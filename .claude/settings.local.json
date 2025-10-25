@@ -1,22 +1,18 @@
 {
   "permissions": {
     "allow": [
-      "Bash(git restore:*)",
-      "Bash(git log:*)",
-      "Bash(git add:*)",
-      "Bash(git commit:*)",
-      "Bash(find:*)",
       "Bash(cat:*)",
-      "Bash(git rm:*)",
-      "Bash(test:*)",
+      "Bash(dir:*)",
+      "Bash(done)",
+      "Bash(find:*)",
+      "Bash(for file in agents/*.md)",
+      "Bash(git:*)",
       "Bash(mkdir:*)",
+      "Bash(npm:*)",
       "Bash(powershell:*)",
       "Bash(python:*)",
-      "Bash(for file in agents/*.md)",
-      "Bash(done)",
-      "Bash(npm install:*)",
-      "Bash(npm search:*)",
-      "Bash(tree:*)"
+      "Bash(test:*)",
+      "Bash(tree:*)"      
     ],
     "deny": [],
     "ask": [],

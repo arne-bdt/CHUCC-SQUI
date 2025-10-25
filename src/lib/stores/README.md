@@ -18,10 +18,10 @@ export const queryStore = writable({
   text: '',
   isExecuting: false,
   lastResult: null,
-  error: null
+  error: null,
 });
 
 export const setQuery = (text: string) => {
-  queryStore.update(s => ({ ...s, text }));
+  queryStore.update((s) => ({ ...s, text }));
 };
 ```

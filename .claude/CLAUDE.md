@@ -7,120 +7,85 @@ SQUI is a modern SPARQL Query Web Component inspired by YASGUI (Yet Another SPAR
 ### Key Technologies
 
 - **Framework**: Svelte 5 (v5.41.x+) - leveraging reactivity and compile-time optimizations
+- **Language**: **TypeScript** - All code must be written in TypeScript (`.ts` and `.svelte` files)
 - **Design System**: IBM Carbon Design System (Svelte Carbon components)
 - **Data Grid**: SVAR Svelte DataGrid v2 (`wx-svelte-grid`) - for high-performance tabular results
 - **Code Editor**: CodeMirror 6 - for SPARQL syntax highlighting and editing
 - **Build Tool**: Vite
-- **Testing**: Vitest/Jest for unit tests, Playwright/Cypress for E2E tests
+- **Testing**: Vitest for unit tests, Playwright for E2E tests
+- **Code Quality**: ESLint + Prettier with strict TypeScript rules
 - **Protocol**: SPARQL 1.2 Protocol compliant
-
-## Core Features Summary
-
-### 1. SPARQL Editor
-- Syntax highlighting for SPARQL
-- Autocompletion (prefixes, IRIs, keywords)
-- Query templates and prefix management
-- Multiple query tabs
-- Ctrl+Enter to execute
-
-### 2. Endpoint Management
-- Endpoint URL input with catalogue
-- Default endpoint configuration
-- Validation and CORS handling
-
-### 3. Tabular Results (SVAR DataGrid)
-- Virtual scrolling (infinite scroll, no pagination)
-- Chunked data loading
-- Column sorting, filtering, resizing, reordering
-- IRI abbreviation (simple/full view toggle)
-- Clickable IRI links
-- Handle 10,000+ rows smoothly
-
-### 4. Raw View & Downloads
-- Raw response viewer (JSON, XML, CSV, TSV, Turtle, etc.)
-- Format switching
-- Download results in multiple formats
-
-### 5. UI/UX
-- IBM Carbon Design System
-- 4 theme support (White, Gray 10, Gray 90, Gray 100)
-- Accessibility (WAI-ARIA, keyboard navigation)
-- Localization support
-
-## Architecture
-
-See full architecture details in the specification PDF at:
-`docs/SPARQL Query UI Web Component Specification.pdf`
-
-### Key Directories
-
-- `src/lib/components/` - Svelte 5 components
-- `src/lib/stores/` - State management
-- `src/lib/services/` - SPARQL protocol, parsing, prefixes
-- `src/lib/utils/` - Formatting, download, validation
-- `src/lib/types/` - TypeScript definitions
 
 ## Development Guidelines
 
+### TypeScript Requirements
+
+**CRITICAL: All code must be written in TypeScript**
+
+- ✅ Use `.ts` for all TypeScript files
+- ✅ Use `<script lang="ts">` in all Svelte components
+- ✅ Define interfaces/types for all data structures
+- ✅ Avoid `any` type - use proper typing or `unknown`
+- ✅ Enable strict mode in tsconfig.json
+- ✅ Use JSDoc comments with proper TypeScript types
+- ✅ Export types from `src/lib/types/index.ts`
+- ❌ NO vanilla JavaScript files (.js) except config files
+
+### Code Quality Standards
+
+**CRITICAL: Quality checks must pass before any commit**
+
+#### Build Process Requirements
+
+Every build must pass these checks:
+
+\`\`\`bash
+# Type checking
+npm run type-check      # Must pass with 0 errors
+
+# Linting
+npm run lint            # Must pass with 0 errors/warnings
+
+# Formatting
+npm run format:check    # Must pass (or auto-fix with npm run format)
+
+# Tests
+npm test                # All tests must pass
+
+# Build
+npm run build           # Must build successfully
+\`\`\`
+
+### Testing Requirements
+
+**CRITICAL: Tests are part of EVERY task, not separate**
+
+Each feature implementation task must include:
+
+1. **Unit Tests** (for services, utilities, pure functions)
+2. **Integration Tests** (for component interactions)
+3. **E2E Tests** (for critical user workflows - when applicable)
+
+**Test-Driven Development Approach:**
+- Write tests DURING feature implementation
+- All tests must pass before task is considered complete
+- No separate "testing phase" - testing is integral to each task
+- Target >80% code coverage for new code
+
 ### Svelte 5 Patterns
-- Use `$effect` and `$trigger` (not old reactivity)
-- Use `bind:this` for component references
-- Follow runes-based reactive declarations
 
-### Code Quality
-- Modularity: separate UI from logic
-- Pure functions for testability
-- TypeScript for public APIs
-- JSDoc for documentation
-- >80% test coverage target
+**CRITICAL: Use Svelte 5 runes, not legacy patterns**
 
-### Performance
-- Virtual scrolling for 60 FPS
-- Efficient JSON parsing
-- Memory cleanup for closed tabs
-- Throttled chunk loading
-- Max 100,000 rows (configurable)
+- ✅ Use `$state` for reactive state
+- ✅ Use `$derived` for computed values
+- ✅ Use `$effect` for side effects
+- ✅ Use `$props` for component props
+- ✅ Use `bind:this` for component references
+- ❌ NO `$:` reactive declarations (legacy)
+- ❌ NO `export let` for props
+- ❌ NO `beforeUpdate`/`afterUpdate`
 
-### Security
-- XSS prevention (sanitize HTML literals)
-- Link safety (`rel="noopener noreferrer"`)
-- CORS for endpoint security
-- No SPARQL injection
+See full specification at: `docs/SPARQL Query UI Web Component Specification.pdf`
 
-## Testing
-
-- **Unit**: Pure functions, services, stores
-- **Integration**: Query flow, autocompletion, result parsing
-- **E2E**: Full workflow, cross-browser, accessibility
-
-## Browser Support
-
-Chrome, Firefox, Safari, Edge (latest versions)
-
-## References
-
-- Full Specification: `docs/SPARQL Query UI Web Component Specification.pdf`
-- [YASGUI Documentation](https://triply.cc/docs/yasgui)
-- [SPARQL 1.2 Protocol](https://www.w3.org/TR/sparql12-protocol/)
-- [SVAR Svelte DataGrid](https://svar.dev/svelte/datagrid/)
-- [IBM Carbon Design System](https://carbondesignsystem.com/)
-- [Svelte 5 Documentation](https://svelte.dev/)
-
-## Quick Start
-
-```bash
-npm install
-npm run dev
-npm test
-npm run build
-```
-
-## Agents
-
-Specialized agents are available in `.claude/agents/`:
-- `component-dev` - Svelte 5 component development
-- `testing` - Test creation and execution
-- `sparql-protocol` - SPARQL protocol implementation
-- `ui-ux` - Carbon Design System and accessibility
-- `datagrid` - SVAR DataGrid integration
-- `docs` - Documentation maintenance
+**Implementation tasks**: See `.tasks/` directory (50 incremental tasks)
+**Start here**: `.tasks/00-GETTING-STARTED.md`

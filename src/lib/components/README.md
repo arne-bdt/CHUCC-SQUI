@@ -13,6 +13,7 @@ Svelte 5 components for the SPARQL Query UI.
 ## Development
 
 Each component should:
+
 - Use Svelte 5 runes ($state, $derived, $effect)
 - Follow Carbon Design System guidelines
 - Be fully accessible (WCAG 2.1 AA)
@@ -27,10 +28,10 @@ Each component should:
     value: string;
     onValueChange?: (value: string) => void;
   }
-  
+
   let { value, onValueChange }: Props = $props();
   let localValue = $state(value);
-  
+
   $effect(() => {
     localValue = value;
   });

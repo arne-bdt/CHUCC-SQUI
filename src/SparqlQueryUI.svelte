@@ -1,55 +1,55 @@
 <script lang="ts">
-  /**
-   * Main SPARQL Query UI Component
-   * 
-   * @component
-   */
-  
-  import { onMount } from 'svelte';
-  
-  interface Props {
+  import type { SquiConfig } from './lib/types/config';
+
+  interface Props extends SquiConfig {
     endpoint?: string;
-    defaultQuery?: string;
-    defaultPrefixes?: Record<string, string>;
     theme?: 'white' | 'g10' | 'g90' | 'g100';
-    maxRows?: number;
     showEndpointSelector?: boolean;
+    defaultPrefixes?: Record<string, string>;
+    maxRows?: number;
   }
-  
+
+  // Destructure props with defaults
   let {
     endpoint = '',
-    defaultQuery = 'SELECT * WHERE { ?s ?p ?o } LIMIT 100',
-    defaultPrefixes = {},
     theme = 'white',
+    defaultPrefixes = {},
     maxRows = 100000,
-    showEndpointSelector = true
+    showEndpointSelector = true,
   }: Props = $props();
-  
-  let query = $state(defaultQuery);
-  let results = $state<any>(null);
-  let isExecuting = $state(false);
-  
-  onMount(() => {
-    console.log('SPARQL Query UI initialized');
+
+  // Component state - will be used in implementation
+  let _query = $state('');
+  let _results = $state(null);
+  let _isExecuting = $state(false);
+
+  // Prevent unused variable warnings - these will be used once we implement
+  $effect(() => {
+    if (endpoint || theme || defaultPrefixes || maxRows || showEndpointSelector) {
+      // Props are available for implementation
+    }
   });
 </script>
 
-<div class="sparql-query-ui theme-{theme}">
-  <div class="container">
+<div class="squi-container theme-{theme}">
+  <div class="placeholder">
     <h1>SPARQL Query UI</h1>
-    <p>Component initialized. Implementation in progress...</p>
-    <p>Endpoint: {endpoint || 'Not set'}</p>
+    <p>Component will be implemented following the tasks.</p>
+    <p>Endpoint: {endpoint || 'Not configured'}</p>
+    <p>Theme: {theme}</p>
   </div>
 </div>
 
 <style>
-  .sparql-query-ui {
+  .squi-container {
     width: 100%;
     height: 100%;
-    font-family: 'IBM Plex Sans', sans-serif;
+    display: flex;
+    flex-direction: column;
   }
-  
-  .container {
+
+  .placeholder {
     padding: 2rem;
+    text-align: center;
   }
 </style>

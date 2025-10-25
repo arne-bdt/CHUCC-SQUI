@@ -3,11 +3,7 @@
 </script>
 
 <main>
-  <SparqlQueryUI 
-    endpoint="https://dbpedia.org/sparql"
-    theme="g90"
-    showEndpointSelector={true}
-  />
+  <SparqlQueryUI endpoint="https://dbpedia.org/sparql" theme="g90" showEndpointSelector={true} />
 </main>
 
 <style>
