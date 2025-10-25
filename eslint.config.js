@@ -53,6 +53,10 @@ export default [
         parser: tsParser,
         project: './tsconfig.json',
         extraFileExtensions: ['.svelte']
+      },
+      globals: {
+        ...globals.browser,
+        ...globals.es2021
       }
     },
     plugins: {
