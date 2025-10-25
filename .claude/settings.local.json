@@ -13,7 +13,9 @@
       "Bash(powershell:*)",
       "Bash(python:*)",
       "Bash(for file in agents/*.md)",
-      "Bash(done)"
+      "Bash(done)",
+      "Bash(npm install:*)",
+      "Bash(npm search:*)"
     ],
     "deny": [],
     "ask": [],
