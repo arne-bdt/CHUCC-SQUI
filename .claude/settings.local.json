@@ -1,0 +1,22 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(git restore:*)",
+      "Bash(git log:*)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Bash(find:*)",
+      "Bash(cat:*)",
+      "Bash(git rm:*)",
+      "Bash(test:*)",
+      "Bash(mkdir:*)",
+      "Bash(powershell:*)",
+      "Bash(python:*)",
+      "Bash(for file in agents/*.md)",
+      "Bash(done)"
+    ],
+    "deny": [],
+    "ask": [],
+    "defaultMode": "bypassPermissions"
+  }
+}
