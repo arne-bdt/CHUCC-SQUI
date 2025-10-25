@@ -1,9 +1,11 @@
 <script lang="ts">
   import type { SquiConfig } from './lib/types/config';
+  import type { CarbonTheme } from './lib/stores';
+  import { themeStore } from './lib/stores';
 
   interface Props extends SquiConfig {
     endpoint?: string;
-    theme?: 'white' | 'g10' | 'g90' | 'g100';
+    theme?: CarbonTheme;
     showEndpointSelector?: boolean;
     defaultPrefixes?: Record<string, string>;
     maxRows?: number;
@@ -23,9 +25,14 @@
   let _results = $state(null);
   let _isExecuting = $state(false);
 
+  // Initialize theme from props
+  $effect(() => {
+    themeStore.setTheme(theme);
+  });
+
   // Prevent unused variable warnings - these will be used once we implement
   $effect(() => {
-    if (endpoint || theme || defaultPrefixes || maxRows || showEndpointSelector) {
+    if (endpoint || defaultPrefixes || maxRows || showEndpointSelector) {
       // Props are available for implementation
     }
   });

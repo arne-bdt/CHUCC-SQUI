@@ -2,9 +2,14 @@
  * Component configuration types
  */
 
+/**
+ * Carbon Design System theme names
+ */
+export type CarbonTheme = 'white' | 'g10' | 'g90' | 'g100';
+
 export interface SquiConfig {
   endpoint?: string;
-  theme?: 'white' | 'g10' | 'g90' | 'g100';
+  theme?: CarbonTheme;
   showEndpointSelector?: boolean;
   defaultPrefixes?: Record<string, string>;
   maxRows?: number;
@@ -15,5 +20,3 @@ export interface EndpointConfig {
   name?: string;
   description?: string;
 }
-
-export type CarbonTheme = 'white' | 'g10' | 'g90' | 'g100';
