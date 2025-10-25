@@ -3,7 +3,11 @@
 </script>
 
 <main>
-  <SparqlQueryUI endpoint="https://dbpedia.org/sparql" theme="g90" showEndpointSelector={true} />
+  <SparqlQueryUI
+    endpoint={{ url: 'https://dbpedia.org/sparql', hideSelector: false }}
+    theme={{ theme: 'g90' }}
+    limits={{ maxRows: 10000 }}
+  />
 </main>
 
 <style>
