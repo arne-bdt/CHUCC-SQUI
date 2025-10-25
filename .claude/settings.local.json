@@ -15,7 +15,8 @@
       "Bash(for file in agents/*.md)",
       "Bash(done)",
       "Bash(npm install:*)",
-      "Bash(npm search:*)"
+      "Bash(npm search:*)",
+      "Bash(tree:*)"
     ],
     "deny": [],
     "ask": [],
