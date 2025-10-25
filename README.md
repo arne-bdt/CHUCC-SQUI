@@ -151,7 +151,9 @@ This project is inspired by [YASGUI](https://triply.cc/docs/yasgui) (Yet Another
 
 ## License
 
-MIT
+Apache License 2.0
+
+See [LICENSE](LICENSE) file for details.
 
 ## Contributing
 

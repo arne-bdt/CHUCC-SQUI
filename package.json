@@ -30,7 +30,7 @@
     "typescript"
   ],
   "author": "Arne Bernhardt",
-  "license": "MIT",
+  "license": "Apache-2.0",
   "devDependencies": {
     "@eslint/js": "^9.15.0",
     "@playwright/test": "^1.56.1",

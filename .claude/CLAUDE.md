@@ -72,6 +72,24 @@ Each feature implementation task must include:
 - No separate "testing phase" - testing is integral to each task
 - Target >80% code coverage for new code
 
+### License Compatibility
+
+**CRITICAL: Check license compatibility when adding dependencies**
+
+This project is licensed under **Apache License 2.0**. When adding new dependencies:
+
+- ✅ **Compatible licenses**: Apache 2.0, MIT, BSD (2-clause, 3-clause), ISC, Public Domain, Unlicense
+- ⚠️ **Check carefully**: LGPL (may be compatible in specific use cases)
+- ❌ **Incompatible licenses**: GPL, AGPL, proprietary licenses with restrictive terms
+- 🔍 **Always verify**: Check `package.json` or repository LICENSE file
+- 📝 **Document**: Note any licensing concerns in PR descriptions
+
+**Before adding any dependency:**
+1. Check the dependency's license using `npm view <package> license`
+2. Verify compatibility with Apache License 2.0
+3. Reject or find alternatives for incompatible licenses
+4. Document the license check in your commit/PR
+
 ### Svelte 5 Patterns
 
 **CRITICAL: Use Svelte 5 runes, not legacy patterns**
