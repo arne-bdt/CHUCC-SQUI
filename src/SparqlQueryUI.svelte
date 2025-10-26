@@ -20,6 +20,7 @@
   import type { CarbonTheme } from './lib/types';
   import { themeStore } from './lib/stores';
   import Toolbar from './lib/components/Toolbar/Toolbar.svelte';
+  import RunButton from './lib/components/Toolbar/RunButton.svelte';
   import SplitPane from './lib/components/Layout/SplitPane.svelte';
   import SparqlEditor from './lib/components/Editor/SparqlEditor.svelte';
   import ResultsPlaceholder from './lib/components/Results/ResultsPlaceholder.svelte';
@@ -88,12 +89,16 @@
   <!-- Top toolbar for controls and endpoint selector -->
   <Toolbar>
     {#snippet children()}
-      <div class="toolbar-placeholder">
-        <span>Endpoint: {endpoint?.url || 'Not configured'}</span>
-        <span class="separator">|</span>
-        <span>Theme: {currentTheme}</span>
-        <span class="separator">|</span>
-        <span>Max Rows: {limits?.maxRows?.toLocaleString() || 'N/A'}</span>
+      <div class="toolbar-content">
+        <!-- Run Query Button -->
+        <RunButton />
+
+        <!-- Endpoint Info -->
+        <div class="toolbar-info">
+          <span class="endpoint-info">
+            <strong>Endpoint:</strong> {endpoint?.url || 'Not configured'}
+          </span>
+        </div>
       </div>
     {/snippet}
   </Toolbar>
@@ -126,26 +131,42 @@
     position: relative;
   }
 
-  .toolbar-placeholder {
+  .toolbar-content {
+    display: flex;
+    align-items: center;
+    gap: var(--cds-spacing-05, 1rem);
+    width: 100%;
+  }
+
+  .toolbar-info {
     display: flex;
     align-items: center;
     gap: var(--cds-spacing-03, 0.5rem);
-    font-size: 0.875rem;
-    color: var(--cds-text-secondary, #525252);
+    flex: 1;
+    min-width: 0;
   }
 
-  .separator {
-    color: var(--cds-border-subtle-01, #e0e0e0);
+  .endpoint-info {
+    font-size: 0.875rem;
+    color: var(--cds-text-secondary, #525252);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .endpoint-info strong {
+    font-weight: 600;
+    color: var(--cds-text-primary, #161616);
   }
 
   /* Dark theme text colors - ensure high contrast */
-  :global(.g90) .toolbar-placeholder,
-  :global(.g100) .toolbar-placeholder {
+  :global(.g90) .endpoint-info,
+  :global(.g100) .endpoint-info {
     color: var(--cds-text-secondary, #c6c6c6);
   }
 
-  :global(.g90) .separator,
-  :global(.g100) .separator {
-    color: var(--cds-border-subtle-01, #6f6f6f);
+  :global(.g90) .endpoint-info strong,
+  :global(.g100) .endpoint-info strong {
+    color: var(--cds-text-primary, #f4f4f4);
   }
 </style>
