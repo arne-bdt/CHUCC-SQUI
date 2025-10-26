@@ -173,10 +173,7 @@ export class TemplateService {
    * @param customPrefixes - Additional prefixes to inject
    * @returns Template query with prefixes
    */
-  getTemplateWithPrefixes(
-    templateName: string,
-    customPrefixes?: Record<string, string>
-  ): string {
+  getTemplateWithPrefixes(templateName: string, customPrefixes?: Record<string, string>): string {
     const template = this.getTemplate(templateName);
     if (!template) {
       return this.getDefaultTemplate();

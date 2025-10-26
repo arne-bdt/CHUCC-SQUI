@@ -197,7 +197,7 @@ describe('SparqlEditor Component', () => {
       const { container } = render(SparqlEditor, {
         props: {
           initialValue: '', // Empty editor to show placeholder
-          placeholder: 'editor.placeholder'
+          placeholder: 'editor.placeholder',
         },
       });
 

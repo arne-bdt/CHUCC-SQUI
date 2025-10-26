@@ -22,6 +22,7 @@
   import { defaultEndpoint } from './lib/stores/endpointStore';
   import Toolbar from './lib/components/Toolbar/Toolbar.svelte';
   import RunButton from './lib/components/Toolbar/RunButton.svelte';
+  import EndpointSelector from './lib/components/Endpoint/EndpointSelector.svelte';
   import SplitPane from './lib/components/Layout/SplitPane.svelte';
   import SparqlEditor from './lib/components/Editor/SparqlEditor.svelte';
   import ResultsPlaceholder from './lib/components/Results/ResultsPlaceholder.svelte';
@@ -75,11 +76,19 @@
 
   // Initialize endpoint store from props
   // This ensures RunButton has access to endpoint on mount
+  let _currentEndpoint = $state(endpoint?.url || '');
   $effect(() => {
     if (endpoint?.url) {
+      _currentEndpoint = endpoint.url;
       defaultEndpoint.set(endpoint.url);
     }
   });
+
+  // Handle endpoint changes from selector
+  function handleEndpointChange(newUrl: string): void {
+    _currentEndpoint = newUrl;
+    defaultEndpoint.set(newUrl);
+  }
 
   // Prevent unused variable warnings - these will be used in future tasks
   $effect(() => {
@@ -102,12 +111,26 @@
         <!-- Run Query Button -->
         <RunButton />
 
-        <!-- Endpoint Info -->
-        <div class="toolbar-info">
-          <span class="endpoint-info">
-            <strong>Endpoint:</strong> {endpoint?.url || 'Not configured'}
-          </span>
-        </div>
+        <!-- Endpoint Selector or Info -->
+        {#if endpoint?.hideSelector}
+          <!-- Show static endpoint info when selector is hidden -->
+          <div class="toolbar-info">
+            <span class="endpoint-info">
+              <strong>Endpoint:</strong>
+              {_currentEndpoint || 'Not configured'}
+            </span>
+          </div>
+        {:else}
+          <!-- Show endpoint selector for choosing/entering endpoints -->
+          <div class="endpoint-selector-wrapper">
+            <EndpointSelector
+              bind:value={_currentEndpoint}
+              onchange={handleEndpointChange}
+              label=""
+              placeholder="Select or enter SPARQL endpoint"
+            />
+          </div>
+        {/if}
       </div>
     {/snippet}
   </Toolbar>
@@ -145,6 +168,12 @@
     align-items: center;
     gap: var(--cds-spacing-05, 1rem);
     width: 100%;
+  }
+
+  .endpoint-selector-wrapper {
+    flex: 1;
+    min-width: 300px;
+    max-width: 600px;
   }
 
   .toolbar-info {

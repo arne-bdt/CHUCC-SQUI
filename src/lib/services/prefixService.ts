@@ -92,9 +92,7 @@ export class PrefixService {
     const allPrefixes = prefixes || this.getAllPrefixes();
 
     // Sort by URI length (descending) to match longest prefix first
-    const sortedPrefixes = Object.entries(allPrefixes).sort(
-      (a, b) => b[1].length - a[1].length
-    );
+    const sortedPrefixes = Object.entries(allPrefixes).sort((a, b) => b[1].length - a[1].length);
 
     for (const [prefix, uri] of sortedPrefixes) {
       if (iri.startsWith(uri)) {
@@ -134,10 +132,10 @@ export class PrefixService {
   async searchPrefixes(query: string): Promise<PrefixSuggestion[]> {
     try {
       // Search prefix.cc API
-      const response = await fetch(
-        `https://prefix.cc/${encodeURIComponent(query)}.file.json`,
-        { method: 'GET', headers: { Accept: 'application/json' } }
-      );
+      const response = await fetch(`https://prefix.cc/${encodeURIComponent(query)}.file.json`, {
+        method: 'GET',
+        headers: { Accept: 'application/json' },
+      });
 
       if (!response.ok) {
         return [];

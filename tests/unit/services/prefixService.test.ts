@@ -197,10 +197,7 @@ describe('PrefixService', () => {
       const service = new PrefixService();
       const customPrefixes = { custom: 'http://custom.org/' };
 
-      const abbreviated = service.abbreviateIRI(
-        'http://custom.org/Resource',
-        customPrefixes
-      );
+      const abbreviated = service.abbreviateIRI('http://custom.org/Resource', customPrefixes);
       expect(abbreviated).toBe('custom:Resource');
     });
 
@@ -285,10 +282,10 @@ describe('PrefixService', () => {
 
       const suggestions = await service.searchPrefixes('foaf');
 
-      expect(global.fetch).toHaveBeenCalledWith(
-        'https://prefix.cc/foaf.file.json',
-        { method: 'GET', headers: { Accept: 'application/json' } }
-      );
+      expect(global.fetch).toHaveBeenCalledWith('https://prefix.cc/foaf.file.json', {
+        method: 'GET',
+        headers: { Accept: 'application/json' },
+      });
       expect(suggestions).toHaveLength(2);
       expect(suggestions[0]).toEqual({ prefix: 'foaf', uri: 'http://xmlns.com/foaf/0.1/' });
     });

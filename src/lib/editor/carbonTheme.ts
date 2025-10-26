@@ -129,7 +129,8 @@ export function createCarbonTheme(themeName: CarbonTheme = 'white'): Extension {
       },
       '.cm-content': {
         caretColor: `var(--cds-link-primary, ${fallback.cursor})`,
-        fontFamily: 'var(--cds-code-01-font-family, "IBM Plex Mono"), Menlo, Monaco, Consolas, monospace',
+        fontFamily:
+          'var(--cds-code-01-font-family, "IBM Plex Mono"), Menlo, Monaco, Consolas, monospace',
         fontSize: 'var(--cds-code-01-font-size, 0.875rem)',
         lineHeight: 'var(--cds-code-01-line-height, 1.42857)',
       },
@@ -181,7 +182,8 @@ export function createCarbonTheme(themeName: CarbonTheme = 'white'): Extension {
         borderTopColor: `var(--cds-layer-01, ${fallback.background})`,
       },
       '.cm-scroller': {
-        fontFamily: 'var(--cds-code-01-font-family, "IBM Plex Mono"), Menlo, Monaco, Consolas, monospace',
+        fontFamily:
+          'var(--cds-code-01-font-family, "IBM Plex Mono"), Menlo, Monaco, Consolas, monospace',
       },
     },
     { dark: isDark }
