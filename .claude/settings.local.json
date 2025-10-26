@@ -14,7 +14,8 @@
       "Bash(test:*)",
       "Bash(tree:*)",
       "Bash(npx vitest:*)",
-      "Bash(npx storybook@latest init:*)"
+      "Bash(npx storybook@latest init:*)",
+      "Bash(curl:*)"
     ],
     "deny": [],
     "ask": [],
