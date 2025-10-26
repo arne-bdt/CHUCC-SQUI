@@ -53,6 +53,7 @@ const meta = {
     },
   },
   parameters: {
+    layout: 'fullscreen',
     docs: {
       description: {
         component:
