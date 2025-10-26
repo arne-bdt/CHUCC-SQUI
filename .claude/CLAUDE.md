@@ -107,14 +107,91 @@ npm run check           # Runs: type-check, lint, format:check, test:unit, build
 Each feature implementation task must include:
 
 1. **Unit Tests** (for services, utilities, pure functions)
-2. **Integration Tests** (for component interactions)
-3. **E2E Tests** (for critical user workflows - when applicable)
+2. **Integration Tests** (for component interactions and rendering)
+3. **Storybook Play Functions** (for visual component testing)
+4. **E2E Tests** (for critical user workflows - when applicable)
 
 **Test-Driven Development Approach:**
 - Write tests DURING feature implementation
 - All tests must pass before task is considered complete
 - No separate "testing phase" - testing is integral to each task
 - Target >80% code coverage for new code
+
+**Test Coverage Requirements:**
+
+1. **Unit Tests** (`tests/unit/`):
+   - Test service logic in isolation
+   - Mock external dependencies
+   - Fast execution (<1ms per test)
+   - Example: `sparqlService.test.ts`, `resultsParser.test.ts`
+
+2. **Integration Tests** (`tests/integration/`):
+   - Test component rendering with real stores
+   - Test component interactions and reactivity
+   - Verify DOM updates after state changes
+   - Use `@testing-library/svelte` with `waitFor()` for async updates
+   - Mock browser APIs (ResizeObserver, IntersectionObserver) in `tests/setup.ts`
+   - Example: `ResultsPlaceholder.test.ts` (23 tests)
+
+3. **Storybook Play Functions**:
+   - Add `play` functions to critical stories
+   - Test component behavior in visual context
+   - Catch rendering bugs and infinite loops
+   - Example: `DataTable.stories.ts` LargeDataset10000 story
+   - Run with: `npm run storybook` (manual) or `npm run test-storybook` (CI)
+
+4. **Critical Integration Test Patterns:**
+
+   ```typescript
+   // ✅ DO: Wait for store updates to propagate to DOM
+   resultsStore.setData(mockData);
+   await waitFor(() => {
+     expect(screen.getByText('2 results')).toBeInTheDocument();
+   });
+
+   // ❌ DON'T: Expect immediate DOM updates
+   resultsStore.setData(mockData);
+   expect(screen.getByText('2 results')).toBeInTheDocument(); // May fail!
+
+   // ✅ DO: Test large datasets for performance
+   const largeData = generateData(10000);
+   await waitFor(() => {
+     expect(container.querySelector('.data-table')).toBeInTheDocument();
+   }, { timeout: 5000 }); // Catches infinite loops/freezes
+
+   // ✅ DO: Test store reactivity
+   const { container } = render(Component);
+   resultsStore.setLoading(true);
+   await waitFor(() => expect(screen.getByText('Loading')).toBeInTheDocument());
+   resultsStore.setData(mockData);
+   await waitFor(() => expect(container.querySelector('.results')).toBeInTheDocument());
+   ```
+
+5. **What Tests Must Catch:**
+
+   - ❌ Store subscription bugs (`$derived($store)` not `$derived(store)`)
+   - ❌ Infinite reactivity loops (`$derived.by()` not `$derived(() => {})`)
+   - ❌ Browser freezes with large datasets (10,000+ rows)
+   - ❌ Missing DOM updates after store changes
+   - ❌ Component rendering errors with real data
+   - ❌ Edge cases (empty results, unbound variables, errors)
+
+**Test Setup:**
+
+- Global mocks in `tests/setup.ts`:
+  - `ResizeObserver` (required by wx-svelte-grid)
+  - `IntersectionObserver` (required by Carbon components)
+  - `@testing-library/jest-dom` matchers
+
+**Running Tests:**
+
+```bash
+npm test                    # All tests (unit + integration)
+npm run test:unit           # Unit tests only
+npm run test:integration    # Integration tests only
+npm run storybook           # Manual visual testing
+npm run test-storybook      # Automated Storybook tests (TODO)
+```
 
 ### License Compatibility
 
@@ -140,12 +217,47 @@ This project is licensed under **Apache License 2.0**. When adding new dependenc
 
 - ✅ Use `$state` for reactive state
 - ✅ Use `$derived` for computed values
+- ✅ Use `$derived.by()` for complex computations
 - ✅ Use `$effect` for side effects
 - ✅ Use `$props` for component props
 - ✅ Use `bind:this` for component references
 - ❌ NO `$:` reactive declarations (legacy)
 - ❌ NO `export let` for props
 - ❌ NO `beforeUpdate`/`afterUpdate`
+
+**Svelte 5 Reactivity Gotchas:**
+
+```typescript
+// ❌ WRONG: Creates a derived FUNCTION, not a derived VALUE
+const data = $derived(() => {
+  return items.map(item => process(item));
+});
+// Usage: data() - calling as function causes infinite loops!
+
+// ✅ CORRECT: Simple derived value
+const data = $derived(items.map(item => process(item)));
+// Usage: data - direct access
+
+// ✅ CORRECT: Complex derived with function body
+const data = $derived.by(() => {
+  return items.map(item => process(item));
+});
+// Usage: data - direct access
+
+// ❌ WRONG: Accessing store object instead of value
+const state = $derived(resultsStore);
+// state = { subscribe, set, update } - the store object!
+
+// ✅ CORRECT: Auto-subscribe to store value
+const state = $derived($resultsStore);
+// state = { loading: false, data: [...] } - the actual value!
+```
+
+**Key Rules:**
+1. `$derived(expression)` - for simple expressions
+2. `$derived.by(() => { ... })` - for complex logic with statements
+3. `$store` syntax auto-subscribes to stores in runes mode
+4. Never call derived values as functions unless explicitly created as functions
 
 See full specification at: `docs/SPARQL Query UI Web Component Specification.pdf`
 
