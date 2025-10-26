@@ -1,7 +1,7 @@
 # Task 08: Prefix Management Service
 
 **Phase:** SPARQL Editor
-**Status:** TODO
+**Status:** COMPLETED
 **Dependencies:** 04
 **Estimated Effort:** 3-4 hours
 
@@ -172,14 +172,14 @@ Per specification sections 1.2 and 1.4:
 
 ## Acceptance Criteria
 
-- [ ] Common prefixes are predefined
-- [ ] PREFIX declarations can be parsed from query text
-- [ ] IRIs can be abbreviated using known prefixes
-- [ ] Abbreviated IRIs can be expanded to full IRIs
-- [ ] Prefix search queries prefix.cc
-- [ ] Custom prefixes can be added
-- [ ] PREFIX declarations can be generated
-- [ ] Discovery hook can be configured for custom prefix fetching
+- [x] Common prefixes are predefined
+- [x] PREFIX declarations can be parsed from query text
+- [x] IRIs can be abbreviated using known prefixes
+- [x] Abbreviated IRIs can be expanded to full IRIs
+- [x] Prefix search queries prefix.cc
+- [x] Custom prefixes can be added
+- [x] PREFIX declarations can be generated
+- [x] Discovery hook can be configured for custom prefix fetching
 
 ## Testing
 
