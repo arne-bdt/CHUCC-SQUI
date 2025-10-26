@@ -5,7 +5,13 @@
    */
 
   import { onMount, onDestroy } from 'svelte';
-  import { EditorView, keymap, lineNumbers, highlightActiveLine } from '@codemirror/view';
+  import {
+    EditorView,
+    keymap,
+    lineNumbers,
+    highlightActiveLine,
+    placeholder,
+  } from '@codemirror/view';
   import { EditorState, Compartment } from '@codemirror/state';
   import { defaultKeymap, history, historyKeymap } from '@codemirror/commands';
   import { searchKeymap, highlightSelectionMatches } from '@codemirror/search';
@@ -99,9 +105,7 @@
         }),
 
         // Placeholder
-        placeholder
-          ? EditorView.placeholder($t(placeholder) || 'Enter your SPARQL query here...')
-          : EditorView.placeholder($t('editor.placeholder')),
+        placeholder($t('editor.placeholder')),
 
         // Accessibility
         EditorView.contentAttributes.of({

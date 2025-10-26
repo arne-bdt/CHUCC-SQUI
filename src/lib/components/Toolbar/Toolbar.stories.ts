@@ -43,14 +43,6 @@ type Story = StoryObj<typeof meta>;
  */
 export const Default: Story = {
   args: {},
-  render: () => ({
-    Component: Toolbar,
-    props: {},
-    slots: {
-      default:
-        '<span style="padding: 0.5rem; color: var(--cds-text-primary);">Toolbar (empty - add content via slots)</span>',
-    },
-  }),
 };
 
 /**
@@ -104,44 +96,4 @@ export const WithCustomClass: Story = {
   args: {
     class: 'custom-toolbar-class',
   },
-  render: (args) => ({
-    Component: Toolbar,
-    props: args,
-    slots: {
-      default:
-        '<span style="padding: 0.5rem; color: var(--cds-text-primary);">Custom class toolbar</span>',
-    },
-  }),
-};
-
-/**
- * Toolbar with example button content.
- * Shows how toolbar looks with actual controls.
- */
-export const WithButtons: Story = {
-  args: {},
-  render: () => ({
-    Component: Toolbar,
-    props: {},
-    slots: {
-      default: `
-        <div style="display: flex; gap: 1rem; align-items: center; padding: 0.5rem;">
-          <button style="padding: 0.5rem 1rem; background: var(--cds-button-primary); color: white; border: none; border-radius: 4px; cursor: pointer;">
-            Run Query
-          </button>
-          <button style="padding: 0.5rem 1rem; background: transparent; color: var(--cds-text-primary); border: 1px solid var(--cds-border-subtle); border-radius: 4px; cursor: pointer;">
-            Share
-          </button>
-          <button style="padding: 0.5rem 1rem; background: transparent; color: var(--cds-text-primary); border: 1px solid var(--cds-border-subtle); border-radius: 4px; cursor: pointer;">
-            Save
-          </button>
-          <select style="padding: 0.5rem; background: var(--cds-field); color: var(--cds-text-primary); border: 1px solid var(--cds-border-subtle); border-radius: 4px;">
-            <option>DBpedia</option>
-            <option>Wikidata</option>
-            <option>Custom Endpoint</option>
-          </select>
-        </div>
-      `,
-    },
-  }),
 };
