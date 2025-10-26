@@ -58,14 +58,14 @@ describe('QueryExecutionService', () => {
 
       expect(result).toBeDefined();
       expect(result.data).toBeDefined();
-      expect(result.executionTime).toBeGreaterThan(0);
+      expect(result.executionTime).toBeGreaterThanOrEqual(0); // Mock may execute instantly (0ms)
       expect(result.status).toBe(200);
 
       // Check results store was updated
       const resultsState = get(resultsStore);
       expect(resultsState.loading).toBe(false);
       expect(resultsState.data).toBeDefined();
-      expect(resultsState.executionTime).toBeGreaterThan(0);
+      expect(resultsState.executionTime).toBeGreaterThanOrEqual(0); // Mock may execute instantly (0ms)
     });
 
     it('should set loading state during execution', async () => {

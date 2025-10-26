@@ -27,22 +27,22 @@
   /**
    * Convert ParsedTableData to wx-svelte-grid column format
    */
-  const columns = $derived(() => {
-    return data.columns.map((varName) => ({
+  const columns = $derived(
+    data.columns.map((varName) => ({
       id: varName,
       label: varName,
       width: 200,
       sort: true,
       editor: false,
       resizable: true,
-    }));
-  });
+    }))
+  );
 
   /**
    * Convert ParsedTableData rows to wx-svelte-grid data format
    * Each row is an object with variable names as keys
    */
-  const gridData = $derived(() => {
+  const gridData = $derived.by(() => {
     return data.rows.map((row, index) => {
       const gridRow: Record<string, any> = {
         id: index, // Grid requires unique id
@@ -65,9 +65,9 @@
   /**
    * Grid configuration
    */
-  const gridConfig = $derived(() => ({
-    columns: columns(),
-    data: gridData(),
+  const gridConfig = $derived({
+    columns: columns,
+    data: gridData,
     autoWidth: false,
     rowHeight: rowHeight,
     headerRowHeight: 40,
@@ -76,7 +76,7 @@
     sort: true,
     filter: false, // Will be enabled in Task 26
     resize: true,
-  }));
+  });
 </script>
 
 <div class="data-table-container {className}">
@@ -90,16 +90,16 @@
     <!-- SVAR DataGrid -->
     <div class="grid-wrapper">
       <Grid
-        columns={gridConfig().columns}
-        data={gridConfig().data}
-        autoWidth={gridConfig().autoWidth}
-        rowHeight={gridConfig().rowHeight}
-        headerRowHeight={gridConfig().headerRowHeight}
-        virtual={gridConfig().virtual}
-        selection={gridConfig().selection}
-        sort={gridConfig().sort}
-        filter={gridConfig().filter}
-        resize={gridConfig().resize}
+        columns={gridConfig.columns}
+        data={gridConfig.data}
+        autoWidth={gridConfig.autoWidth}
+        rowHeight={gridConfig.rowHeight}
+        headerRowHeight={gridConfig.headerRowHeight}
+        virtual={gridConfig.virtual}
+        selection={gridConfig.selection}
+        sort={gridConfig.sort}
+        filter={gridConfig.filter}
+        resize={gridConfig.resize}
       />
     </div>
 

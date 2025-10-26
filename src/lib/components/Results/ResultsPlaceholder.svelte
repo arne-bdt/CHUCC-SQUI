@@ -18,8 +18,8 @@
 
   let { class: className = '' }: Props = $props();
 
-  // Subscribe to results store
-  const state = $derived(resultsStore);
+  // Subscribe to results store (use $ prefix to auto-subscribe)
+  const state = $derived($resultsStore);
 
   // Convert error string to QueryError object
   const errorObject = $derived<QueryError | null>(() => {
