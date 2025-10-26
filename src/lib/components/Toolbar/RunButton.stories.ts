@@ -22,15 +22,8 @@ const meta = {
       description: 'Additional CSS classes',
     },
   },
-  decorators: [
-    (story: any) => {
-      // Reset stores before each story
-      queryStore.reset();
-      resultsStore.reset();
-      defaultEndpoint.set('');
-      return story();
-    },
-  ],
+  // Note: Removed meta-level decorators to avoid state_unsafe_mutation errors in Svelte 5
+  // Each story now explicitly sets all required store state
 } satisfies Meta<RunButton>;
 
 export default meta;
