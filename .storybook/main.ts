@@ -11,7 +11,7 @@ const config: StorybookConfig = {
     '@chromatic-com/storybook',
     '@storybook/addon-docs',
     '@storybook/addon-a11y',
-    // '@storybook/addon-vitest', // Disabled - causing timeout errors
+    '@storybook/addon-vitest',
   ],
   framework: {
     name: '@storybook/sveltekit',

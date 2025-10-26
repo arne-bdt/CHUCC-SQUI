@@ -13,6 +13,7 @@
     "test:integration": "vitest run --dir tests/integration",
     "test:e2e": "playwright test",
     "test:coverage": "vitest run --coverage",
+    "bench": "vitest bench",
     "lint": "eslint src",
     "lint:fix": "eslint src --fix",
     "format": "prettier --write src tests",
@@ -20,7 +21,8 @@
     "check": "npm run type-check && npm run lint && npm run format:check && npm run test:unit && npm run build-storybook",
     "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build --quiet",
-    "test:storybook": "test-storybook"
+    "test:storybook": "test-storybook",
+    "chromatic": "chromatic --exit-zero-on-changes"
   },
   "keywords": [
     "sparql",

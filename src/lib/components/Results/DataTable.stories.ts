@@ -4,6 +4,7 @@
  */
 
 import type { Meta, StoryObj } from '@storybook/svelte';
+import { expect } from 'vitest';
 import DataTable from './DataTable.svelte';
 import type { ParsedTableData } from '../../utils/resultsParser';
 
@@ -198,8 +199,17 @@ export const Default: Story = {
     virtualScroll: true,
     rowHeight: 32,
   },
-  // TODO: Add play function when @storybook/test is configured
-  // play: async ({ canvasElement }) => { ... }
+  play: async ({ canvasElement }) => {
+    // Verify DataTable renders
+    const resultsInfo = canvasElement.querySelector('.results-info');
+    expect(resultsInfo).toBeTruthy();
+    expect(resultsInfo?.textContent).toContain('3 results');
+    expect(resultsInfo?.textContent).toContain('4 variables');
+
+    // Verify grid container exists
+    const gridContainer = canvasElement.querySelector('.data-table-container');
+    expect(gridContainer).toBeTruthy();
+  },
 };
 
 export const SmallDataset: Story = {
@@ -232,11 +242,39 @@ export const LargeDataset10000: Story = {
     virtualScroll: true,
     rowHeight: 32,
   },
-  // TODO: Add play function when @storybook/test is configured
-  // This would catch the infinite $derived loop freeze bug!
-  // play: async ({ canvasElement }) => {
-  //   Should render 10,000 rows in <5s without freezing
-  // }
+  play: async ({ canvasElement }) => {
+    // CRITICAL TEST: This catches the infinite $derived loop freeze bug!
+    // Should render 10,000 rows without freezing the browser
+    const startTime = performance.now();
+
+    // Wait for DataTable to render (with timeout to catch infinite loops)
+    let attempts = 0;
+    const maxAttempts = 100; // 10 seconds max (100 * 100ms)
+
+    while (attempts < maxAttempts) {
+      const gridContainer = canvasElement.querySelector('.data-table-container');
+      if (gridContainer) {
+        break;
+      }
+      await new Promise((resolve) => setTimeout(resolve, 100));
+      attempts++;
+    }
+
+    const renderTime = performance.now() - startTime;
+
+    // Verify it rendered
+    const gridContainer = canvasElement.querySelector('.data-table-container');
+    expect(gridContainer).toBeTruthy();
+
+    // Verify count is correct
+    const resultsInfo = canvasElement.querySelector('.results-info');
+    expect(resultsInfo?.textContent).toContain('10000 results');
+    expect(resultsInfo?.textContent).toContain('4 variables');
+
+    // Performance assertion: Should render in under 5 seconds
+    // This catches infinite reactivity loops and browser freezes
+    expect(renderTime).toBeLessThan(5000);
+  },
 };
 
 export const MultilingualLabels: Story = {
@@ -261,11 +299,17 @@ export const EmptyResults: Story = {
     virtualScroll: false,
     rowHeight: 32,
   },
-  // TODO: Add play function when @storybook/test is configured
-  // play: async ({ canvasElement }) => {
-  //   Verify empty state shows "No results found"
-  //   Verify grid is not rendered
-  // }
+  play: async ({ canvasElement }) => {
+    // Should show empty state
+    const emptyState = canvasElement.querySelector('.empty-state');
+    expect(emptyState).toBeTruthy();
+    expect(emptyState?.textContent).toContain('No results found');
+    expect(emptyState?.textContent).toContain('Try modifying your query');
+
+    // Should NOT show grid
+    const grid = canvasElement.querySelector('.wx-grid');
+    expect(grid).toBeFalsy();
+  },
 };
 
 export const CustomRowHeight: Story = {
