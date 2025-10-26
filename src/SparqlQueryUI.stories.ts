@@ -111,62 +111,6 @@ export const WikidataEndpoint: Story = {
 };
 
 /**
- * White theme (default) - light theme with high contrast.
- * Use the theme toolbar (paintbrush icon) to switch themes.
- */
-export const WhiteTheme: Story = {
-  args: {
-    endpoint: { url: 'https://dbpedia.org/sparql' },
-  },
-  parameters: {
-    backgrounds: { default: 'white' },
-    globals: { theme: 'white' },
-  },
-};
-
-/**
- * Gray 10 theme - light theme with slightly darker background.
- * Use the theme toolbar (paintbrush icon) to switch themes.
- */
-export const G10Theme: Story = {
-  args: {
-    endpoint: { url: 'https://dbpedia.org/sparql' },
-  },
-  parameters: {
-    backgrounds: { default: 'g10' },
-    globals: { theme: 'g10' },
-  },
-};
-
-/**
- * Gray 90 dark theme - dark interface with light text.
- * Use the theme toolbar (paintbrush icon) to switch themes.
- */
-export const G90DarkTheme: Story = {
-  args: {
-    endpoint: { url: 'https://dbpedia.org/sparql' },
-  },
-  parameters: {
-    backgrounds: { default: 'g90' },
-    globals: { theme: 'g90' },
-  },
-};
-
-/**
- * Gray 100 darkest theme - maximum contrast dark interface.
- * Use the theme toolbar (paintbrush icon) to switch themes.
- */
-export const G100DarkestTheme: Story = {
-  args: {
-    endpoint: { url: 'https://dbpedia.org/sparql' },
-  },
-  parameters: {
-    backgrounds: { default: 'g100' },
-    globals: { theme: 'g100' },
-  },
-};
-
-/**
  * Custom limits configuration for result handling.
  * Lower limits for better performance with large datasets.
  */
