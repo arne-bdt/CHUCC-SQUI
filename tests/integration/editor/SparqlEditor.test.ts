@@ -431,7 +431,7 @@ describe('SparqlEditor Component', () => {
 
       const executeSpy = vi.spyOn(queryExecutionService, 'executeQuery');
 
-      const { container } = render(SparqlEditor);
+      const { container } = render(SparqlEditor, { props: { initialValue: '' } });
 
       await new Promise((resolve) => setTimeout(resolve, 100));
 

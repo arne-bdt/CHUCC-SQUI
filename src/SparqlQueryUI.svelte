@@ -19,6 +19,7 @@
   import type { SquiConfig } from './lib/types';
   import type { CarbonTheme } from './lib/types';
   import { themeStore } from './lib/stores';
+  import { defaultEndpoint } from './lib/stores/endpointStore';
   import Toolbar from './lib/components/Toolbar/Toolbar.svelte';
   import RunButton from './lib/components/Toolbar/RunButton.svelte';
   import SplitPane from './lib/components/Layout/SplitPane.svelte';
@@ -72,9 +73,17 @@
     }
   });
 
+  // Initialize endpoint store from props
+  // This ensures RunButton has access to endpoint on mount
+  $effect(() => {
+    if (endpoint?.url) {
+      defaultEndpoint.set(endpoint.url);
+    }
+  });
+
   // Prevent unused variable warnings - these will be used in future tasks
   $effect(() => {
-    if (endpoint || prefixes || localization || features || limits) {
+    if (prefixes || localization || features || limits) {
       // Props are available for implementation
     }
   });

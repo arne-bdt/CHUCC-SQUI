@@ -108,6 +108,12 @@
   function initializeEditor() {
     if (!editorElement) return;
 
+    // Initialize query store with initial value
+    // This ensures RunButton has access to query text immediately
+    if (initialValue) {
+      queryStore.setText(initialValue);
+    }
+
     const state = EditorState.create({
       doc: initialValue,
       extensions: [
