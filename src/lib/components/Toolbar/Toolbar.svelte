@@ -4,16 +4,22 @@
    * Contains endpoint selector, query execution controls, and other actions
    */
 
+  import type { Snippet } from 'svelte';
+
   interface Props {
     /** CSS class for the toolbar */
     class?: string;
+    /** Toolbar content */
+    children?: Snippet;
   }
 
-  let { class: className = '' }: Props = $props();
+  let { class: className = '', children }: Props = $props();
 </script>
 
 <div class="squi-toolbar {className}" role="toolbar" aria-label="SPARQL Query Controls">
-  <slot />
+  {#if children}
+    {@render children()}
+  {/if}
 </div>
 
 <style>

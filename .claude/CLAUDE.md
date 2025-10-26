@@ -39,21 +39,34 @@ SQUI is a modern SPARQL Query Web Component inspired by YASGUI (Yet Another SPAR
 
 **BEFORE EVERY COMMIT, YOU MUST RUN:**
 ```bash
-npm run build           # MANDATORY - Catches runtime errors, naming conflicts, type issues
+npm run build           # MANDATORY - Catches runtime errors, naming conflicts, type issues, AND warnings
 ```
 
-**IF BUILD FAILS:**
-- ❌ DO NOT COMMIT
-- Fix the errors first
-- Run build again to verify
-- Only commit when build succeeds
+**BUILD MUST COMPLETE WITH:**
+- ✅ Zero errors
+- ✅ Zero warnings (Svelte deprecations, a11y, etc.)
+- ✅ Successful bundle generation
 
-**Common build errors to watch for:**
-- Naming conflicts (imported names vs local variables)
-- Missing imports
-- TypeScript type errors
-- CodeMirror API usage errors
-- Component prop/slot errors
+**IF BUILD FAILS OR HAS WARNINGS:**
+- ❌ DO NOT COMMIT
+- Fix ALL errors AND warnings
+- Run build again to verify clean output
+- Only commit when build has ZERO errors and ZERO warnings
+
+**Common build issues to fix:**
+- **Errors:**
+  - Naming conflicts (imported names vs local variables)
+  - Missing imports
+  - TypeScript type errors
+  - CodeMirror API usage errors
+  - Component prop/slot errors
+
+- **Warnings:**
+  - Svelte 5 slot deprecations (`<slot>` → `{@render ...}`)
+  - A11y warnings (accessibility issues)
+  - Unused variables
+  - TypeScript strict mode warnings
+  - Vite/build configuration warnings
 
 #### Build Process Requirements
 

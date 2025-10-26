@@ -4,6 +4,8 @@
    * Allows users to drag a divider to resize top and bottom panes
    */
 
+  import type { Snippet } from 'svelte';
+
   interface Props {
     /** Initial split ratio (0-1) - percentage of total height for top pane */
     initialSplit?: number;
@@ -13,6 +15,10 @@
     minBottomHeight?: number;
     /** CSS class for the container */
     class?: string;
+    /** Top pane content */
+    top?: Snippet;
+    /** Bottom pane content */
+    bottom?: Snippet;
   }
 
   let {
@@ -20,6 +26,8 @@
     minTopHeight = 200,
     minBottomHeight = 150,
     class: className = '',
+    top,
+    bottom,
   }: Props = $props();
 
   // Component state
@@ -89,9 +97,15 @@
 
 <div class="split-pane-container {className}" bind:this={containerRef}>
   <div class="split-pane-top" style="height: {topHeight}">
-    <slot name="top" />
+    {#if top}
+      {@render top()}
+    {:else}
+      <div style="padding: 1rem; background: var(--cds-layer-01, #f4f4f4);">Top Pane</div>
+    {/if}
   </div>
 
+  <!-- svelte-ignore a11y_no_noninteractive_tabindex -->
+  <!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
   <div
     class="split-pane-divider"
     class:dragging={isDragging}
@@ -103,7 +117,11 @@
   ></div>
 
   <div class="split-pane-bottom" style="height: {bottomHeight}">
-    <slot name="bottom" />
+    {#if bottom}
+      {@render bottom()}
+    {:else}
+      <div style="padding: 1rem; background: var(--cds-layer-02, #e0e0e0);">Bottom Pane</div>
+    {/if}
   </div>
 </div>
 

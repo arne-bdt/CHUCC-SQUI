@@ -79,20 +79,26 @@
 <div class="squi-container theme-{currentTheme}">
   <!-- Top toolbar for controls and endpoint selector -->
   <Toolbar>
-    <div class="toolbar-placeholder">
-      <span>Endpoint: {endpoint?.url || 'Not configured'}</span>
-      <span class="separator">|</span>
-      <span>Theme: {currentTheme}</span>
-      <span class="separator">|</span>
-      <span>Max Rows: {limits?.maxRows?.toLocaleString() || 'N/A'}</span>
-    </div>
+    {#snippet children()}
+      <div class="toolbar-placeholder">
+        <span>Endpoint: {endpoint?.url || 'Not configured'}</span>
+        <span class="separator">|</span>
+        <span>Theme: {currentTheme}</span>
+        <span class="separator">|</span>
+        <span>Max Rows: {limits?.maxRows?.toLocaleString() || 'N/A'}</span>
+      </div>
+    {/snippet}
   </Toolbar>
 
   <!-- Main content area with resizable editor and results panes -->
   <div class="squi-main">
     <SplitPane initialSplit={0.5} minTopHeight={200} minBottomHeight={150}>
-      <SparqlEditor slot="top" />
-      <ResultsPlaceholder slot="bottom" />
+      {#snippet top()}
+        <SparqlEditor />
+      {/snippet}
+      {#snippet bottom()}
+        <ResultsPlaceholder />
+      {/snippet}
     </SplitPane>
   </div>
 </div>
