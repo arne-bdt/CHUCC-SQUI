@@ -1,11 +1,16 @@
 import { defineConfig } from 'vite';
 import { svelte } from '@sveltejs/vite-plugin-svelte';
 import { vitePreprocess } from '@sveltejs/vite-plugin-svelte';
+import { optimizeImports, optimizeCss } from 'carbon-preprocess-svelte';
 
 export default defineConfig({
   plugins: [
     svelte({
-      preprocess: vitePreprocess(),
+      preprocess: [
+        vitePreprocess(),
+        optimizeImports(),
+        optimizeCss()
+      ],
       compilerOptions: {
         // Dynamically set runes based on file path
         runes: undefined

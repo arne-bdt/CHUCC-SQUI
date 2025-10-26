@@ -1,4 +1,6 @@
 import type { StorybookConfig } from '@storybook/sveltekit';
+import { vitePreprocess } from '@sveltejs/vite-plugin-svelte';
+import { optimizeImports, optimizeCss } from 'carbon-preprocess-svelte';
 
 const config: StorybookConfig = {
   stories: [
@@ -29,6 +31,11 @@ const config: StorybookConfig = {
     return config;
   },
   svelteOptions: {
+    preprocess: [
+      vitePreprocess(),
+      optimizeImports(),
+      optimizeCss()
+    ],
     configFile: false,
     // Handle runes per-file
     dynamicCompileOptions({ filename }: { filename: string }) {
