@@ -21,10 +21,11 @@ const config: StorybookConfig = {
     reactDocgen: false,
   },
   async viteFinal(config) {
-    // Exclude carbon-icons-svelte from optimization to prevent runes mode conflicts
+    // Exclude Carbon packages from optimization to prevent runes mode conflicts
+    // Carbon components use legacy Svelte syntax ($$props, $$restProps) incompatible with Svelte 5 runes
     config.optimizeDeps = config.optimizeDeps || {};
     config.optimizeDeps.exclude = config.optimizeDeps.exclude || [];
-    config.optimizeDeps.exclude.push('carbon-icons-svelte');
+    config.optimizeDeps.exclude.push('carbon-components-svelte', 'carbon-icons-svelte');
 
     return config;
   },

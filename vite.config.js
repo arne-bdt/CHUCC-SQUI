@@ -4,7 +4,7 @@ import { svelte } from '@sveltejs/vite-plugin-svelte';
 export default defineConfig({
   plugins: [svelte()],
   optimizeDeps: {
-    exclude: ['carbon-icons-svelte']
+    exclude: ['carbon-components-svelte', 'carbon-icons-svelte']
   },
   build: {
     lib: {
