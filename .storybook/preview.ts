@@ -54,33 +54,9 @@ const preview: Preview = {
       toc: true,
     },
   },
-  // Global decorators
-  decorators: [
-    (Story, context) => {
-      // Apply Carbon theme class based on background
-      const theme = context.globals.backgrounds?.value || 'white';
-      let themeClass = 'white';
-
-      if (theme.includes('#f4f4f4') || context.parameters.backgrounds?.default === 'g10') {
-        themeClass = 'g10';
-      } else if (theme.includes('#262626') || context.parameters.backgrounds?.default === 'g90') {
-        themeClass = 'g90';
-      } else if (theme.includes('#161616') || context.parameters.backgrounds?.default === 'g100') {
-        themeClass = 'g100';
-      }
-
-      return {
-        Component: Story,
-        props: {
-          ...context.args,
-        },
-        context: {
-          ...context,
-          themeClass,
-        },
-      };
-    },
-  ],
+  // Global decorators removed for Svelte 5 compatibility
+  // Theme handling is done via the themeStore in components
+  decorators: [],
   // Global types for toolbar controls
   globalTypes: {
     theme: {

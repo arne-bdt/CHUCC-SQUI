@@ -150,7 +150,7 @@
    * Update theme when theme store changes
    */
   $effect(() => {
-    const theme = $themeStore;
+    const theme = $themeStore.current;
     if (theme !== currentTheme) {
       currentTheme = theme;
       if (editorView) {
