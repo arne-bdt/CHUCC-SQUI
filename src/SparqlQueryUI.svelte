@@ -50,17 +50,25 @@
     },
   }: Props = $props();
 
-  // Extract theme value for convenience
-  const currentTheme: CarbonTheme = theme?.theme || 'white';
-
   // Component internal state
   let _query = $state('');
   let _results = $state(null);
   let _isExecuting = $state(false);
 
-  // Initialize theme from props
+  // Read current theme from store (reactive)
+  // This ensures the component always displays the current global theme
+  const themeState = $derived(themeStore);
+  const currentTheme = $derived(themeState ? themeState.current : 'white');
+
+  // Initialize theme from props on mount (if provided)
+  // This runs once and only if a theme prop was explicitly passed
+  // After initialization, external theme changes (e.g., Storybook toolbar) take precedence
+  let themeInitialized = false;
   $effect(() => {
-    themeStore.setTheme(currentTheme);
+    if (!themeInitialized && theme?.theme) {
+      themeStore.setTheme(theme.theme);
+      themeInitialized = true;
+    }
   });
 
   // Prevent unused variable warnings - these will be used in future tasks
