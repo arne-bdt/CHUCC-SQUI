@@ -9,6 +9,8 @@ export type {
   EndpointConfig,
   Endpoint,
   PrefixConfig,
+  QueryTemplate,
+  TemplateConfig,
   ThemeConfig,
   LocalizationConfig,
   FeatureFlags,

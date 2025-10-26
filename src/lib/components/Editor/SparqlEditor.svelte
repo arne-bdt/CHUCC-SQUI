@@ -21,6 +21,7 @@
   import { createCarbonTheme } from '../../editor/carbonTheme';
   import { sparqlCompletion } from '../../editor/sparqlCompletions';
   import { prefixCompletion } from '../../editor/prefixCompletions';
+  import { templateService } from '../../services/templateService';
   import { queryStore } from '../../stores';
   import { themeStore } from '../../stores/theme';
   import { t } from '../../localization';
@@ -40,7 +41,12 @@
     class?: string;
   }
 
-  let { initialValue = '', readonly = false, placeholder, class: className = '' }: Props = $props();
+  let {
+    initialValue = templateService.getDefaultTemplate(),
+    readonly = false,
+    placeholder,
+    class: className = '',
+  }: Props = $props();
 
   // Component state
   let editorElement: HTMLDivElement | null = $state(null);

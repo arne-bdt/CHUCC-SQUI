@@ -17,6 +17,8 @@ export interface SquiConfig {
   endpoint?: EndpointConfig;
   /** Prefix configuration for SPARQL queries */
   prefixes?: PrefixConfig;
+  /** Query template configuration */
+  templates?: TemplateConfig;
   /** Theme configuration */
   theme?: ThemeConfig;
   /** Localization configuration */
@@ -60,6 +62,28 @@ export interface PrefixConfig {
   default?: Record<string, string>;
   /** Hook to discover prefixes from an endpoint */
   discoveryHook?: (_endpoint: string) => Promise<Record<string, string>>;
+}
+
+/**
+ * Query template definition
+ */
+export interface QueryTemplate {
+  /** Template name for identification */
+  name: string;
+  /** Template description */
+  description?: string;
+  /** The SPARQL query template text */
+  query: string;
+}
+
+/**
+ * Template configuration
+ */
+export interface TemplateConfig {
+  /** Default template for new queries */
+  default?: string;
+  /** Custom templates provided by integrator */
+  custom?: QueryTemplate[];
 }
 
 /**
