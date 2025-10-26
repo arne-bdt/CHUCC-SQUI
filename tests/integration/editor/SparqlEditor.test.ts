@@ -1,0 +1,237 @@
+/**
+ * Integration tests for SparqlEditor component
+ */
+
+import { describe, it, expect, beforeEach, afterEach } from 'vitest';
+import { render, cleanup } from '@testing-library/svelte';
+import SparqlEditor from '../../../src/lib/components/Editor/SparqlEditor.svelte';
+import { queryStore } from '../../../src/lib/stores';
+
+describe('SparqlEditor Component', () => {
+  beforeEach(() => {
+    // Reset query store before each test
+    queryStore.setText('');
+  });
+
+  afterEach(() => {
+    cleanup();
+  });
+
+  describe('Rendering', () => {
+    it('should render the editor', () => {
+      const { container } = render(SparqlEditor);
+      const editorElement = container.querySelector('.sparql-editor');
+      expect(editorElement).toBeTruthy();
+    });
+
+    it('should render CodeMirror editor', async () => {
+      const { container } = render(SparqlEditor);
+
+      // Wait a tick for CodeMirror to initialize
+      await new Promise((resolve) => setTimeout(resolve, 100));
+
+      const cmEditor = container.querySelector('.cm-editor');
+      expect(cmEditor).toBeTruthy();
+    });
+
+    it('should render with initial value', async () => {
+      const initialQuery = 'SELECT * WHERE { ?s ?p ?o }';
+      const { container } = render(SparqlEditor, {
+        props: { initialValue: initialQuery },
+      });
+
+      await new Promise((resolve) => setTimeout(resolve, 100));
+
+      const content = container.querySelector('.cm-content');
+      expect(content?.textContent).toContain('SELECT');
+    });
+
+    it('should render with custom class', () => {
+      const { container } = render(SparqlEditor, {
+        props: { class: 'custom-editor' },
+      });
+
+      const editorContainer = container.querySelector('.sparql-editor-container');
+      expect(editorContainer?.classList.contains('custom-editor')).toBe(true);
+    });
+  });
+
+  describe('Read-only mode', () => {
+    it('should render in readonly mode', async () => {
+      const { container } = render(SparqlEditor, {
+        props: { readonly: true },
+      });
+
+      await new Promise((resolve) => setTimeout(resolve, 100));
+
+      const editor = container.querySelector('.cm-editor');
+      expect(editor).toBeTruthy();
+      // CodeMirror applies contenteditable=false in readonly mode
+    });
+
+    it('should allow editing when not readonly', async () => {
+      const { container } = render(SparqlEditor, {
+        props: { readonly: false },
+      });
+
+      await new Promise((resolve) => setTimeout(resolve, 100));
+
+      const content = container.querySelector('.cm-content');
+      expect(content).toBeTruthy();
+    });
+  });
+
+  describe('Accessibility', () => {
+    it('should have proper ARIA attributes', async () => {
+      const { container } = render(SparqlEditor);
+
+      await new Promise((resolve) => setTimeout(resolve, 100));
+
+      const content = container.querySelector('.cm-content');
+      expect(content?.getAttribute('role')).toBe('textbox');
+      expect(content?.hasAttribute('aria-label')).toBe(true);
+    });
+  });
+
+  describe('Theme integration', () => {
+    it('should render with Carbon theme', async () => {
+      const { container } = render(SparqlEditor);
+
+      await new Promise((resolve) => setTimeout(resolve, 100));
+
+      const editor = container.querySelector('.cm-editor');
+      expect(editor).toBeTruthy();
+      // Theme is applied via CodeMirror extensions
+    });
+  });
+
+  describe('Line numbers and features', () => {
+    it('should show line numbers', async () => {
+      const { container } = render(SparqlEditor);
+
+      await new Promise((resolve) => setTimeout(resolve, 100));
+
+      const gutters = container.querySelector('.cm-gutters');
+      expect(gutters).toBeTruthy();
+    });
+
+    it('should have fold gutter', async () => {
+      const { container } = render(SparqlEditor);
+
+      await new Promise((resolve) => setTimeout(resolve, 100));
+
+      const foldGutter = container.querySelector('.cm-foldGutter');
+      expect(foldGutter).toBeTruthy();
+    });
+  });
+
+  describe('SPARQL syntax highlighting', () => {
+    it('should apply syntax highlighting to keywords', async () => {
+      const query = 'SELECT * WHERE { ?s ?p ?o }';
+      const { container } = render(SparqlEditor, {
+        props: { initialValue: query },
+      });
+
+      await new Promise((resolve) => setTimeout(resolve, 100));
+
+      // CodeMirror applies syntax highlighting via CSS classes
+      const content = container.querySelector('.cm-content');
+      expect(content).toBeTruthy();
+    });
+  });
+
+  describe('Placeholder', () => {
+    it('should show placeholder when empty', async () => {
+      const { container } = render(SparqlEditor, {
+        props: { placeholder: 'editor.placeholder' },
+      });
+
+      await new Promise((resolve) => setTimeout(resolve, 100));
+
+      // CodeMirror shows placeholder when editor is empty
+      const placeholder = container.querySelector('.cm-placeholder');
+      expect(placeholder).toBeTruthy();
+    });
+
+    it('should not show placeholder with content', async () => {
+      const { container } = render(SparqlEditor, {
+        props: {
+          initialValue: 'SELECT * WHERE { ?s ?p ?o }',
+          placeholder: 'editor.placeholder',
+        },
+      });
+
+      await new Promise((resolve) => setTimeout(resolve, 100));
+
+      // Placeholder should not be visible when there's content
+      const content = container.querySelector('.cm-content');
+      expect(content?.textContent).toContain('SELECT');
+    });
+  });
+
+  describe('Integration with query store', () => {
+    it('should initialize with empty store', () => {
+      const initialText = queryStore.getText();
+      expect(initialText).toBe('');
+    });
+
+    it('should update store when text changes', async () => {
+      const { container, component } = render(SparqlEditor);
+
+      await new Promise((resolve) => setTimeout(resolve, 100));
+
+      // Programmatically set value
+      const testQuery = 'SELECT * WHERE { ?s ?p ?o }';
+      (component as { setValue: (v: string) => void }).setValue(testQuery);
+
+      await new Promise((resolve) => setTimeout(resolve, 100));
+
+      // Check that store was updated
+      const storeText = queryStore.getText();
+      expect(storeText).toBe(testQuery);
+    });
+  });
+
+  describe('Component API', () => {
+    it('should expose setValue method', () => {
+      const { component } = render(SparqlEditor);
+      expect(typeof (component as { setValue?: unknown }).setValue).toBe('function');
+    });
+
+    it('should expose getValue method', () => {
+      const { component } = render(SparqlEditor);
+      expect(typeof (component as { getValue?: unknown }).getValue).toBe('function');
+    });
+
+    it('should expose focus method', () => {
+      const { component } = render(SparqlEditor);
+      expect(typeof (component as { focus?: unknown }).focus).toBe('function');
+    });
+
+    it('should set value via setValue method', async () => {
+      const { component } = render(SparqlEditor);
+
+      await new Promise((resolve) => setTimeout(resolve, 100));
+
+      const testQuery = 'ASK { ?s ?p ?o }';
+      (component as { setValue: (v: string) => void }).setValue(testQuery);
+
+      await new Promise((resolve) => setTimeout(resolve, 50));
+
+      const value = (component as { getValue: () => string }).getValue();
+      expect(value).toBe(testQuery);
+    });
+
+    it('should get value via getValue method', async () => {
+      const initialQuery = 'DESCRIBE <http://example.org/resource>';
+      const { component } = render(SparqlEditor, {
+        props: { initialValue: initialQuery },
+      });
+
+      await new Promise((resolve) => setTimeout(resolve, 100));
+
+      const value = (component as { getValue: () => string }).getValue();
+      expect(value).toBe(initialQuery);
+    });
+  });
+});

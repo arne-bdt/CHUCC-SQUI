@@ -21,7 +21,7 @@
   import { themeStore } from './lib/stores';
   import Toolbar from './lib/components/Toolbar/Toolbar.svelte';
   import SplitPane from './lib/components/Layout/SplitPane.svelte';
-  import EditorPlaceholder from './lib/components/Editor/EditorPlaceholder.svelte';
+  import SparqlEditor from './lib/components/Editor/SparqlEditor.svelte';
   import ResultsPlaceholder from './lib/components/Results/ResultsPlaceholder.svelte';
 
   /**
@@ -91,7 +91,7 @@
   <!-- Main content area with resizable editor and results panes -->
   <div class="squi-main">
     <SplitPane initialSplit={0.5} minTopHeight={200} minBottomHeight={150}>
-      <EditorPlaceholder slot="top" />
+      <SparqlEditor slot="top" />
       <ResultsPlaceholder slot="bottom" />
     </SplitPane>
   </div>
