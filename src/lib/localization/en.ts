@@ -115,6 +115,12 @@ export const en = {
   'template.ask': 'ASK Query',
   'template.describe': 'DESCRIBE Query',
 
+  // Keyboard shortcuts
+  'shortcuts.executeQuery': 'Execute Query (Ctrl+Enter)',
+  'shortcuts.executeQueryMac': 'Execute Query (Cmd+Enter)',
+  'shortcuts.hint': 'Press Ctrl+Enter to execute query',
+  'shortcuts.hintMac': 'Press Cmd+Enter to execute query',
+
   // Common actions
   'action.cancel': 'Cancel',
   'action.confirm': 'Confirm',

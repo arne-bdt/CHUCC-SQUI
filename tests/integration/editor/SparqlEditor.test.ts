@@ -2,15 +2,21 @@
  * Integration tests for SparqlEditor component
  */
 
-import { describe, it, expect, beforeEach, afterEach } from 'vitest';
+import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { render, cleanup } from '@testing-library/svelte';
 import SparqlEditor from '../../../src/lib/components/Editor/SparqlEditor.svelte';
 import { queryStore } from '../../../src/lib/stores';
+import { resultsStore } from '../../../src/lib/stores/resultsStore';
+import { defaultEndpoint } from '../../../src/lib/stores/endpointStore';
+import { queryExecutionService } from '../../../src/lib/services/queryExecutionService';
 
 describe('SparqlEditor Component', () => {
   beforeEach(() => {
-    // Reset query store before each test
+    // Reset stores before each test
     queryStore.setText('');
+    resultsStore.reset();
+    defaultEndpoint.set('');
+    vi.clearAllMocks();
   });
 
   afterEach(() => {
@@ -326,6 +332,205 @@ describe('SparqlEditor Component', () => {
 
       // Read-only editors still have the completion extension,
       // but it won't trigger since the editor is not editable
+    });
+  });
+
+  describe('Keyboard Shortcuts (Ctrl+Enter)', () => {
+    it('should execute query when Ctrl+Enter is pressed with valid query and endpoint', async () => {
+      // Set up valid query and endpoint
+      const testQuery = 'SELECT * WHERE { ?s ?p ?o }';
+      queryStore.setText(testQuery);
+      defaultEndpoint.set('https://dbpedia.org/sparql');
+      resultsStore.setLoading(false);
+
+      const executeSpy = vi.spyOn(queryExecutionService, 'executeQuery');
+
+      const { container } = render(SparqlEditor, {
+        props: { initialValue: testQuery },
+      });
+
+      await new Promise((resolve) => setTimeout(resolve, 100));
+
+      // Find the CodeMirror content element
+      const cmContent = container.querySelector('.cm-content') as HTMLElement;
+      expect(cmContent).toBeTruthy();
+
+      // Simulate Ctrl+Enter keydown
+      const event = new KeyboardEvent('keydown', {
+        key: 'Enter',
+        ctrlKey: true,
+        bubbles: true,
+        cancelable: true,
+      });
+      cmContent.dispatchEvent(event);
+
+      await new Promise((resolve) => setTimeout(resolve, 100));
+
+      // Verify executeQuery was called
+      expect(executeSpy).toHaveBeenCalledWith({
+        query: testQuery,
+        endpoint: 'https://dbpedia.org/sparql',
+      });
+
+      executeSpy.mockRestore();
+    });
+
+    it('should not execute query when query is empty', async () => {
+      queryStore.setText('');
+      defaultEndpoint.set('https://dbpedia.org/sparql');
+      resultsStore.setLoading(false);
+
+      const executeSpy = vi.spyOn(queryExecutionService, 'executeQuery');
+
+      const { container } = render(SparqlEditor);
+
+      await new Promise((resolve) => setTimeout(resolve, 100));
+
+      const cmContent = container.querySelector('.cm-content') as HTMLElement;
+      const event = new KeyboardEvent('keydown', {
+        key: 'Enter',
+        ctrlKey: true,
+        bubbles: true,
+        cancelable: true,
+      });
+      cmContent.dispatchEvent(event);
+
+      await new Promise((resolve) => setTimeout(resolve, 100));
+
+      // Verify executeQuery was NOT called
+      expect(executeSpy).not.toHaveBeenCalled();
+
+      executeSpy.mockRestore();
+    });
+
+    it('should not execute query when endpoint is empty', async () => {
+      queryStore.setText('SELECT * WHERE { ?s ?p ?o }');
+      defaultEndpoint.set('');
+      resultsStore.setLoading(false);
+
+      const executeSpy = vi.spyOn(queryExecutionService, 'executeQuery');
+
+      const { container } = render(SparqlEditor, {
+        props: { initialValue: 'SELECT * WHERE { ?s ?p ?o }' },
+      });
+
+      await new Promise((resolve) => setTimeout(resolve, 100));
+
+      const cmContent = container.querySelector('.cm-content') as HTMLElement;
+      const event = new KeyboardEvent('keydown', {
+        key: 'Enter',
+        ctrlKey: true,
+        bubbles: true,
+        cancelable: true,
+      });
+      cmContent.dispatchEvent(event);
+
+      await new Promise((resolve) => setTimeout(resolve, 100));
+
+      // Verify executeQuery was NOT called
+      expect(executeSpy).not.toHaveBeenCalled();
+
+      executeSpy.mockRestore();
+    });
+
+    it('should not execute query when already loading', async () => {
+      queryStore.setText('SELECT * WHERE { ?s ?p ?o }');
+      defaultEndpoint.set('https://dbpedia.org/sparql');
+      resultsStore.setLoading(true); // Already loading
+
+      const executeSpy = vi.spyOn(queryExecutionService, 'executeQuery');
+
+      const { container } = render(SparqlEditor, {
+        props: { initialValue: 'SELECT * WHERE { ?s ?p ?o }' },
+      });
+
+      await new Promise((resolve) => setTimeout(resolve, 100));
+
+      const cmContent = container.querySelector('.cm-content') as HTMLElement;
+      const event = new KeyboardEvent('keydown', {
+        key: 'Enter',
+        ctrlKey: true,
+        bubbles: true,
+        cancelable: true,
+      });
+      cmContent.dispatchEvent(event);
+
+      await new Promise((resolve) => setTimeout(resolve, 100));
+
+      // Verify executeQuery was NOT called
+      expect(executeSpy).not.toHaveBeenCalled();
+
+      executeSpy.mockRestore();
+    });
+
+    it('should not execute query in readonly mode', async () => {
+      queryStore.setText('SELECT * WHERE { ?s ?p ?o }');
+      defaultEndpoint.set('https://dbpedia.org/sparql');
+      resultsStore.setLoading(false);
+
+      const executeSpy = vi.spyOn(queryExecutionService, 'executeQuery');
+
+      const { container } = render(SparqlEditor, {
+        props: {
+          readonly: true,
+          initialValue: 'SELECT * WHERE { ?s ?p ?o }',
+        },
+      });
+
+      await new Promise((resolve) => setTimeout(resolve, 100));
+
+      const cmContent = container.querySelector('.cm-content') as HTMLElement;
+      const event = new KeyboardEvent('keydown', {
+        key: 'Enter',
+        ctrlKey: true,
+        bubbles: true,
+        cancelable: true,
+      });
+      cmContent.dispatchEvent(event);
+
+      await new Promise((resolve) => setTimeout(resolve, 100));
+
+      // Verify executeQuery was NOT called
+      expect(executeSpy).not.toHaveBeenCalled();
+
+      executeSpy.mockRestore();
+    });
+
+    it('should support Cmd+Enter on Mac', async () => {
+      // Set up valid query and endpoint
+      const testQuery = 'SELECT * WHERE { ?s ?p ?o }';
+      queryStore.setText(testQuery);
+      defaultEndpoint.set('https://dbpedia.org/sparql');
+      resultsStore.setLoading(false);
+
+      const executeSpy = vi.spyOn(queryExecutionService, 'executeQuery');
+
+      const { container } = render(SparqlEditor, {
+        props: { initialValue: testQuery },
+      });
+
+      await new Promise((resolve) => setTimeout(resolve, 100));
+
+      const cmContent = container.querySelector('.cm-content') as HTMLElement;
+
+      // Simulate Cmd+Enter keydown (metaKey instead of ctrlKey)
+      const event = new KeyboardEvent('keydown', {
+        key: 'Enter',
+        metaKey: true,
+        bubbles: true,
+        cancelable: true,
+      });
+      cmContent.dispatchEvent(event);
+
+      await new Promise((resolve) => setTimeout(resolve, 100));
+
+      // Verify executeQuery was called
+      expect(executeSpy).toHaveBeenCalledWith({
+        query: testQuery,
+        endpoint: 'https://dbpedia.org/sparql',
+      });
+
+      executeSpy.mockRestore();
     });
   });
 });

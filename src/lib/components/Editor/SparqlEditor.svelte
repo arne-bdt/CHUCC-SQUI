@@ -23,6 +23,9 @@
   import { prefixCompletion } from '../../editor/prefixCompletions';
   import { templateService } from '../../services/templateService';
   import { queryStore } from '../../stores';
+  import { resultsStore } from '../../stores/resultsStore';
+  import { defaultEndpoint } from '../../stores/endpointStore';
+  import { queryExecutionService } from '../../services/queryExecutionService';
   import { themeStore } from '../../stores/theme';
   import { t } from '../../localization';
   import type { CarbonTheme } from '../../types';
@@ -53,9 +56,51 @@
   let editorView: EditorView | null = $state(null);
   let currentTheme = $state<CarbonTheme>('white');
 
+  // Store subscriptions for query execution
+  let queryState = $state($queryStore);
+  let resultsState = $state($resultsStore);
+  let endpoint = $state($defaultEndpoint);
+
+  $effect(() => {
+    queryState = $queryStore;
+  });
+
+  $effect(() => {
+    resultsState = $resultsStore;
+  });
+
+  $effect(() => {
+    endpoint = $defaultEndpoint;
+  });
+
+  // Computed state for execution
+  const hasQuery = $derived(queryState.text.trim().length > 0);
+  const hasEndpoint = $derived(endpoint.trim().length > 0);
+  const isLoading = $derived(resultsState.loading);
+  const canExecute = $derived(hasQuery && hasEndpoint && !isLoading && !readonly);
+
   // Theme compartment for dynamic theme switching
   const themeCompartment = new Compartment();
   const readOnlyCompartment = new Compartment();
+
+  /**
+   * Execute the current query (triggered by Ctrl+Enter / Cmd+Enter)
+   */
+  async function executeQuery(): Promise<boolean> {
+    if (!canExecute) return false;
+
+    try {
+      await queryExecutionService.executeQuery({
+        query: queryState.text,
+        endpoint: endpoint,
+      });
+      return true;
+    } catch (error) {
+      // Error is already handled by the service and set in resultsStore
+      console.error('Query execution error:', error);
+      return false;
+    }
+  }
 
   /**
    * Initialize CodeMirror editor
@@ -96,6 +141,15 @@
 
         // Keymaps
         keymap.of([
+          // Custom keyboard shortcuts
+          {
+            key: 'Mod-Enter',
+            run: () => {
+              executeQuery();
+              return true;
+            },
+          },
+          // Standard keymaps
           ...closeBracketsKeymap,
           ...defaultKeymap,
           ...searchKeymap,
