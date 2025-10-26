@@ -54,6 +54,17 @@ npm test                # All tests must pass
 
 # Build
 npm run build           # Must build successfully
+
+# Storybook Build (Visual Component Documentation)
+npm run build-storybook # Must build successfully
+                        # Verifies all stories are valid
+                        # Catches component prop/type errors
+                        # Ensures visual documentation is deployable
+\`\`\`
+
+**Alternatively, run all checks at once:**
+\`\`\`bash
+npm run check           # Runs: type-check, lint, format:check, test:unit, build-storybook
 \`\`\`
 
 ### Testing Requirements

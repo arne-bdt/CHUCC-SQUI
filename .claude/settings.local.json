@@ -12,7 +12,9 @@
       "Bash(powershell:*)",
       "Bash(python:*)",
       "Bash(test:*)",
-      "Bash(tree:*)"      
+      "Bash(tree:*)",
+      "Bash(npx vitest:*)",
+      "Bash(npx storybook@latest init:*)"
     ],
     "deny": [],
     "ask": [],
