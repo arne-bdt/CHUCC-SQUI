@@ -1,7 +1,4 @@
-import { expect, afterEach } from 'vitest';
-import { cleanup } from '@testing-library/svelte';
+import { expect } from 'vitest';
 
-// Cleanup after each test
-afterEach(() => {
-  cleanup();
-});
+// Test setup file for Vitest
+// Currently no global setup needed for store tests
