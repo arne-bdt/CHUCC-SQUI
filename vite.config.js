@@ -3,6 +3,9 @@ import { svelte } from '@sveltejs/vite-plugin-svelte';
 
 export default defineConfig({
   plugins: [svelte()],
+  optimizeDeps: {
+    exclude: ['carbon-icons-svelte']
+  },
   build: {
     lib: {
       entry: 'src/SparqlQueryUI.svelte',
