@@ -10,7 +10,7 @@
     keymap,
     lineNumbers,
     highlightActiveLine,
-    placeholder,
+    placeholder as placeholderExtension,
   } from '@codemirror/view';
   import { EditorState, Compartment } from '@codemirror/state';
   import { defaultKeymap, history, historyKeymap } from '@codemirror/commands';
@@ -105,7 +105,7 @@
         }),
 
         // Placeholder
-        placeholder($t('editor.placeholder')),
+        placeholderExtension($t('editor.placeholder')),
 
         // Accessibility
         EditorView.contentAttributes.of({

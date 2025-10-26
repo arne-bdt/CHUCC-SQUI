@@ -35,6 +35,26 @@ SQUI is a modern SPARQL Query Web Component inspired by YASGUI (Yet Another SPAR
 
 **CRITICAL: Quality checks must pass before any commit**
 
+**⚠️ MANDATORY PRE-COMMIT CHECK ⚠️**
+
+**BEFORE EVERY COMMIT, YOU MUST RUN:**
+```bash
+npm run build           # MANDATORY - Catches runtime errors, naming conflicts, type issues
+```
+
+**IF BUILD FAILS:**
+- ❌ DO NOT COMMIT
+- Fix the errors first
+- Run build again to verify
+- Only commit when build succeeds
+
+**Common build errors to watch for:**
+- Naming conflicts (imported names vs local variables)
+- Missing imports
+- TypeScript type errors
+- CodeMirror API usage errors
+- Component prop/slot errors
+
 #### Build Process Requirements
 
 Every build must pass these checks:
