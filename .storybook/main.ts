@@ -21,13 +21,29 @@ const config: StorybookConfig = {
     reactDocgen: false,
   },
   async viteFinal(config) {
-    // Exclude Carbon packages from optimization to prevent runes mode conflicts
-    // Carbon components use legacy Svelte syntax ($$props, $$restProps) incompatible with Svelte 5 runes
+    // Exclude Carbon packages from optimization
     config.optimizeDeps = config.optimizeDeps || {};
     config.optimizeDeps.exclude = config.optimizeDeps.exclude || [];
     config.optimizeDeps.exclude.push('carbon-components-svelte', 'carbon-icons-svelte');
 
     return config;
+  },
+  svelteOptions: {
+    configFile: false,
+    // Handle runes per-file
+    dynamicCompileOptions({ filename }: { filename: string }) {
+      // Disable runes for Carbon packages
+      if (filename?.includes('node_modules/carbon-components-svelte') ||
+          filename?.includes('node_modules/carbon-icons-svelte')) {
+        return {
+          runes: false
+        };
+      }
+      // Enable runes for our code
+      return {
+        runes: true
+      };
+    }
   },
 };
 
