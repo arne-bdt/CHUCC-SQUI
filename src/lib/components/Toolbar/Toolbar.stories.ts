@@ -40,53 +40,10 @@ type Story = StoryObj<typeof meta>;
 /**
  * Default empty toolbar showing structure.
  * Content should be provided via the default slot.
+ * Use the theme toolbar (paintbrush icon) to test different themes.
  */
 export const Default: Story = {
   args: {},
-};
-
-/**
- * White theme (default Carbon theme).
- * Light background with dark text.
- */
-export const WhiteTheme: Story = {
-  args: {},
-  parameters: {
-    backgrounds: { default: 'white' },
-  },
-};
-
-/**
- * Gray 10 theme - light theme variant.
- * Slightly darker background than white theme.
- */
-export const G10Theme: Story = {
-  args: {},
-  parameters: {
-    backgrounds: { default: 'g10' },
-  },
-};
-
-/**
- * Gray 90 theme - dark theme.
- * Dark background with light text.
- */
-export const G90Theme: Story = {
-  args: {},
-  parameters: {
-    backgrounds: { default: 'g90' },
-  },
-};
-
-/**
- * Gray 100 theme - darkest theme.
- * Darkest background with light text for maximum contrast.
- */
-export const G100Theme: Story = {
-  args: {},
-  parameters: {
-    backgrounds: { default: 'g100' },
-  },
 };
 
 /**

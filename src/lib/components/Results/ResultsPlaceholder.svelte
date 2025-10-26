@@ -60,4 +60,20 @@
     background-color: var(--cds-layer-01, #262626);
     border-color: var(--cds-border-subtle-01, #393939);
   }
+
+  /* Dark theme text colors - ensure high contrast */
+  :global(.g90) .placeholder-content,
+  :global(.g100) .placeholder-content {
+    color: var(--cds-text-secondary, #c6c6c6);
+  }
+
+  :global(.g90) .placeholder-content h3,
+  :global(.g100) .placeholder-content h3 {
+    color: var(--cds-text-primary, #f4f4f4);
+  }
+
+  :global(.g90) .placeholder-content .hint,
+  :global(.g100) .placeholder-content .hint {
+    color: var(--cds-text-helper, #a8a8a8);
+  }
 </style>

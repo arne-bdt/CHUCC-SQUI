@@ -137,4 +137,15 @@
   .separator {
     color: var(--cds-border-subtle-01, #e0e0e0);
   }
+
+  /* Dark theme text colors - ensure high contrast */
+  :global(.g90) .toolbar-placeholder,
+  :global(.g100) .toolbar-placeholder {
+    color: var(--cds-text-secondary, #c6c6c6);
+  }
+
+  :global(.g90) .separator,
+  :global(.g100) .separator {
+    color: var(--cds-border-subtle-01, #6f6f6f);
+  }
 </style>

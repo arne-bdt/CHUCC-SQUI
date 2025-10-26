@@ -56,3 +56,60 @@ body.g100 * {
   /* Inherit colors from Carbon CSS variables */
   border-color: var(--cds-border-subtle-01, #525252);
 }
+
+/* Ensure CodeMirror editor inherits theme-specific colors */
+.sparql-editor-container.white {
+  --cds-background: #ffffff;
+  --cds-text-primary: #161616;
+  --cds-text-secondary: #525252;
+  --cds-layer-01: #f4f4f4;
+  --cds-layer-selected-01: #e0e0e0;
+  --cds-layer-selected-hover: #e8daff;
+  --cds-link-primary: #0f62fe;
+  --cds-support-success: #198038;
+  --cds-support-error: #da1e28;
+  --cds-support-warning: #8a3800;
+  --cds-border-subtle-01: #e0e0e0;
+}
+
+.sparql-editor-container.g10 {
+  --cds-background: #f4f4f4;
+  --cds-text-primary: #161616;
+  --cds-text-secondary: #525252;
+  --cds-layer-01: #ffffff;
+  --cds-layer-selected-01: #e0e0e0;
+  --cds-layer-selected-hover: #e8daff;
+  --cds-link-primary: #0f62fe;
+  --cds-support-success: #198038;
+  --cds-support-error: #da1e28;
+  --cds-support-warning: #8a3800;
+  --cds-border-subtle-01: #e0e0e0;
+}
+
+.sparql-editor-container.g90 {
+  --cds-background: #262626;
+  --cds-text-primary: #f4f4f4;
+  --cds-text-secondary: #c6c6c6;
+  --cds-layer-01: #393939;
+  --cds-layer-selected-01: #525252;
+  --cds-layer-selected-hover: #525252;
+  --cds-link-primary: #78a9ff;
+  --cds-support-success: #42be65;
+  --cds-support-error: #ff8389;
+  --cds-support-warning: #ff7eb6;
+  --cds-border-subtle-01: #525252;
+}
+
+.sparql-editor-container.g100 {
+  --cds-background: #161616;
+  --cds-text-primary: #f4f4f4;
+  --cds-text-secondary: #c6c6c6;
+  --cds-layer-01: #262626;
+  --cds-layer-selected-01: #393939;
+  --cds-layer-selected-hover: #393939;
+  --cds-link-primary: #78a9ff;
+  --cds-support-success: #42be65;
+  --cds-support-error: #ff8389;
+  --cds-support-warning: #ff7eb6;
+  --cds-border-subtle-01: #525252;
+}

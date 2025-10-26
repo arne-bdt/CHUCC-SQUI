@@ -247,7 +247,7 @@
   });
 </script>
 
-<div class="sparql-editor-container {className}">
+<div class="sparql-editor-container {currentTheme} {className}">
   <div class="sparql-editor" bind:this={editorElement}></div>
 </div>
 
