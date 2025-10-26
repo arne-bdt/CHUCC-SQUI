@@ -16,13 +16,21 @@ const meta = {
     disabled: {
       control: 'boolean',
       description: 'Disable the button',
-      defaultValue: false,
     },
     class: {
       control: 'text',
       description: 'Additional CSS classes',
     },
   },
+  decorators: [
+    (story: any) => {
+      // Reset stores before each story
+      queryStore.reset();
+      resultsStore.reset();
+      defaultEndpoint.set('');
+      return story();
+    },
+  ],
 } satisfies Meta<RunButton>;
 
 export default meta;
@@ -35,12 +43,14 @@ export const Default: Story = {
   args: {
     disabled: false,
   },
-  play: () => {
-    // Set up store state for the story
-    queryStore.setText('SELECT * WHERE { ?s ?p ?o } LIMIT 10');
-    defaultEndpoint.set('https://dbpedia.org/sparql');
-    resultsStore.setLoading(false);
-  },
+  decorators: [
+    (story: any) => {
+      queryStore.setText('SELECT * WHERE { ?s ?p ?o } LIMIT 10');
+      defaultEndpoint.set('https://dbpedia.org/sparql');
+      resultsStore.setLoading(false);
+      return story();
+    },
+  ],
 };
 
 /**
@@ -50,11 +60,14 @@ export const Disabled: Story = {
   args: {
     disabled: false,
   },
-  play: () => {
-    queryStore.setText('');
-    defaultEndpoint.set('');
-    resultsStore.setLoading(false);
-  },
+  decorators: [
+    (story: any) => {
+      queryStore.setText('');
+      defaultEndpoint.set('');
+      resultsStore.setLoading(false);
+      return story();
+    },
+  ],
 };
 
 /**
@@ -64,11 +77,14 @@ export const Loading: Story = {
   args: {
     disabled: false,
   },
-  play: () => {
-    queryStore.setText('SELECT * WHERE { ?s ?p ?o } LIMIT 10');
-    defaultEndpoint.set('https://dbpedia.org/sparql');
-    resultsStore.setLoading(true);
-  },
+  decorators: [
+    (story: any) => {
+      queryStore.setText('SELECT * WHERE { ?s ?p ?o } LIMIT 10');
+      defaultEndpoint.set('https://dbpedia.org/sparql');
+      resultsStore.setLoading(true);
+      return story();
+    },
+  ],
 };
 
 /**
@@ -78,11 +94,14 @@ export const ExplicitlyDisabled: Story = {
   args: {
     disabled: true,
   },
-  play: () => {
-    queryStore.setText('SELECT * WHERE { ?s ?p ?o } LIMIT 10');
-    defaultEndpoint.set('https://dbpedia.org/sparql');
-    resultsStore.setLoading(false);
-  },
+  decorators: [
+    (story: any) => {
+      queryStore.setText('SELECT * WHERE { ?s ?p ?o } LIMIT 10');
+      defaultEndpoint.set('https://dbpedia.org/sparql');
+      resultsStore.setLoading(false);
+      return story();
+    },
+  ],
 };
 
 /**
@@ -92,11 +111,14 @@ export const NoQuery: Story = {
   args: {
     disabled: false,
   },
-  play: () => {
-    queryStore.setText('');
-    defaultEndpoint.set('https://dbpedia.org/sparql');
-    resultsStore.setLoading(false);
-  },
+  decorators: [
+    (story: any) => {
+      queryStore.setText('');
+      defaultEndpoint.set('https://dbpedia.org/sparql');
+      resultsStore.setLoading(false);
+      return story();
+    },
+  ],
 };
 
 /**
@@ -106,9 +128,12 @@ export const NoEndpoint: Story = {
   args: {
     disabled: false,
   },
-  play: () => {
-    queryStore.setText('SELECT * WHERE { ?s ?p ?o } LIMIT 10');
-    defaultEndpoint.set('');
-    resultsStore.setLoading(false);
-  },
+  decorators: [
+    (story: any) => {
+      queryStore.setText('SELECT * WHERE { ?s ?p ?o } LIMIT 10');
+      defaultEndpoint.set('');
+      resultsStore.setLoading(false);
+      return story();
+    },
+  ],
 };
