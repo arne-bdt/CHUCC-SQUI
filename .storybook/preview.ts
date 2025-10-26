@@ -1,10 +1,53 @@
-import type { Preview } from '@storybook/sveltekit';
+import type { Preview, Decorator } from '@storybook/sveltekit';
 import 'carbon-components-svelte/css/all.css';
+import './preview.css';
+import type { CarbonTheme } from '../src/lib/types';
 
 /**
  * Storybook preview configuration for SQUI
  * Integrates Carbon Design System and provides theme switching
  */
+
+/**
+ * Theme decorator - applies Carbon theme classes to Storybook preview
+ * This makes Carbon CSS variables available to all components
+ */
+const withTheme: Decorator = (story, context) => {
+  const theme = (context.globals.theme as CarbonTheme) || 'white';
+
+  // Apply theme to the preview body and update theme store
+  if (typeof document !== 'undefined') {
+    const body = document.body;
+
+    // Remove all theme classes
+    body.classList.remove('white', 'g10', 'g90', 'g100');
+
+    // Add the current theme class
+    body.classList.add(theme);
+
+    // Apply to the main Storybook preview container
+    const previewBody = document.querySelector('.sb-show-main');
+    if (previewBody) {
+      previewBody.classList.remove('white', 'g10', 'g90', 'g100');
+      previewBody.classList.add(theme);
+    }
+
+    // Also apply to the docs root for Docs view
+    const docsRoot = document.querySelector('.docs-story');
+    if (docsRoot) {
+      docsRoot.classList.remove('white', 'g10', 'g90', 'g100');
+      docsRoot.classList.add(theme);
+    }
+
+    // Sync with our theme store (dynamic import to avoid SSR issues)
+    import('../src/lib/stores/theme').then(({ themeStore }) => {
+      themeStore.setTheme(theme);
+    });
+  }
+
+  return story();
+};
+
 const preview: Preview = {
   parameters: {
     // Configure controls for automatic arg type inference
@@ -27,7 +70,7 @@ const preview: Preview = {
         ],
       },
     },
-    // Backgrounds configuration for testing themes
+    // Backgrounds configuration synchronized with themes
     backgrounds: {
       default: 'white',
       values: [
@@ -54,9 +97,8 @@ const preview: Preview = {
       toc: true,
     },
   },
-  // Global decorators removed for Svelte 5 compatibility
-  // Theme handling is done via the themeStore in components
-  decorators: [],
+  // Apply theme decorator to ensure CSS variables are available
+  decorators: [withTheme],
   // Global types for toolbar controls
   globalTypes: {
     theme: {

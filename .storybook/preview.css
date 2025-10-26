@@ -1,0 +1,58 @@
+/**
+ * Storybook preview styles
+ * Ensures proper Carbon theme application across all views
+ */
+
+/* Apply theme to Storybook preview body */
+body.white,
+body.g10,
+body.g90,
+body.g100 {
+  background-color: var(--cds-background, #ffffff);
+  color: var(--cds-text-primary, #161616);
+}
+
+/* Ensure theme classes work in preview container */
+.sb-show-main.white,
+.sb-show-main.g10,
+.sb-show-main.g90,
+.sb-show-main.g100 {
+  background-color: var(--cds-background, #ffffff);
+  color: var(--cds-text-primary, #161616);
+  min-height: 100vh;
+}
+
+/* Ensure theme classes work in docs view */
+.docs-story.white,
+.docs-story.g10,
+.docs-story.g90,
+.docs-story.g100 {
+  background-color: var(--cds-background, #ffffff);
+  color: var(--cds-text-primary, #161616);
+  padding: 1rem;
+  min-height: 400px;
+}
+
+/* Fix for dark themes - ensure proper text color */
+body.g90,
+body.g100,
+.sb-show-main.g90,
+.sb-show-main.g100,
+.docs-story.g90,
+.docs-story.g100 {
+  background-color: var(--cds-background, #262626);
+  color: var(--cds-text-primary, #f4f4f4);
+}
+
+/* Ensure Storybook UI elements respect theme */
+.sb-show-main {
+  background-color: var(--cds-background, #ffffff);
+  color: var(--cds-text-primary, #161616);
+}
+
+/* Fix for toolbar and other Carbon components in dark themes */
+body.g90 *,
+body.g100 * {
+  /* Inherit colors from Carbon CSS variables */
+  border-color: var(--cds-border-subtle-01, #525252);
+}
