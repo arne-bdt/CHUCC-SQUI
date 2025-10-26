@@ -1,10 +1,11 @@
 /**
  * Query Execution Service
  * Handles SPARQL query execution against endpoints
- * NOTE: This is a stub implementation. Full SPARQL 1.2 Protocol implementation in Task 16.
+ * Uses the real SPARQL Protocol implementation from Task 16
  */
 
 import { resultsStore } from '../stores/resultsStore';
+import { sparqlService } from './sparqlService';
 import type { SparqlJsonResults } from '../types';
 
 /**
@@ -63,25 +64,35 @@ export class QueryExecutionService {
     const startTime = Date.now();
 
     try {
-      // Set up timeout
-      const timeoutId = setTimeout(() => {
-        this.currentController?.abort();
-      }, timeout);
-
-      // TODO: Task 16 - Implement actual SPARQL 1.2 Protocol
-      // For now, return mock data
-      const result = await this.mockQueryExecution(query, endpoint, this.currentController.signal);
-
-      clearTimeout(timeoutId);
+      // Execute query using real SPARQL Protocol implementation
+      const result = await sparqlService.executeQuery({
+        endpoint,
+        query,
+        timeout,
+        signal: this.currentController.signal,
+      });
 
       const executionTime = Date.now() - startTime;
 
+      // Parse the result data
+      let parsedData: SparqlJsonResults;
+      if (typeof result.data === 'string') {
+        // For non-JSON responses, create a minimal results structure
+        parsedData = {
+          head: { vars: [] },
+          results: { bindings: [] },
+        };
+      } else {
+        parsedData = result.data;
+      }
+
       // Update results store
-      resultsStore.setData(result.data, executionTime);
+      resultsStore.setData(parsedData, executionTime);
 
       return {
-        ...result,
+        data: parsedData,
         executionTime,
+        status: result.status,
       };
     } catch (error) {
       const executionTime = Date.now() - startTime;
@@ -97,7 +108,12 @@ export class QueryExecutionService {
       }
 
       // Handle other errors
-      const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
+      // Check for QueryError (has message property), Error, or unknown
+      let errorMessage = 'Unknown error occurred';
+      if (error && typeof error === 'object' && 'message' in error && typeof error.message === 'string') {
+        errorMessage = error.message;
+      }
+
       resultsStore.setError(errorMessage);
       throw error;
     } finally {
@@ -120,72 +136,6 @@ export class QueryExecutionService {
    */
   isExecuting(): boolean {
     return this.currentController !== null;
-  }
-
-  /**
-   * Mock query execution for development/testing
-   * TODO: Remove in Task 16 and replace with real SPARQL protocol implementation
-   */
-  private async mockQueryExecution(
-    query: string,
-    endpoint: string,
-    signal: AbortSignal
-  ): Promise<{ data: SparqlJsonResults; status: number }> {
-    // Simulate network delay
-    await new Promise((resolve, reject) => {
-      const timeoutId = setTimeout(resolve, 1000);
-      signal.addEventListener('abort', () => {
-        clearTimeout(timeoutId);
-        reject(new DOMException('Query execution cancelled', 'AbortError'));
-      });
-    });
-
-    // Return mock SPARQL JSON results
-    const mockData: SparqlJsonResults = {
-      head: {
-        vars: ['subject', 'predicate', 'object'],
-      },
-      results: {
-        bindings: [
-          {
-            subject: {
-              type: 'uri',
-              value: 'http://example.org/resource/1',
-            },
-            predicate: {
-              type: 'uri',
-              value: 'http://www.w3.org/1999/02/22-rdf-syntax-ns#type',
-            },
-            object: {
-              type: 'uri',
-              value: 'http://example.org/Class',
-            },
-          },
-          {
-            subject: {
-              type: 'uri',
-              value: 'http://example.org/resource/1',
-            },
-            predicate: {
-              type: 'uri',
-              value: 'http://www.w3.org/2000/01/rdf-schema#label',
-            },
-            object: {
-              type: 'literal',
-              value: 'Example Resource',
-              'xml:lang': 'en',
-            },
-          },
-        ],
-      },
-    };
-
-    console.log('Mock query execution:', { query, endpoint });
-
-    return {
-      data: mockData,
-      status: 200,
-    };
   }
 }
 
