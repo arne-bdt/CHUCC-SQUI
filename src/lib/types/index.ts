@@ -30,4 +30,5 @@ export type {
   QueryOptions,
   QueryResult,
   QueryError,
+  QueryErrorType,
 } from './sparql';

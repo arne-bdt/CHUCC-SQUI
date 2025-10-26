@@ -304,7 +304,8 @@ describe('SparqlService', () => {
           query: 'INVALID QUERY',
         })
       ).rejects.toMatchObject({
-        message: expect.stringContaining('HTTP 400'),
+        message: expect.stringContaining('Bad Request'),
+        type: 'sparql',
         status: 400,
       });
     });
@@ -324,7 +325,8 @@ describe('SparqlService', () => {
           query: 'SELECT * WHERE { ?s ?p ?o }',
         })
       ).rejects.toMatchObject({
-        message: expect.stringContaining('HTTP 500'),
+        message: expect.stringContaining('Internal Server Error'),
+        type: 'http',
       });
     });
 
@@ -338,6 +340,7 @@ describe('SparqlService', () => {
         })
       ).rejects.toMatchObject({
         message: expect.stringContaining('Network error'),
+        type: 'network',
       });
     });
 
@@ -364,8 +367,221 @@ describe('SparqlService', () => {
         })
       ).rejects.toMatchObject({
         message: expect.stringContaining('timeout'),
+        type: 'timeout',
       });
     }, 10000);
+  });
+
+  describe('Error Categorization (Task 18)', () => {
+    it('should categorize HTTP 401 as unauthorized', async () => {
+      fetchMock.mockResolvedValue({
+        ok: false,
+        status: 401,
+        statusText: 'Unauthorized',
+        headers: new Headers({ 'Content-Type': 'text/plain' }),
+        text: async () => '',
+      });
+
+      await expect(
+        service.executeQuery({
+          endpoint: 'http://example.com/sparql',
+          query: 'SELECT * WHERE { ?s ?p ?o }',
+        })
+      ).rejects.toMatchObject({
+        message: expect.stringContaining('Unauthorized'),
+        type: 'http',
+        status: 401,
+      });
+    });
+
+    it('should categorize HTTP 403 as forbidden', async () => {
+      fetchMock.mockResolvedValue({
+        ok: false,
+        status: 403,
+        statusText: 'Forbidden',
+        headers: new Headers({ 'Content-Type': 'text/plain' }),
+        text: async () => '',
+      });
+
+      await expect(
+        service.executeQuery({
+          endpoint: 'http://example.com/sparql',
+          query: 'SELECT * WHERE { ?s ?p ?o }',
+        })
+      ).rejects.toMatchObject({
+        message: expect.stringContaining('Forbidden'),
+        type: 'http',
+        status: 403,
+      });
+    });
+
+    it('should categorize HTTP 404 as not found', async () => {
+      fetchMock.mockResolvedValue({
+        ok: false,
+        status: 404,
+        statusText: 'Not Found',
+        headers: new Headers({ 'Content-Type': 'text/plain' }),
+        text: async () => '',
+      });
+
+      await expect(
+        service.executeQuery({
+          endpoint: 'http://example.com/sparql',
+          query: 'SELECT * WHERE { ?s ?p ?o }',
+        })
+      ).rejects.toMatchObject({
+        message: expect.stringContaining('Not Found'),
+        type: 'http',
+        status: 404,
+      });
+    });
+
+    it('should categorize HTTP 408 as timeout', async () => {
+      fetchMock.mockResolvedValue({
+        ok: false,
+        status: 408,
+        statusText: 'Request Timeout',
+        headers: new Headers({ 'Content-Type': 'text/plain' }),
+        text: async () => '',
+      });
+
+      await expect(
+        service.executeQuery({
+          endpoint: 'http://example.com/sparql',
+          query: 'SELECT * WHERE { ?s ?p ?o }',
+        })
+      ).rejects.toMatchObject({
+        message: expect.stringContaining('Request Timeout'),
+        type: 'http',
+        status: 408,
+      });
+    });
+
+    it('should categorize HTTP 502 as bad gateway', async () => {
+      fetchMock.mockResolvedValue({
+        ok: false,
+        status: 502,
+        statusText: 'Bad Gateway',
+        headers: new Headers({ 'Content-Type': 'text/plain' }),
+        text: async () => '',
+      });
+
+      await expect(
+        service.executeQuery({
+          endpoint: 'http://example.com/sparql',
+          query: 'SELECT * WHERE { ?s ?p ?o }',
+        })
+      ).rejects.toMatchObject({
+        message: expect.stringContaining('Bad Gateway'),
+        type: 'http',
+        status: 502,
+      });
+    });
+
+    it('should categorize HTTP 503 as service unavailable', async () => {
+      fetchMock.mockResolvedValue({
+        ok: false,
+        status: 503,
+        statusText: 'Service Unavailable',
+        headers: new Headers({ 'Content-Type': 'text/plain' }),
+        text: async () => '',
+      });
+
+      await expect(
+        service.executeQuery({
+          endpoint: 'http://example.com/sparql',
+          query: 'SELECT * WHERE { ?s ?p ?o }',
+        })
+      ).rejects.toMatchObject({
+        message: expect.stringContaining('Service Unavailable'),
+        type: 'http',
+        status: 503,
+      });
+    });
+
+    it('should categorize HTTP 504 as gateway timeout', async () => {
+      fetchMock.mockResolvedValue({
+        ok: false,
+        status: 504,
+        statusText: 'Gateway Timeout',
+        headers: new Headers({ 'Content-Type': 'text/plain' }),
+        text: async () => '',
+      });
+
+      await expect(
+        service.executeQuery({
+          endpoint: 'http://example.com/sparql',
+          query: 'SELECT * WHERE { ?s ?p ?o }',
+        })
+      ).rejects.toMatchObject({
+        message: expect.stringContaining('Gateway Timeout'),
+        type: 'http',
+        status: 504,
+      });
+    });
+
+    it('should detect SPARQL syntax errors in response text', async () => {
+      fetchMock.mockResolvedValue({
+        ok: false,
+        status: 400,
+        statusText: 'Bad Request',
+        headers: new Headers({ 'Content-Type': 'text/plain' }),
+        text: async () => 'SPARQL syntax error: Expected SELECT, found SLECT',
+      });
+
+      await expect(
+        service.executeQuery({
+          endpoint: 'http://example.com/sparql',
+          query: 'SLECT * WHERE { ?s ?p ?o }',
+        })
+      ).rejects.toMatchObject({
+        message: expect.stringContaining('Bad Request'),
+        type: 'sparql',
+        details: expect.stringContaining('syntax'),
+      });
+    });
+
+    it('should detect CORS errors', async () => {
+      const corsError = new TypeError(
+        'Failed to fetch: CORS policy blocked cross-origin request'
+      );
+      fetchMock.mockRejectedValue(corsError);
+
+      await expect(
+        service.executeQuery({
+          endpoint: 'http://example.com/sparql',
+          query: 'SELECT * WHERE { ?s ?p ?o }',
+        })
+      ).rejects.toMatchObject({
+        message: expect.stringContaining('CORS Error'),
+        type: 'cors',
+        details: expect.stringContaining('cross-origin'),
+      });
+    });
+
+    it('should include detailed error information', async () => {
+      fetchMock.mockResolvedValue({
+        ok: false,
+        status: 400,
+        statusText: 'Bad Request',
+        headers: new Headers({ 'Content-Type': 'application/json' }),
+        json: async () => ({
+          message: 'Lexical error at line 1, column 2. Encountered: "L"',
+        }),
+      });
+
+      await expect(
+        service.executeQuery({
+          endpoint: 'http://example.com/sparql',
+          query: 'INVALID',
+        })
+      ).rejects.toMatchObject({
+        message: expect.stringContaining('Bad Request'),
+        type: 'sparql',
+        status: 400,
+        details: expect.stringContaining('Lexical error'),
+      });
+    });
   });
 
   describe('Custom Headers', () => {

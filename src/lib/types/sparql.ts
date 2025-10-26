@@ -132,11 +132,25 @@ export interface QueryResult {
 }
 
 /**
+ * Error types for query execution failures
+ */
+export type QueryErrorType =
+  | 'network' // Network connection failure
+  | 'cors' // CORS policy violation
+  | 'timeout' // Request timeout or user cancellation
+  | 'http' // HTTP error (4xx, 5xx)
+  | 'sparql' // SPARQL syntax or semantic error
+  | 'parse' // Response parsing error
+  | 'unknown'; // Unknown error type
+
+/**
  * Query error information
  */
 export interface QueryError {
   /** Error message */
   message: string;
+  /** Error type for categorization */
+  type?: QueryErrorType;
   /** HTTP status code if available */
   status?: number;
   /** Detailed error information */

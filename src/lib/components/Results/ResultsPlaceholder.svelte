@@ -1,8 +1,12 @@
 <script lang="ts">
   /**
-   * ResultsPlaceholder component - Temporary placeholder for query results
-   * Will be replaced by DataGrid and other result views in later tasks
+   * ResultsPlaceholder component - Shows query results or errors
+   * Displays error notifications when queries fail
    */
+
+  import { resultsStore } from '../../stores/resultsStore';
+  import ErrorNotification from './ErrorNotification.svelte';
+  import type { QueryError } from '../../types';
 
   interface Props {
     /** CSS class for the placeholder */
@@ -10,14 +14,48 @@
   }
 
   let { class: className = '' }: Props = $props();
+
+  // Subscribe to results store
+  const state = $derived(resultsStore);
+
+  // Convert error string to QueryError object
+  const errorObject = $derived<QueryError | null>(() => {
+    if (!state.error) return null;
+    if (typeof state.error === 'string') {
+      return { message: state.error };
+    }
+    return state.error as QueryError;
+  });
+
+  // Handle error notification close
+  function handleCloseError(): void {
+    resultsStore.clearError();
+  }
 </script>
 
 <div class="results-placeholder {className}">
-  <div class="placeholder-content">
-    <h3>Query Results</h3>
-    <p>Results will be displayed here after query execution</p>
-    <p class="hint">Future implementation will include table view, raw view, and visualizations</p>
-  </div>
+  <!-- Show error notification if there's an error -->
+  {#if errorObject()}
+    <ErrorNotification error={errorObject()} onClose={handleCloseError} />
+  {/if}
+
+  <!-- Show placeholder content when no error -->
+  {#if !state.error}
+    <div class="placeholder-content">
+      <h3>Query Results</h3>
+      {#if state.loading}
+        <p>Executing query...</p>
+      {:else if state.data}
+        <p>Query executed successfully in {state.executionTime}ms</p>
+        <p class="hint">Table view will be displayed here in future tasks</p>
+      {:else}
+        <p>Results will be displayed here after query execution</p>
+        <p class="hint">
+          Future implementation will include table view, raw view, and visualizations
+        </p>
+      {/if}
+    </div>
+  {/if}
 </div>
 
 <style>
