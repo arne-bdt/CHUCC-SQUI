@@ -72,41 +72,51 @@
   }
 </script>
 
-{#if isLoading}
-  <!-- Cancel button with loading indicator -->
-  <Button
-    kind="danger"
-    size="field"
-    icon={StopOutline}
-    on:click={handleCancelQuery}
-    class={className}
-  >
-    <InlineLoading description={$t('toolbar.cancelling')} />
-  </Button>
-{:else}
-  <!-- Run button -->
-  <Button
-    kind="primary"
-    size="field"
-    icon={Play}
-    on:click={handleRunQuery}
-    disabled={!canExecute}
-    class={className}
-    title={!hasQuery
-      ? $t('toolbar.runTooltipNoQuery')
-      : !hasEndpoint
-        ? $t('toolbar.runTooltipNoEndpoint')
-        : $t('toolbar.runTooltip')}
-  >
-    {$t('toolbar.run')}
-  </Button>
-{/if}
+<div class="run-button-container">
+  {#if isLoading}
+    <!-- Cancel button with loading indicator -->
+    <Button
+      kind="danger"
+      size="field"
+      icon={StopOutline}
+      on:click={handleCancelQuery}
+      class="run-button {className}"
+    >
+      <InlineLoading description={$t('toolbar.cancelling')} />
+    </Button>
+  {:else}
+    <!-- Run button -->
+    <Button
+      kind="primary"
+      size="field"
+      icon={Play}
+      on:click={handleRunQuery}
+      disabled={!canExecute}
+      class="run-button {className}"
+      title={!hasQuery
+        ? $t('toolbar.runTooltipNoQuery')
+        : !hasEndpoint
+          ? $t('toolbar.runTooltipNoEndpoint')
+          : $t('toolbar.runTooltip')}
+    >
+      {$t('toolbar.run')}
+    </Button>
+  {/if}
+</div>
 
 <style>
-  /* Component-specific styles if needed */
-  :global(.run-button-loading) {
-    display: inline-flex;
-    align-items: center;
-    gap: var(--cds-spacing-03, 0.5rem);
+  .run-button-container {
+    display: inline-block;
+  }
+
+  /* Fixed width to prevent layout shift */
+  .run-button-container :global(.run-button) {
+    min-width: 140px;
+    justify-content: center;
+  }
+
+  /* Ensure loading indicator is centered */
+  .run-button-container :global(.bx--inline-loading) {
+    min-height: unset;
   }
 </style>
