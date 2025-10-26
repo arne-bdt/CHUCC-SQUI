@@ -423,3 +423,53 @@ export const WithCustomClass: Story = {
     initialValue: 'SELECT * WHERE { ?s ?p ?o }',
   },
 };
+
+/**
+ * Interactive Theme Switcher
+ * Demonstrates automatic synchronization between Carbon Design System theme
+ * and CodeMirror editor theme. The editor uses CSS custom properties from
+ * Carbon Design Tokens, so theme changes are immediate and automatic.
+ *
+ * Try switching themes using the theme selector in the toolbar to see the
+ * editor colors update in real-time. Light themes (White, Gray 10) use dark
+ * text on light backgrounds, while dark themes (Gray 90, Gray 100) use light
+ * text on dark backgrounds.
+ *
+ * Mapping:
+ * - White, Gray 10 → dark=false (light mode)
+ * - Gray 90, Gray 100 → dark=true (dark mode)
+ */
+export const InteractiveThemeSwitcher: Story = {
+  args: {
+    initialValue: `# SPARQL Theme Demo
+# Change the theme using the toolbar selector above!
+# Notice how the syntax highlighting adapts automatically.
+
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX foaf: <http://xmlns.com/foaf/0.1/>
+
+SELECT ?person ?name ?email
+WHERE {
+  # Find all people
+  ?person a foaf:Person ;
+          foaf:name ?name .
+
+  # Optional email
+  OPTIONAL { ?person foaf:mbox ?email }
+
+  # Filter by name pattern
+  FILTER(CONTAINS(LCASE(?name), "john"))
+}
+ORDER BY ?name
+LIMIT 100`,
+  },
+  parameters: {
+    docs: {
+      description: {
+        story:
+          'This story demonstrates the automatic theme synchronization between Carbon Design System and the CodeMirror editor. The editor theme is built using CSS custom properties (CSS variables) that reference Carbon Design Tokens, ensuring perfect color harmony across all 4 Carbon themes without any JavaScript theme switching logic.',
+      },
+    },
+  },
+};

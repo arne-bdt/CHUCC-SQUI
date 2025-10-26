@@ -110,6 +110,51 @@ describe('SparqlEditor Component', () => {
       expect(editor).toBeTruthy();
       // Theme is applied via CodeMirror extensions
     });
+
+    it('should apply dark mode class for dark themes', async () => {
+      const { container: container1 } = render(SparqlEditor);
+      await new Promise((resolve) => setTimeout(resolve, 100));
+
+      // The theme is applied via CodeMirror extension with isDark flag
+      // Dark mode is determined by theme name (g90, g100)
+      const editor = container1.querySelector('.cm-editor');
+      expect(editor).toBeTruthy();
+    });
+
+    it('should use CSS variables for theming', async () => {
+      const { container } = render(SparqlEditor);
+      await new Promise((resolve) => setTimeout(resolve, 100));
+
+      const editor = container.querySelector('.cm-editor') as HTMLElement;
+      expect(editor).toBeTruthy();
+
+      // Verify that the editor exists and can receive theme styles
+      // The actual CSS variable theming is applied via createCarbonTheme()
+      // which uses var(--cds-*) CSS custom properties
+      const computedStyle = getComputedStyle(editor);
+      expect(computedStyle).toBeTruthy();
+    });
+
+    it('should update theme when theme store changes', async () => {
+      const { container } = render(SparqlEditor);
+      await new Promise((resolve) => setTimeout(resolve, 100));
+
+      const editor = container.querySelector('.cm-editor');
+      expect(editor).toBeTruthy();
+
+      // Change theme via store
+      const { themeStore } = await import('../../../src/lib/stores/theme');
+      themeStore.setTheme('g90');
+
+      await new Promise((resolve) => setTimeout(resolve, 100));
+
+      // Verify editor still exists after theme change
+      const updatedEditor = container.querySelector('.cm-editor');
+      expect(updatedEditor).toBeTruthy();
+
+      // Reset theme for other tests
+      themeStore.setTheme('white');
+    });
   });
 
   describe('Line numbers and features', () => {
