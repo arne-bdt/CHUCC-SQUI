@@ -1,7 +1,7 @@
 # Task 09: Prefix Autocompletion in Editor
 
 **Phase:** SPARQL Editor
-**Status:** TODO
+**Status:** COMPLETED
 **Dependencies:** 06, 08
 **Estimated Effort:** 3-4 hours
 
@@ -98,12 +98,12 @@ Per specification section 1.2:
 
 ## Acceptance Criteria
 
-- [ ] Typing "PREFIX " suggests common prefix names
-- [ ] Selecting a prefix auto-completes with full URI
-- [ ] Typing "prefix:" suggests terms for that prefix
-- [ ] Common terms for rdf, rdfs, owl, xsd, foaf, skos are available
-- [ ] PREFIX declaration is auto-inserted if using new prefix
-- [ ] Completions work asynchronously without blocking editor
+- [x] Typing "PREFIX " suggests common prefix names
+- [x] Selecting a prefix auto-completes with full URI
+- [x] Typing "prefix:" suggests terms for that prefix
+- [x] Common terms for rdf, rdfs, owl, xsd, foaf, skos are available
+- [x] PREFIX declaration is auto-inserted if using new prefix
+- [x] Completions work asynchronously without blocking editor
 
 ## Testing
 

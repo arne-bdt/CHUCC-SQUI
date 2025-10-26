@@ -20,6 +20,7 @@
   import { sparql } from '../../editor/sparqlLanguage';
   import { createCarbonTheme } from '../../editor/carbonTheme';
   import { sparqlCompletion } from '../../editor/sparqlCompletions';
+  import { prefixCompletion } from '../../editor/prefixCompletions';
   import { queryStore } from '../../stores';
   import { themeStore } from '../../stores/theme';
   import { t } from '../../localization';
@@ -76,7 +77,7 @@
 
         // Autocompletion
         autocompletion({
-          override: [sparqlCompletion],
+          override: [prefixCompletion, sparqlCompletion],
           activateOnTyping: true,
           maxRenderedOptions: 20,
         }),
