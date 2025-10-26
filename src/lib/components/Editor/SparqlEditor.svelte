@@ -10,9 +10,10 @@
   import { defaultKeymap, history, historyKeymap } from '@codemirror/commands';
   import { searchKeymap, highlightSelectionMatches } from '@codemirror/search';
   import { foldGutter, indentOnInput, bracketMatching, foldKeymap } from '@codemirror/language';
-  import { closeBrackets, closeBracketsKeymap } from '@codemirror/autocomplete';
+  import { closeBrackets, closeBracketsKeymap, autocompletion } from '@codemirror/autocomplete';
   import { sparql } from '../../editor/sparqlLanguage';
   import { createCarbonTheme } from '../../editor/carbonTheme';
+  import { sparqlCompletion } from '../../editor/sparqlCompletions';
   import { queryStore } from '../../stores';
   import { themeStore } from '../../stores/theme';
   import { t } from '../../localization';
@@ -66,6 +67,13 @@
 
         // SPARQL language support
         sparql(),
+
+        // Autocompletion
+        autocompletion({
+          override: [sparqlCompletion],
+          activateOnTyping: true,
+          maxRenderedOptions: 20,
+        }),
 
         // Theme (dynamic)
         themeCompartment.of(createCarbonTheme(currentTheme)),
