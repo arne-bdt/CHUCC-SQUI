@@ -7,20 +7,11 @@
    *
    * @component
    */
+  import type { ICellProps } from 'wx-svelte-grid';
 
-  interface Props {
-    /** Row data from wx-svelte-grid */
-    row: Record<string, any>;
-    /** Column configuration from wx-svelte-grid */
-    column: {
-      id: string;
-      [key: string]: any;
-    };
-    /** Grid API (not used) */
-    api?: any;
-  }
+  interface Props extends ICellProps {}
 
-  let { row, column }: Props = $props();
+  let { row, column, api: _api, onaction: _onaction }: Props = $props();
 
   // Get pre-computed metadata (NO reactive computation here!)
   const meta = row[`__meta_${column.id}`];
@@ -45,13 +36,16 @@
     </span>
   {:else if meta.annotation && meta.annotationType}
     <!-- Literal with styled annotation -->
-    <span class="literal-value">{meta.literalValue}</span><span
+    <span class="literal-value" title={meta.displayText}>{meta.literalValue}</span><span
       class="literal-annotation {meta.annotationType}"
+      title="Language or datatype annotation"
       >{meta.annotation}</span
     >
   {:else}
-    <!-- Plain text -->
-    {meta.displayText}
+    <!-- Plain text with tooltip - Task 31 -->
+    <span title={meta.displayText}>
+      {meta.displayText}
+    </span>
   {/if}
 {:else}
   <!-- Fallback for rows without metadata -->

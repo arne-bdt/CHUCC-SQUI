@@ -8,7 +8,7 @@
    */
 
   import { Grid } from 'wx-svelte-grid';
-  import type { ParsedTableData, ParsedCell } from '../../utils/resultsParser';
+  import type { ParsedTableData } from '../../utils/resultsParser';
   import {
     getCellDisplayValue,
     getCellAnnotation,
@@ -28,9 +28,21 @@
     class?: string;
     /** Prefixes from the query for IRI abbreviation */
     prefixes?: Record<string, string>;
+    /** Enable column filtering (default: false) - Task 26 */
+    enableFilter?: boolean;
+    /** Show full URIs instead of abbreviated (default: false) - Task 30 */
+    showFullUris?: boolean;
   }
 
-  let { data, virtualScroll = true, rowHeight = 32, class: className = '', prefixes }: Props = $props();
+  let {
+    data,
+    virtualScroll = true,
+    rowHeight = 32,
+    class: className = '',
+    prefixes,
+    enableFilter = false,
+    showFullUris = false,
+  }: Props = $props();
 
   /**
    * Convert ParsedTableData to wx-svelte-grid column format
@@ -41,10 +53,24 @@
       id: varName,
       label: varName,
       width: 200,
-      sort: true, // Use default string sorting on display values
+      sort: true, // Task 25: Column sorting enabled
       editor: false,
-      resizable: true,
+      resizable: true, // Task 27: Column resizing enabled
       cell: CellRenderer, // Minimal component with ZERO reactive computations
+      // Task 26: Column filtering - add filter config when enabled
+      header: enableFilter
+        ? [
+            varName, // Column label
+            {
+              filter: {
+                type: 'text' as const,
+                config: {
+                  placeholder: `Filter ${varName}...`,
+                },
+              },
+            },
+          ]
+        : varName,
     }))
   );
 
@@ -63,10 +89,11 @@
         const cell = row[varName];
 
         // Get display value for sorting
+        // Task 30: Use showFullUris prop to control IRI abbreviation
         const displayValue = getCellDisplayValue(cell, {
           showDatatype: true,
           showLang: true,
-          abbreviateUri: true, // Enable IRI abbreviation (Task 22)
+          abbreviateUri: !showFullUris, // Task 30: Toggle between simple/full view
           prefixes: prefixes, // Use prefixes from query
         });
 
@@ -112,11 +139,12 @@
         data={gridData}
         autoWidth={false}
         rowHeight={rowHeight}
-        headerRowHeight={40}
+        headerRowHeight={enableFilter ? 80 : 40}
+        header={true}
         virtual={virtualScroll}
         selection={true}
         sort={true}
-        filter={false}
+        filter={enableFilter}
         resize={true}
       />
     </div>

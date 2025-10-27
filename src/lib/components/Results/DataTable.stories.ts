@@ -793,3 +793,278 @@ export const StyledLiteralAnnotations: Story = {
     expect(literalValues.length).toBeGreaterThan(0);
   },
 };
+
+/**
+ * Column Sorting (Task 25)
+ * Demonstrates sortable columns with visual indicators:
+ * - Click column header to sort ascending
+ * - Click again for descending
+ * - Click third time to clear sort
+ * - Sort direction icon shown in header
+ * - Multi-column sorting supported (Ctrl+Click)
+ * - Works with all data types (strings, numbers, dates, URIs)
+ */
+export const ColumnSorting: Story = {
+  args: {
+    data: {
+      columns: ['name', 'age', 'score', 'birthDate'],
+      rows: [
+        {
+          name: { value: 'Alice', type: 'literal' },
+          age: {
+            value: '30',
+            type: 'literal',
+            datatype: 'http://www.w3.org/2001/XMLSchema#integer',
+          },
+          score: {
+            value: '95.5',
+            type: 'literal',
+            datatype: 'http://www.w3.org/2001/XMLSchema#decimal',
+          },
+          birthDate: {
+            value: '1994-03-15',
+            type: 'literal',
+            datatype: 'http://www.w3.org/2001/XMLSchema#date',
+          },
+        },
+        {
+          name: { value: 'Bob', type: 'literal' },
+          age: {
+            value: '25',
+            type: 'literal',
+            datatype: 'http://www.w3.org/2001/XMLSchema#integer',
+          },
+          score: {
+            value: '87.3',
+            type: 'literal',
+            datatype: 'http://www.w3.org/2001/XMLSchema#decimal',
+          },
+          birthDate: {
+            value: '1999-08-22',
+            type: 'literal',
+            datatype: 'http://www.w3.org/2001/XMLSchema#date',
+          },
+        },
+        {
+          name: { value: 'Charlie', type: 'literal' },
+          age: {
+            value: '35',
+            type: 'literal',
+            datatype: 'http://www.w3.org/2001/XMLSchema#integer',
+          },
+          score: {
+            value: '92.8',
+            type: 'literal',
+            datatype: 'http://www.w3.org/2001/XMLSchema#decimal',
+          },
+          birthDate: {
+            value: '1989-12-10',
+            type: 'literal',
+            datatype: 'http://www.w3.org/2001/XMLSchema#date',
+          },
+        },
+        {
+          name: { value: 'Diana', type: 'literal' },
+          age: {
+            value: '28',
+            type: 'literal',
+            datatype: 'http://www.w3.org/2001/XMLSchema#integer',
+          },
+          score: {
+            value: '98.1',
+            type: 'literal',
+            datatype: 'http://www.w3.org/2001/XMLSchema#decimal',
+          },
+          birthDate: {
+            value: '1996-05-18',
+            type: 'literal',
+            datatype: 'http://www.w3.org/2001/XMLSchema#date',
+          },
+        },
+      ],
+      rowCount: 4,
+      vars: ['name', 'age', 'score', 'birthDate'],
+    },
+    virtualScroll: false,
+    rowHeight: 36,
+  },
+};
+
+/**
+ * Column Filtering (Task 26)
+ * Demonstrates per-column text filters:
+ * - Filter row shown below column headers
+ * - Text input for each column
+ * - Case-insensitive substring matching
+ * - AND logic for multiple filters
+ * - Real-time filtering as you type
+ * - Clear filter by clearing input
+ */
+export const ColumnFiltering: Story = {
+  args: {
+    data: {
+      columns: ['city', 'country', 'population', 'continent'],
+      rows: [
+        {
+          city: { value: 'New York', type: 'literal' },
+          country: { value: 'United States', type: 'literal' },
+          population: {
+            value: '8336817',
+            type: 'literal',
+            datatype: 'http://www.w3.org/2001/XMLSchema#integer',
+          },
+          continent: { value: 'North America', type: 'literal' },
+        },
+        {
+          city: { value: 'London', type: 'literal' },
+          country: { value: 'United Kingdom', type: 'literal' },
+          population: {
+            value: '8982000',
+            type: 'literal',
+            datatype: 'http://www.w3.org/2001/XMLSchema#integer',
+          },
+          continent: { value: 'Europe', type: 'literal' },
+        },
+        {
+          city: { value: 'Tokyo', type: 'literal' },
+          country: { value: 'Japan', type: 'literal' },
+          population: {
+            value: '13960000',
+            type: 'literal',
+            datatype: 'http://www.w3.org/2001/XMLSchema#integer',
+          },
+          continent: { value: 'Asia', type: 'literal' },
+        },
+        {
+          city: { value: 'Paris', type: 'literal' },
+          country: { value: 'France', type: 'literal' },
+          population: {
+            value: '2161000',
+            type: 'literal',
+            datatype: 'http://www.w3.org/2001/XMLSchema#integer',
+          },
+          continent: { value: 'Europe', type: 'literal' },
+        },
+        {
+          city: { value: 'Sydney', type: 'literal' },
+          country: { value: 'Australia', type: 'literal' },
+          population: {
+            value: '5312000',
+            type: 'literal',
+            datatype: 'http://www.w3.org/2001/XMLSchema#integer',
+          },
+          continent: { value: 'Oceania', type: 'literal' },
+        },
+        {
+          city: { value: 'Berlin', type: 'literal' },
+          country: { value: 'Germany', type: 'literal' },
+          population: {
+            value: '3645000',
+            type: 'literal',
+            datatype: 'http://www.w3.org/2001/XMLSchema#integer',
+          },
+          continent: { value: 'Europe', type: 'literal' },
+        },
+      ],
+      rowCount: 6,
+      vars: ['city', 'country', 'population', 'continent'],
+    },
+    virtualScroll: false,
+    rowHeight: 36,
+    enableFilter: true, // Task 26: Enable column filtering
+  },
+};
+
+/**
+ * Full URI Display Toggle (Task 30)
+ * Demonstrates Simple vs Full View for IRIs:
+ * - Simple View (default): Shows abbreviated IRIs (rdf:type, foaf:Person)
+ * - Full View: Shows complete URIs (http://www.w3.org/1999/02/22-rdf-syntax-ns#type)
+ * - Toggle controlled by showFullUris prop
+ * - Useful when abbreviated form is ambiguous
+ * - Column widths adjust automatically
+ */
+export const FullURIDisplay: Story = {
+  args: {
+    data: iriAbbreviationData,
+    virtualScroll: false,
+    rowHeight: 36,
+    prefixes: {
+      rdf: 'http://www.w3.org/1999/02/22-rdf-syntax-ns#',
+      rdfs: 'http://www.w3.org/2000/01/rdf-schema#',
+      owl: 'http://www.w3.org/2002/07/owl#',
+      foaf: 'http://xmlns.com/foaf/0.1/',
+      dbr: 'http://dbpedia.org/resource/',
+      wd: 'http://www.wikidata.org/entity/',
+      wdt: 'http://www.wikidata.org/prop/direct/',
+      schema: 'http://schema.org/',
+      dcterms: 'http://purl.org/dc/terms/',
+      skos: 'http://www.w3.org/2004/02/skos/core#',
+    },
+    showFullUris: true, // Task 30: Show full URIs instead of abbreviated
+  },
+};
+
+/**
+ * Column Resizing (Task 27)
+ * Demonstrates column width adjustment:
+ * - Drag column separator to resize
+ * - Minimum column width enforced (50px)
+ * - Double-click separator to auto-fit content (not yet implemented)
+ * - Widths persist during session (grid internal state)
+ * - All columns resizable by default
+ */
+export const ColumnResizing: Story = {
+  args: {
+    data: {
+      columns: ['short', 'medium', 'long', 'veryLongColumnName'],
+      rows: [
+        {
+          short: { value: 'A', type: 'literal' },
+          medium: { value: 'Medium text', type: 'literal' },
+          long: {
+            value: 'This is a longer text that might need more column width',
+            type: 'literal',
+          },
+          veryLongColumnName: {
+            value: 'Value for column with very long name',
+            type: 'literal',
+          },
+        },
+        {
+          short: { value: 'B', type: 'literal' },
+          medium: { value: 'Another medium', type: 'literal' },
+          long: {
+            value: 'Another long text that demonstrates column width needs',
+            type: 'literal',
+          },
+          veryLongColumnName: { value: 'Another value here', type: 'literal' },
+        },
+      ],
+      rowCount: 2,
+      vars: ['short', 'medium', 'long', 'veryLongColumnName'],
+    },
+    virtualScroll: false,
+    rowHeight: 36,
+  },
+};
+
+/**
+ * All Advanced Features Combined (Phase 6 Complete)
+ * Demonstrates all Phase 6 features together:
+ * - Column Sorting (click headers)
+ * - Column Filtering (type in filter row)
+ * - Column Resizing (drag column separators)
+ * - IRI Abbreviation (with prefixes)
+ * - Virtual Scrolling (for large dataset)
+ * - Cell Ellipsis with tooltips
+ */
+export const AllAdvancedFeatures: Story = {
+  args: {
+    data: generateLargeData(100),
+    virtualScroll: true,
+    rowHeight: 32,
+    enableFilter: true,
+    showFullUris: false,
+  },
+};
