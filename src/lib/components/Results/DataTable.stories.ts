@@ -483,3 +483,161 @@ export const IRIAbbreviation: Story = {
     // happens via getCellDisplayValue() with abbreviateUri: true
   },
 };
+
+/**
+ * Clickable IRI Links (Task 23)
+ * Demonstrates clickable URIs that open in new tab:
+ * - URIs are rendered as clickable links
+ * - Links open in new tab with target="_blank"
+ * - Security attributes: rel="noopener noreferrer"
+ * - Abbreviated IRIs show as link text, full IRI in href
+ * - Literals and blank nodes are NOT links
+ * - Carbon Design System link styles applied
+ */
+export const ClickableIRILinks: Story = {
+  args: {
+    data: {
+      columns: ['subject', 'predicate', 'object', 'description'],
+      rows: [
+        {
+          subject: {
+            value: 'http://dbpedia.org/resource/Albert_Einstein',
+            type: 'uri',
+            rawValue: 'http://dbpedia.org/resource/Albert_Einstein',
+          },
+          predicate: {
+            value: 'http://www.w3.org/1999/02/22-rdf-syntax-ns#type',
+            type: 'uri',
+            rawValue: 'http://www.w3.org/1999/02/22-rdf-syntax-ns#type',
+          },
+          object: {
+            value: 'http://xmlns.com/foaf/0.1/Person',
+            type: 'uri',
+            rawValue: 'http://xmlns.com/foaf/0.1/Person',
+          },
+          description: { value: 'URIs are clickable links', type: 'literal' },
+        },
+        {
+          subject: {
+            value: 'http://www.wikidata.org/entity/Q42',
+            type: 'uri',
+            rawValue: 'http://www.wikidata.org/entity/Q42',
+          },
+          predicate: {
+            value: 'http://www.w3.org/2000/01/rdf-schema#label',
+            type: 'uri',
+            rawValue: 'http://www.w3.org/2000/01/rdf-schema#label',
+          },
+          object: { value: 'Douglas Adams', type: 'literal', lang: 'en' },
+          description: { value: 'Literals are NOT links', type: 'literal' },
+        },
+        {
+          subject: { value: '_:b0', type: 'bnode', rawValue: '_:b0' },
+          predicate: {
+            value: 'http://xmlns.com/foaf/0.1/name',
+            type: 'uri',
+            rawValue: 'http://xmlns.com/foaf/0.1/name',
+          },
+          object: { value: 'Anonymous Person', type: 'literal' },
+          description: { value: 'Blank nodes are NOT links', type: 'literal' },
+        },
+        {
+          subject: {
+            value: 'http://schema.org/Person',
+            type: 'uri',
+            rawValue: 'http://schema.org/Person',
+          },
+          predicate: {
+            value: 'http://www.w3.org/2002/07/owl#equivalentClass',
+            type: 'uri',
+            rawValue: 'http://www.w3.org/2002/07/owl#equivalentClass',
+          },
+          object: {
+            value: 'http://xmlns.com/foaf/0.1/Person',
+            type: 'uri',
+            rawValue: 'http://xmlns.com/foaf/0.1/Person',
+          },
+          description: { value: 'Links open in new tab (target="_blank")', type: 'literal' },
+        },
+        {
+          subject: {
+            value: 'http://purl.org/dc/terms/creator',
+            type: 'uri',
+            rawValue: 'http://purl.org/dc/terms/creator',
+          },
+          predicate: {
+            value: 'http://www.w3.org/2000/01/rdf-schema#range',
+            type: 'uri',
+            rawValue: 'http://www.w3.org/2000/01/rdf-schema#range',
+          },
+          object: {
+            value: 'http://xmlns.com/foaf/0.1/Agent',
+            type: 'uri',
+            rawValue: 'http://xmlns.com/foaf/0.1/Agent',
+          },
+          description: {
+            value: 'Security: rel="noopener noreferrer"',
+            type: 'literal',
+          },
+        },
+      ],
+      rowCount: 5,
+      vars: ['subject', 'predicate', 'object', 'description'],
+    },
+    virtualScroll: false,
+    rowHeight: 40,
+    prefixes: {
+      rdf: 'http://www.w3.org/1999/02/22-rdf-syntax-ns#',
+      rdfs: 'http://www.w3.org/2000/01/rdf-schema#',
+      owl: 'http://www.w3.org/2002/07/owl#',
+      foaf: 'http://xmlns.com/foaf/0.1/',
+      dbr: 'http://dbpedia.org/resource/',
+      wd: 'http://www.wikidata.org/entity/',
+      schema: 'http://schema.org/',
+      dcterms: 'http://purl.org/dc/terms/',
+    },
+  },
+  play: async ({ canvasElement }) => {
+    // Verify table renders
+    const gridContainer = canvasElement.querySelector('.data-table-container');
+    expect(gridContainer).toBeTruthy();
+
+    // Verify results count
+    const resultsInfo = canvasElement.querySelector('.results-info');
+    expect(resultsInfo?.textContent).toContain('5 results');
+    expect(resultsInfo?.textContent).toContain('4 variables');
+
+    // Wait for grid to render
+    await new Promise((resolve) => setTimeout(resolve, 500));
+
+    // Verify clickable links exist
+    const links = canvasElement.querySelectorAll('a.uri-link');
+    expect(links.length).toBeGreaterThan(0);
+
+    // Check first link (subject in first row)
+    if (links.length > 0) {
+      const firstLink = links[0] as HTMLAnchorElement;
+
+      // Should have correct attributes
+      expect(firstLink.getAttribute('target')).toBe('_blank');
+      expect(firstLink.getAttribute('rel')).toBe('noopener noreferrer');
+
+      // Should have full IRI in href
+      expect(firstLink.href).toContain('http');
+
+      // Should have title attribute for tooltip
+      expect(firstLink.hasAttribute('title')).toBe(true);
+
+      // Should have uri-link class for styling
+      expect(firstLink.classList.contains('uri-link')).toBe(true);
+    }
+
+    // Verify literals are NOT links
+    // The description column contains only literals
+    // We should not find those literal values as link hrefs
+    const literalLinks = Array.from(links).filter((link) =>
+      (link as HTMLAnchorElement).href.includes('Literals are NOT links')
+    );
+    expect(literalLinks.length).toBe(0);
+  },
+};

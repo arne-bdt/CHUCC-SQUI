@@ -10,6 +10,7 @@
   import { Grid } from 'wx-svelte-grid';
   import type { ParsedTableData, ParsedCell } from '../../utils/resultsParser';
   import { getCellDisplayValue } from '../../utils/resultsParser';
+  import UriCell from './UriCell.svelte';
 
   interface Props {
     /** Parsed table data from resultsParser */
@@ -28,31 +29,40 @@
 
   /**
    * Convert ParsedTableData to wx-svelte-grid column format
+   * All columns use UriCell component which handles both URIs and literals
    */
   const columns = $derived(
     data.columns.map((varName) => ({
       id: varName,
       label: varName,
       width: 200,
-      sort: true,
+      sort: true, // Use default string sorting on display values
       editor: false,
       resizable: true,
+      cell: UriCell, // Custom cell renderer for clickable IRI links (Task 23)
     }))
   );
 
   /**
    * Convert ParsedTableData rows to wx-svelte-grid data format
-   * Each row is an object with variable names as keys
+   * Stores display strings for sorting, with original cell data in __cellData__ for UriCell
    */
   const gridData = $derived.by(() => {
     return data.rows.map((row, index) => {
       const gridRow: Record<string, any> = {
         id: index, // Grid requires unique id
+        __cellData__: {}, // Store original ParsedCell objects here
       };
 
-      // Convert each cell to display value
+      // Convert each cell to display value (string) for sorting
+      // Store original cell data in __cellData__ for UriCell access
       for (const varName of data.columns) {
         const cell = row[varName];
+
+        // Store original cell data
+        gridRow.__cellData__[varName] = cell;
+
+        // Store display string for grid
         gridRow[varName] = getCellDisplayValue(cell, {
           showDatatype: true,
           showLang: true,
@@ -65,21 +75,6 @@
     });
   });
 
-  /**
-   * Grid configuration
-   */
-  const gridConfig = $derived({
-    columns: columns,
-    data: gridData,
-    autoWidth: false,
-    rowHeight: rowHeight,
-    headerRowHeight: 40,
-    virtual: virtualScroll,
-    selection: true,
-    sort: true,
-    filter: false, // Will be enabled in Task 26
-    resize: true,
-  });
 </script>
 
 <div class="data-table-container {className}">
@@ -93,16 +88,16 @@
     <!-- SVAR DataGrid -->
     <div class="grid-wrapper">
       <Grid
-        columns={gridConfig.columns}
-        data={gridConfig.data}
-        autoWidth={gridConfig.autoWidth}
-        rowHeight={gridConfig.rowHeight}
-        headerRowHeight={gridConfig.headerRowHeight}
-        virtual={gridConfig.virtual}
-        selection={gridConfig.selection}
-        sort={gridConfig.sort}
-        filter={gridConfig.filter}
-        resize={gridConfig.resize}
+        columns={columns}
+        data={gridData}
+        autoWidth={false}
+        rowHeight={rowHeight}
+        headerRowHeight={40}
+        virtual={virtualScroll}
+        selection={true}
+        sort={true}
+        filter={false}
+        resize={true}
       />
     </div>
 
