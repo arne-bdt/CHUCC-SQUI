@@ -36,3 +36,7 @@ global.fetch = vi.fn().mockImplementation(() =>
     text: () => Promise.resolve(''),
   })
 );
+
+// Mock URL.createObjectURL and URL.revokeObjectURL (required for download tests)
+global.URL.createObjectURL = vi.fn(() => 'blob:mock-url');
+global.URL.revokeObjectURL = vi.fn();

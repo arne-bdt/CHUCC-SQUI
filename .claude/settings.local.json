@@ -17,7 +17,8 @@
       "Bash(npx storybook@latest init:*)",
       "Bash(curl:*)",
       "Bash(del \"src\\lib\\components\\Results\\DataTable.stories.minimal.ts\")",
-      "Bash(timeout 15 bash:*)"
+      "Bash(timeout 15 bash:*)",
+      "Bash(timeout:*)"
     ],
     "deny": [],
     "ask": [],

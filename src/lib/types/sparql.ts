@@ -99,6 +99,10 @@ export interface ResultsState {
   executionTime?: number;
   /** Prefixes from the query for IRI abbreviation */
   prefixes?: Record<string, string>;
+  /** Task 35: Raw response data for raw view */
+  rawData?: string;
+  /** Task 35: Content type of the response */
+  contentType?: string;
   /** Task 33: Chunked loading state */
   chunkedLoading?: {
     /** Currently loading next chunk */

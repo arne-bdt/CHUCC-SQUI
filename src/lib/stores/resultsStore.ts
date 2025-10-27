@@ -6,7 +6,7 @@ import type {
   QueryOptions,
   QueryError,
 } from '../types';
-import { sparqlService } from '../services/sparqlService';
+import { sparqlService, type ExtendedQueryOptions } from '../services/sparqlService';
 import { prefixService } from '../services/prefixService';
 
 /**
@@ -23,7 +23,7 @@ export function createResultsStore(): {
   setFormat: (_format: ResultFormat) => void;
   setExecutionTime: (_executionTime: number) => void;
   setState: (_newState: Partial<ResultsState>) => void;
-  executeQuery: (_options: QueryOptions) => Promise<void>;
+  executeQuery: (_options: ExtendedQueryOptions) => Promise<void>;
   cancelQuery: () => void;
   reset: () => void;
   // Task 33: Chunked loading methods
@@ -121,8 +121,9 @@ export function createResultsStore(): {
     /**
      * Execute a SPARQL query
      * Sets loading state, executes query via sparqlService, and updates results
+     * Task 37: Now supports format parameter for content negotiation
      */
-    executeQuery: async (options: QueryOptions): Promise<void> => {
+    executeQuery: async (options: ExtendedQueryOptions): Promise<void> => {
       // Set loading state
       update((state) => ({ ...state, loading: true, error: null }));
 
@@ -134,6 +135,8 @@ export function createResultsStore(): {
 
         // Parse the result data based on content type
         let parsedData: SparqlJsonResults;
+        let rawData: string;
+
         if (typeof result.data === 'string') {
           // For non-JSON responses, create a minimal results structure
           // This will be used in the raw view
@@ -141,22 +144,29 @@ export function createResultsStore(): {
             head: { vars: [] },
             results: { bindings: [] },
           };
-          // Store raw data in the state for raw view
+          rawData = result.data;
+
+          // Store both parsed and raw data in the state
           update((state) => ({
             ...state,
             data: parsedData,
+            rawData,
+            contentType: result.contentType,
             loading: false,
             error: null,
             executionTime: result.executionTime,
             prefixes: queryPrefixes,
-            // We could add a rawData field to ResultsState in the future
           }));
         } else {
-          // JSON response - use directly
+          // JSON response - stringify for raw view
           parsedData = result.data;
+          rawData = JSON.stringify(result.data, null, 2);
+
           update((state) => ({
             ...state,
             data: parsedData,
+            rawData,
+            contentType: result.contentType,
             loading: false,
             error: null,
             executionTime: result.executionTime,

@@ -2,14 +2,22 @@
   /**
    * ResultsPlaceholder component - Shows query results or errors
    * Displays DataTable for SELECT queries, boolean for ASK queries, and errors when queries fail
+   * Task 36: Added view switching between Table and Raw views
    */
 
   import { resultsStore } from '../../stores/resultsStore';
+  import { queryStore } from '../../stores/queryStore';
+  import { themeStore } from '../../stores/theme';
   import ErrorNotification from './ErrorNotification.svelte';
   import DataTable from './DataTable.svelte';
+  import RawView from './RawView.svelte';
   import ResultsWarning from './ResultsWarning.svelte';
+  import FormatSelector from './FormatSelector.svelte';
+  import DownloadButton from './DownloadButton.svelte';
+  import { ContentSwitcher, Switch } from 'carbon-components-svelte';
   import { parseResults, isAskResult, isSelectResult } from '../../utils/resultsParser';
-  import type { QueryError, SparqlJsonResults } from '../../types';
+  import { downloadResults } from '../../utils/download';
+  import type { QueryError, SparqlJsonResults, ResultFormat } from '../../types';
   import type { ParsedTableData, ParsedAskResult } from '../../utils/resultsParser';
 
   interface Props {
@@ -32,6 +40,12 @@
 
   // Subscribe to results store (use $ prefix to auto-subscribe)
   const state = $derived($resultsStore);
+
+  // Subscribe to query store to get current query for re-execution
+  const queryState = $derived($queryStore);
+
+  // Get current theme for RawView
+  const currentTheme = $derived($themeStore.current);
 
   // Convert error string to QueryError object
   const errorObject = $derived<QueryError | null>(() => {
@@ -63,6 +77,44 @@
     return parsedResults() && 'type' in parsedResults()! && parsedResults()!.type === 'boolean';
   });
 
+  // Check if we have results to display (not just the placeholder)
+  const hasResults = $derived(() => {
+    return state.data !== null && !state.loading;
+  });
+
+  // Task 36: View switcher state (0 = Table, 1 = Raw)
+  // Use $derived to track state changes
+  const selectedIndex = $derived(state.view === 'raw' ? 1 : 0);
+
+  // Handle view switching
+  function handleViewChange(event: CustomEvent): void {
+    const newIndex = event.detail.index;
+    const newView = newIndex === 0 ? 'table' : 'raw';
+    resultsStore.setView(newView);
+  }
+
+  // Task 37: Handle format change and re-query
+  async function handleFormatChange(newFormat: ResultFormat): Promise<void> {
+    // Update format in store
+    resultsStore.setFormat(newFormat);
+
+    // Re-execute query with new format if we have query and endpoint
+    if (queryState.text && queryState.endpoint) {
+      await resultsStore.executeQuery({
+        query: queryState.text,
+        endpoint: queryState.endpoint,
+        format: newFormat,
+      });
+    }
+  }
+
+  // Task 38: Handle download
+  function handleDownload(format: ResultFormat): void {
+    if (state.rawData) {
+      downloadResults(state.rawData, format);
+    }
+  }
+
   // Handle error notification close
   function handleCloseError(): void {
     resultsStore.clearError();
@@ -84,17 +136,83 @@
         <p>Please wait...</p>
       </div>
 
-    <!-- SELECT query results - show DataTable -->
-    {:else if isTable() && parsedResults()}
-      <!-- Task 34: Show warning for large result sets -->
-      <ResultsWarning
-        resultCount={(parsedResults() as ParsedTableData).rowCount}
-        maxResults={maxResults}
-        warningThreshold={warningThreshold}
-        onDownload={onDownloadResults}
-        downloadAvailable={!!onDownloadResults}
-      />
-      <DataTable data={parsedResults() as ParsedTableData} prefixes={state.prefixes} />
+    <!-- Task 36: View switcher and results display for SELECT queries -->
+    {:else if (isTable() || hasResults()) && parsedResults()}
+      <div class="results-container">
+        <!-- View switcher toolbar -->
+        <div class="results-toolbar">
+          <div class="toolbar-left">
+            <ContentSwitcher selectedIndex={selectedIndex} on:change={handleViewChange}>
+              <Switch text="Table" />
+              <Switch text="Raw" />
+            </ContentSwitcher>
+
+            <!-- Task 37: Format selector (shown only in raw view) -->
+            {#if state.view === 'raw'}
+              <FormatSelector
+                value={state.format}
+                queryType={queryState.type}
+                onchange={handleFormatChange}
+                disabled={state.loading}
+              />
+            {/if}
+          </div>
+
+          <div class="toolbar-right">
+            {#if state.executionTime}
+              <span class="execution-time-badge">
+                Executed in {state.executionTime}ms
+              </span>
+            {/if}
+
+            <!-- Task 38: Download button -->
+            <DownloadButton
+              currentFormat={state.format}
+              ondownload={handleDownload}
+              disabled={state.loading || !state.rawData}
+            />
+          </div>
+        </div>
+
+        <!-- Task 34: Show warning for large result sets (only in table view) -->
+        {#if state.view === 'table' && isTable()}
+          <ResultsWarning
+            resultCount={(parsedResults() as ParsedTableData).rowCount}
+            maxResults={maxResults}
+            warningThreshold={warningThreshold}
+            onDownload={onDownloadResults}
+            downloadAvailable={!!onDownloadResults}
+          />
+        {/if}
+
+        <!-- Results content area -->
+        <div class="results-content">
+          {#if state.view === 'table'}
+            <!-- Table view - show DataTable -->
+            {#if isTable()}
+              <DataTable data={parsedResults() as ParsedTableData} prefixes={state.prefixes} />
+            {:else}
+              <div class="placeholder-content">
+                <p>No tabular data available for this query result.</p>
+                <p class="hint">Switch to Raw view to see the response.</p>
+              </div>
+            {/if}
+          {:else if state.view === 'raw'}
+            <!-- Raw view - show raw response -->
+            {#if state.rawData}
+              <RawView
+                data={state.rawData}
+                contentType={state.contentType}
+                theme={currentTheme}
+              />
+            {:else}
+              <div class="placeholder-content">
+                <p>No raw data available.</p>
+              </div>
+            {/if}
+          {/if}
+        </div>
+      </div>
 
     <!-- ASK query results - show boolean -->
     {:else if isBoolean() && parsedResults()}
@@ -131,6 +249,59 @@
     background-color: var(--cds-layer-01, #f4f4f4);
     border: 1px dashed var(--cds-border-subtle-01, #e0e0e0);
     padding: var(--cds-spacing-05, 1rem);
+  }
+
+  /* Task 36: Results container with view switcher */
+  .results-container {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+
+  /* Task 36: Toolbar with view switcher */
+  .results-toolbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--cds-spacing-05, 1rem);
+    padding: var(--cds-spacing-03, 0.5rem) var(--cds-spacing-05, 1rem);
+    background-color: var(--cds-layer-01, #f4f4f4);
+    border-bottom: 1px solid var(--cds-border-subtle-01, #e0e0e0);
+  }
+
+  /* Task 37: Toolbar sections */
+  .toolbar-left {
+    display: flex;
+    align-items: center;
+    gap: var(--cds-spacing-05, 1rem);
+  }
+
+  .toolbar-right {
+    display: flex;
+    align-items: center;
+    gap: var(--cds-spacing-05, 1rem);
+  }
+
+  .execution-time-badge {
+    font-size: 0.75rem;
+    color: var(--cds-text-helper, #6f6f6f);
+    font-style: italic;
+  }
+
+  /* Task 36: Results content fills remaining space */
+  .results-content {
+    flex: 1;
+    overflow: hidden;
+    position: relative;
+  }
+
+  /* When results-container is present, reset placeholder styles */
+  .results-placeholder:has(.results-container) {
+    padding: 0;
+    border: none;
+    display: block;
   }
 
   .placeholder-content {
@@ -194,6 +365,12 @@
     border-color: var(--cds-border-subtle-01, #393939);
   }
 
+  :global(.g90) .results-toolbar,
+  :global(.g100) .results-toolbar {
+    background-color: var(--cds-layer-01, #262626);
+    border-bottom-color: var(--cds-border-subtle-01, #393939);
+  }
+
   /* Dark theme text colors - ensure high contrast */
   :global(.g90) .placeholder-content,
   :global(.g100) .placeholder-content {
@@ -211,7 +388,9 @@
   }
 
   :global(.g90) .execution-time,
-  :global(.g100) .execution-time {
+  :global(.g100) .execution-time,
+  :global(.g90) .execution-time-badge,
+  :global(.g100) .execution-time-badge {
     color: var(--cds-text-helper, #a8a8a8);
   }
 </style>
