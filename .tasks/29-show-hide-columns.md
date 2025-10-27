@@ -116,15 +116,47 @@ const columns = $derived(
 
 #### 6. Add CSS Styling
 
+**IMPORTANT**: Use actual SVAR Grid class names (not assumed names)
+
 ```css
-.column-visibility-toolbar {
+/* Menu option items (NOT .wx-menu-item) */
+:global(.wx-option) {
   padding: var(--cds-spacing-03, 0.5rem) var(--cds-spacing-05, 1rem);
-  border-bottom: 1px solid var(--cds-border-subtle-01, #e0e0e0);
-  background-color: var(--cds-layer-02, #ffffff);
+  cursor: pointer;
+  color: var(--cds-text-primary, #161616);
+  font-family: 'IBM Plex Sans', 'Helvetica Neue', Arial, sans-serif;
+  font-size: 0.875rem;
   display: flex;
-  justify-content: flex-end;
+  align-items: center;
+  gap: var(--cds-spacing-03, 0.5rem);
+}
+
+:global(.wx-option:hover) {
+  background-color: var(--cds-layer-hover-01, #e5e5e5);
+}
+
+/* Menu icon container */
+:global(.wx-icon) {
+  width: 16px;
+  height: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Icon elements (wxi-* classes) */
+:global(.wx-icon i[class^="wxi-"]),
+:global(.wx-icon .wxi-eye) {
+  font-size: 16px;
+  color: var(--cds-icon-primary, #161616);
 }
 ```
+
+**CSS Class Names Discovery**: The actual SVAR Grid class names are:
+- Menu container: `.wx-menu` (with scoped hash like `s-UxV9GBaukwGm`)
+- Menu options: `.wx-option` (NOT `.wx-menu-item`)
+- Icon container: `.wx-icon`
+- Icon elements: `.wxi-eye`, `.wxi-*` pattern
 
 ### Column Hidden Property
 

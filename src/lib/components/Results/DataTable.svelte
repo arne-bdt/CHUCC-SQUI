@@ -251,9 +251,8 @@
     z-index: 1000;
   }
 
-  /* Menu items */
-  :global(.wx-menu-item),
-  :global(.svar-menu-item) {
+  /* Menu option items */
+  :global(.wx-option) {
     padding: var(--cds-spacing-03, 0.5rem) var(--cds-spacing-05, 1rem);
     cursor: pointer;
     color: var(--cds-text-primary, #161616);
@@ -264,47 +263,47 @@
     gap: var(--cds-spacing-03, 0.5rem);
   }
 
-  :global(.wx-menu-item:hover),
-  :global(.svar-menu-item:hover) {
+  :global(.wx-option:hover) {
     background-color: var(--cds-layer-hover-01, #e5e5e5);
   }
 
-  /* Checkbox in menu items */
-  :global(.wx-menu-item input[type="checkbox"]),
-  :global(.svar-menu-item input[type="checkbox"]) {
+  /* Checkbox in menu options */
+  :global(.wx-option input[type="checkbox"]) {
     margin-right: var(--cds-spacing-03, 0.5rem);
     cursor: pointer;
   }
 
-  /* Menu icons */
-  :global(.wx-menu-icon),
-  :global(.svar-menu-icon) {
+  /* Menu icon container */
+  :global(.wx-icon) {
     width: 16px;
     height: 16px;
-    fill: var(--cds-icon-primary, #161616);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  /* Icon elements (wxi-* classes) */
+  :global(.wx-icon i[class^="wxi-"]),
+  :global(.wx-icon .wxi-eye) {
+    font-size: 16px;
+    color: var(--cds-icon-primary, #161616);
   }
 
   /* Dark theme support for HeaderMenu */
   :global(.g90 .wx-menu),
-  :global(.g100 .wx-menu),
-  :global(.g90 .svar-menu),
-  :global(.g100 .svar-menu) {
+  :global(.g100 .wx-menu) {
     background-color: var(--cds-layer-01, #262626);
     border-color: var(--cds-border-subtle-01, #525252);
     color: var(--cds-text-primary, #f4f4f4);
   }
 
-  :global(.g90 .wx-menu-item),
-  :global(.g100 .wx-menu-item),
-  :global(.g90 .svar-menu-item),
-  :global(.g100 .svar-menu-item) {
+  :global(.g90 .wx-option),
+  :global(.g100 .wx-option) {
     color: var(--cds-text-primary, #f4f4f4);
   }
 
-  :global(.g90 .wx-menu-item:hover),
-  :global(.g100 .wx-menu-item:hover),
-  :global(.g90 .svar-menu-item:hover),
-  :global(.g100 .svar-menu-item:hover) {
+  :global(.g90 .wx-option:hover),
+  :global(.g100 .wx-option:hover) {
     background-color: var(--cds-layer-hover-01, #353535);
   }
 
@@ -319,11 +318,9 @@
     background-color: var(--cds-layer-hover-01, #353535);
   }
 
-  :global(.g90 .wx-menu-icon),
-  :global(.g100 .wx-menu-icon),
-  :global(.g90 .svar-menu-icon),
-  :global(.g100 .svar-menu-icon) {
-    fill: var(--cds-icon-primary, #f4f4f4);
+  :global(.g90 .wx-icon i[class^="wxi-"]),
+  :global(.g100 .wx-icon i[class^="wxi-"]) {
+    color: var(--cds-icon-primary, #f4f4f4);
   }
 
   /* Carbon-compatible styling for wx-svelte-grid */
