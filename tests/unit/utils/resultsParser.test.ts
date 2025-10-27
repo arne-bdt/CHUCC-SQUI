@@ -3,7 +3,7 @@
  * Tests parsing of SPARQL JSON Results format
  */
 
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, beforeEach } from 'vitest';
 import {
   parseResults,
   parseTableResults,
@@ -14,6 +14,8 @@ import {
   isSelectResult,
   getCellDisplayValue,
   abbreviateDatatype,
+  abbreviateIRI,
+  clearAbbreviationCache,
   getResultStats,
   type ParsedTableData,
   type ParsedAskResult,
@@ -486,6 +488,248 @@ describe('resultsParser', () => {
       const parsed = parseTableResults(results);
       expect(parsed.rows[0].subject.type).toBe('bnode');
       expect(parsed.rows[0].subject.value).toBe('_:b0');
+    });
+  });
+
+  describe('abbreviateIRI', () => {
+    beforeEach(() => {
+      // Clear cache before each test to ensure clean state
+      clearAbbreviationCache();
+    });
+
+    it('should abbreviate IRIs using provided custom prefixes', () => {
+      const customPrefixes = {
+        ex: 'http://example.org/',
+        my: 'http://my-domain.com/ontology/',
+      };
+
+      expect(abbreviateIRI('http://example.org/Person', customPrefixes)).toBe('ex:Person');
+      expect(abbreviateIRI('http://my-domain.com/ontology/hasValue', customPrefixes)).toBe(
+        'my:hasValue'
+      );
+    });
+
+    it('should abbreviate common RDF namespace IRIs when no custom prefixes provided', () => {
+      // Falls back to common prefixes from prefixService
+      expect(abbreviateIRI('http://www.w3.org/1999/02/22-rdf-syntax-ns#type')).toBe('rdf:type');
+      expect(abbreviateIRI('http://www.w3.org/2000/01/rdf-schema#label')).toBe('rdfs:label');
+      expect(abbreviateIRI('http://www.w3.org/2002/07/owl#Class')).toBe('owl:Class');
+    });
+
+    it('should abbreviate XSD namespace IRIs', () => {
+      expect(abbreviateIRI('http://www.w3.org/2001/XMLSchema#string')).toBe('xsd:string');
+      expect(abbreviateIRI('http://www.w3.org/2001/XMLSchema#integer')).toBe('xsd:integer');
+      expect(abbreviateIRI('http://www.w3.org/2001/XMLSchema#dateTime')).toBe('xsd:dateTime');
+    });
+
+    it('should abbreviate FOAF namespace IRIs', () => {
+      expect(abbreviateIRI('http://xmlns.com/foaf/0.1/name')).toBe('foaf:name');
+      expect(abbreviateIRI('http://xmlns.com/foaf/0.1/Person')).toBe('foaf:Person');
+    });
+
+    it('should abbreviate DBpedia namespace IRIs', () => {
+      expect(abbreviateIRI('http://dbpedia.org/ontology/birthDate')).toBe('dbo:birthDate');
+      expect(abbreviateIRI('http://dbpedia.org/resource/Albert_Einstein')).toBe(
+        'dbr:Albert_Einstein'
+      );
+    });
+
+    it('should abbreviate Wikidata namespace IRIs', () => {
+      expect(abbreviateIRI('http://www.wikidata.org/entity/Q42')).toBe('wd:Q42');
+      expect(abbreviateIRI('http://www.wikidata.org/prop/direct/P31')).toBe('wdt:P31');
+    });
+
+    it('should abbreviate Schema.org IRIs', () => {
+      expect(abbreviateIRI('http://schema.org/Person')).toBe('schema:Person');
+      expect(abbreviateIRI('http://schema.org/name')).toBe('schema:name');
+    });
+
+    it('should abbreviate Dublin Core IRIs', () => {
+      expect(abbreviateIRI('http://purl.org/dc/terms/title')).toBe('dcterms:title');
+      expect(abbreviateIRI('http://purl.org/dc/elements/1.1/creator')).toBe('dc:creator');
+    });
+
+    it('should abbreviate SKOS IRIs', () => {
+      expect(abbreviateIRI('http://www.w3.org/2004/02/skos/core#prefLabel')).toBe(
+        'skos:prefLabel'
+      );
+      expect(abbreviateIRI('http://www.w3.org/2004/02/skos/core#Concept')).toBe('skos:Concept');
+    });
+
+    it('should return full IRI when no prefix matches', () => {
+      const customIRI = 'http://example.org/custom/resource';
+      expect(abbreviateIRI(customIRI)).toBe(customIRI);
+    });
+
+    it('should handle IRIs with fragments', () => {
+      expect(abbreviateIRI('http://xmlns.com/foaf/0.1/name#fragment')).toBe('foaf:name#fragment');
+    });
+
+    it('should cache abbreviations for performance', () => {
+      const iri = 'http://xmlns.com/foaf/0.1/name';
+
+      // First call - should calculate
+      const result1 = abbreviateIRI(iri);
+      expect(result1).toBe('foaf:name');
+
+      // Second call - should use cache (same result)
+      const result2 = abbreviateIRI(iri);
+      expect(result2).toBe('foaf:name');
+
+      // Results should be identical (cache hit)
+      expect(result1).toBe(result2);
+    });
+
+    it('should use longest matching prefix', () => {
+      // Dublin Core has both 'dc' and 'dcterms' prefixes
+      // dcterms URI is longer, so it should match first
+      expect(abbreviateIRI('http://purl.org/dc/terms/title')).toBe('dcterms:title');
+      expect(abbreviateIRI('http://purl.org/dc/elements/1.1/creator')).toBe('dc:creator');
+    });
+
+    it('should handle empty strings', () => {
+      expect(abbreviateIRI('')).toBe('');
+    });
+
+    it('should cache abbreviations separately for different prefix sets', () => {
+      const prefixes1 = { ex: 'http://example.org/' };
+      const prefixes2 = { ex: 'http://different.org/' };
+
+      const iri1 = abbreviateIRI('http://example.org/Person', prefixes1);
+      const iri2 = abbreviateIRI('http://example.org/Person', prefixes2);
+
+      expect(iri1).toBe('ex:Person');
+      // Without prefixes2 having the right match, should return full IRI
+      expect(iri2).toBe('http://example.org/Person');
+    });
+
+    it('should prefer custom prefixes over common prefixes', () => {
+      // Custom prefix that shadows a common one
+      const customPrefixes = {
+        rdf: 'http://my-custom.org/rdf#',
+      };
+
+      // Should use custom prefix, not common rdf prefix
+      expect(abbreviateIRI('http://my-custom.org/rdf#myTerm', customPrefixes)).toBe('rdf:myTerm');
+    });
+  });
+
+  describe('clearAbbreviationCache', () => {
+    it('should clear the abbreviation cache', () => {
+      // Populate cache
+      abbreviateIRI('http://xmlns.com/foaf/0.1/name');
+
+      // Clear cache
+      clearAbbreviationCache();
+
+      // Next call should recalculate (we can't directly test cache state,
+      // but we can verify the function still works)
+      expect(abbreviateIRI('http://xmlns.com/foaf/0.1/name')).toBe('foaf:name');
+    });
+  });
+
+  describe('getCellDisplayValue with abbreviateUri', () => {
+    beforeEach(() => {
+      clearAbbreviationCache();
+    });
+
+    it('should abbreviate URIs using custom prefixes when provided', () => {
+      const cell: ParsedCell = {
+        value: 'http://example.org/Person',
+        type: 'uri',
+        rawValue: 'http://example.org/Person',
+      };
+
+      const customPrefixes = { ex: 'http://example.org/' };
+
+      expect(getCellDisplayValue(cell, { abbreviateUri: true, prefixes: customPrefixes })).toBe(
+        'ex:Person'
+      );
+    });
+
+    it('should abbreviate URIs when abbreviateUri is true', () => {
+      const cell: ParsedCell = {
+        value: 'http://xmlns.com/foaf/0.1/name',
+        type: 'uri',
+        rawValue: 'http://xmlns.com/foaf/0.1/name',
+      };
+
+      expect(getCellDisplayValue(cell, { abbreviateUri: true })).toBe('foaf:name');
+    });
+
+    it('should not abbreviate URIs when abbreviateUri is false', () => {
+      const cell: ParsedCell = {
+        value: 'http://xmlns.com/foaf/0.1/name',
+        type: 'uri',
+        rawValue: 'http://xmlns.com/foaf/0.1/name',
+      };
+
+      expect(getCellDisplayValue(cell, { abbreviateUri: false })).toBe(
+        'http://xmlns.com/foaf/0.1/name'
+      );
+    });
+
+    it('should use abbreviateUri=false by default', () => {
+      const cell: ParsedCell = {
+        value: 'http://xmlns.com/foaf/0.1/name',
+        type: 'uri',
+        rawValue: 'http://xmlns.com/foaf/0.1/name',
+      };
+
+      // Default behavior (no options)
+      expect(getCellDisplayValue(cell)).toBe('http://xmlns.com/foaf/0.1/name');
+    });
+
+    it('should abbreviate DBpedia URIs', () => {
+      const cell: ParsedCell = {
+        value: 'http://dbpedia.org/resource/Albert_Einstein',
+        type: 'uri',
+        rawValue: 'http://dbpedia.org/resource/Albert_Einstein',
+      };
+
+      expect(getCellDisplayValue(cell, { abbreviateUri: true })).toBe('dbr:Albert_Einstein');
+    });
+
+    it('should abbreviate Wikidata URIs', () => {
+      const cell: ParsedCell = {
+        value: 'http://www.wikidata.org/entity/Q42',
+        type: 'uri',
+        rawValue: 'http://www.wikidata.org/entity/Q42',
+      };
+
+      expect(getCellDisplayValue(cell, { abbreviateUri: true })).toBe('wd:Q42');
+    });
+
+    it('should keep full URI when no prefix matches', () => {
+      const cell: ParsedCell = {
+        value: 'http://example.org/custom/resource',
+        type: 'uri',
+        rawValue: 'http://example.org/custom/resource',
+      };
+
+      expect(getCellDisplayValue(cell, { abbreviateUri: true })).toBe(
+        'http://example.org/custom/resource'
+      );
+    });
+
+    it('should not affect literals with abbreviateUri option', () => {
+      const cell: ParsedCell = {
+        value: 'Hello',
+        type: 'literal',
+        lang: 'en',
+      };
+
+      expect(getCellDisplayValue(cell, { abbreviateUri: true })).toBe('"Hello"@en');
+    });
+
+    it('should not affect blank nodes with abbreviateUri option', () => {
+      const cell: ParsedCell = {
+        value: '_:b0',
+        type: 'bnode',
+        rawValue: '_:b0',
+      };
+
+      expect(getCellDisplayValue(cell, { abbreviateUri: true })).toBe('_:b0');
     });
   });
 });

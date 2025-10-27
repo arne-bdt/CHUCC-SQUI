@@ -5,6 +5,21 @@
  */
 
 import type { SparqlJsonResults, SparqlBinding, SparqlTerm } from '../types';
+import { prefixService } from '../services/prefixService';
+
+/**
+ * Cache for IRI abbreviations to improve performance
+ * Maps full IRI to abbreviated form
+ */
+const iriAbbreviationCache = new Map<string, string>();
+
+/**
+ * Clear the IRI abbreviation cache
+ * Useful when prefix definitions change
+ */
+export function clearAbbreviationCache(): void {
+  iriAbbreviationCache.clear();
+}
 
 /**
  * Parsed table cell with display value and metadata
@@ -230,9 +245,10 @@ export function getCellDisplayValue(
     showDatatype?: boolean;
     showLang?: boolean;
     abbreviateUri?: boolean;
+    prefixes?: Record<string, string>;
   } = {}
 ): string {
-  const { showDatatype = true, showLang = true, abbreviateUri = false } = options;
+  const { showDatatype = true, showLang = true, abbreviateUri = false, prefixes } = options;
 
   let displayValue = cell.value;
 
@@ -241,10 +257,9 @@ export function getCellDisplayValue(
     return '';
   }
 
-  // For URIs, optionally abbreviate (will be handled by prefix service later)
+  // For URIs, optionally abbreviate using prefix service
   if (cell.type === 'uri' && abbreviateUri) {
-    // Abbreviation will be handled by prefixService in later tasks
-    displayValue = cell.value;
+    displayValue = abbreviateIRI(cell.value, prefixes);
   }
 
   // Add language tag for literals
@@ -291,6 +306,33 @@ export function abbreviateDatatype(datatype: string): string {
   }
 
   return datatype;
+}
+
+/**
+ * Abbreviate IRI using prefix service with caching
+ * Falls back to full IRI if no prefix matches
+ *
+ * @param iri Full IRI to abbreviate
+ * @param prefixes Optional custom prefix mapping (from query). If not provided, uses common prefixes
+ * @returns Abbreviated IRI (prefix:localName) or full IRI if no match
+ */
+export function abbreviateIRI(iri: string, prefixes?: Record<string, string>): string {
+  // Create cache key that includes prefix hash for proper cache separation
+  const cacheKey = prefixes ? `${iri}|${JSON.stringify(prefixes)}` : iri;
+
+  // Check cache first
+  const cached = iriAbbreviationCache.get(cacheKey);
+  if (cached !== undefined) {
+    return cached;
+  }
+
+  // Abbreviate using prefix service with custom prefixes
+  const abbreviated = prefixService.abbreviateIRI(iri, prefixes);
+
+  // Cache the result
+  iriAbbreviationCache.set(cacheKey, abbreviated);
+
+  return abbreviated;
 }
 
 /**

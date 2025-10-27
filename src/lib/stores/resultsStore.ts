@@ -7,6 +7,7 @@ import type {
   QueryError,
 } from '../types';
 import { sparqlService } from '../services/sparqlService';
+import { prefixService } from '../services/prefixService';
 
 /**
  * Results store for managing query results and execution state
@@ -14,7 +15,7 @@ import { sparqlService } from '../services/sparqlService';
  */
 export function createResultsStore(): {
   subscribe: (_run: (_value: ResultsState) => void) => () => void;
-  setData: (_data: SparqlJsonResults, _executionTime?: number) => void;
+  setData: (_data: SparqlJsonResults, _executionTime?: number, _prefixes?: Record<string, string>) => void;
   setLoading: (_loading: boolean) => void;
   setError: (_error: string) => void;
   clearError: () => void;
@@ -33,6 +34,7 @@ export function createResultsStore(): {
     loading: false,
     error: null,
     executionTime: undefined,
+    prefixes: undefined,
   };
 
   const { subscribe, set, update } = writable<ResultsState>(initialState);
@@ -43,14 +45,18 @@ export function createResultsStore(): {
     /**
      * Set query results data
      * Automatically clears loading and error states
+     * @param data - SPARQL JSON results
+     * @param executionTime - Query execution time in ms
+     * @param prefixes - Prefixes from the query for IRI abbreviation
      */
-    setData: (data: SparqlJsonResults, executionTime?: number): void => {
+    setData: (data: SparqlJsonResults, executionTime?: number, prefixes?: Record<string, string>): void => {
       update((state) => ({
         ...state,
         data,
         loading: false,
         error: null,
         executionTime,
+        prefixes,
       }));
     },
 
@@ -116,6 +122,9 @@ export function createResultsStore(): {
       // Set loading state
       update((state) => ({ ...state, loading: true, error: null }));
 
+      // Parse prefixes from the query
+      const queryPrefixes = prefixService.parsePrefixesFromQuery(options.query);
+
       try {
         const result = await sparqlService.executeQuery(options);
 
@@ -135,6 +144,7 @@ export function createResultsStore(): {
             loading: false,
             error: null,
             executionTime: result.executionTime,
+            prefixes: queryPrefixes,
             // We could add a rawData field to ResultsState in the future
           }));
         } else {
@@ -146,6 +156,7 @@ export function createResultsStore(): {
             loading: false,
             error: null,
             executionTime: result.executionTime,
+            prefixes: queryPrefixes,
           }));
         }
       } catch (error) {

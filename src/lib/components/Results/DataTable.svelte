@@ -20,9 +20,11 @@
     rowHeight?: number;
     /** CSS class for the table container */
     class?: string;
+    /** Prefixes from the query for IRI abbreviation */
+    prefixes?: Record<string, string>;
   }
 
-  let { data, virtualScroll = true, rowHeight = 32, class: className = '' }: Props = $props();
+  let { data, virtualScroll = true, rowHeight = 32, class: className = '', prefixes }: Props = $props();
 
   /**
    * Convert ParsedTableData to wx-svelte-grid column format
@@ -54,7 +56,8 @@
         gridRow[varName] = getCellDisplayValue(cell, {
           showDatatype: true,
           showLang: true,
-          abbreviateUri: false,
+          abbreviateUri: true, // Enable IRI abbreviation (Task 22)
+          prefixes: prefixes, // Use prefixes from query
         });
       }
 

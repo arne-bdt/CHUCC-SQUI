@@ -97,6 +97,8 @@ export interface ResultsState {
   error: string | null;
   /** Query execution time in milliseconds */
   executionTime?: number;
+  /** Prefixes from the query for IRI abbreviation */
+  prefixes?: Record<string, string>;
 }
 
 /**

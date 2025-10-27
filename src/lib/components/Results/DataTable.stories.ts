@@ -193,6 +193,111 @@ const emptyData: ParsedTableData = {
   vars: ['s', 'p', 'o'],
 };
 
+// IRI Abbreviation showcase (Task 22)
+const iriAbbreviationData: ParsedTableData = {
+  columns: ['subject', 'predicate', 'object', 'type'],
+  rows: [
+    {
+      subject: {
+        value: 'http://dbpedia.org/resource/Albert_Einstein',
+        type: 'uri',
+        rawValue: 'http://dbpedia.org/resource/Albert_Einstein',
+      },
+      predicate: {
+        value: 'http://www.w3.org/1999/02/22-rdf-syntax-ns#type',
+        type: 'uri',
+        rawValue: 'http://www.w3.org/1999/02/22-rdf-syntax-ns#type',
+      },
+      object: {
+        value: 'http://xmlns.com/foaf/0.1/Person',
+        type: 'uri',
+        rawValue: 'http://xmlns.com/foaf/0.1/Person',
+      },
+      type: { value: 'RDF namespace abbreviation', type: 'literal' },
+    },
+    {
+      subject: {
+        value: 'http://www.wikidata.org/entity/Q42',
+        type: 'uri',
+        rawValue: 'http://www.wikidata.org/entity/Q42',
+      },
+      predicate: {
+        value: 'http://www.wikidata.org/prop/direct/P31',
+        type: 'uri',
+        rawValue: 'http://www.wikidata.org/prop/direct/P31',
+      },
+      object: {
+        value: 'http://www.wikidata.org/entity/Q5',
+        type: 'uri',
+        rawValue: 'http://www.wikidata.org/entity/Q5',
+      },
+      type: { value: 'Wikidata namespace abbreviation', type: 'literal' },
+    },
+    {
+      subject: {
+        value: 'http://schema.org/Person',
+        type: 'uri',
+        rawValue: 'http://schema.org/Person',
+      },
+      predicate: {
+        value: 'http://www.w3.org/2000/01/rdf-schema#label',
+        type: 'uri',
+        rawValue: 'http://www.w3.org/2000/01/rdf-schema#label',
+      },
+      object: { value: 'Person', type: 'literal', lang: 'en' },
+      type: { value: 'Schema.org namespace abbreviation', type: 'literal' },
+    },
+    {
+      subject: {
+        value: 'http://purl.org/dc/terms/title',
+        type: 'uri',
+        rawValue: 'http://purl.org/dc/terms/title',
+      },
+      predicate: {
+        value: 'http://www.w3.org/2002/07/owl#equivalentProperty',
+        type: 'uri',
+        rawValue: 'http://www.w3.org/2002/07/owl#equivalentProperty',
+      },
+      object: {
+        value: 'http://purl.org/dc/elements/1.1/title',
+        type: 'uri',
+        rawValue: 'http://purl.org/dc/elements/1.1/title',
+      },
+      type: { value: 'Dublin Core namespace abbreviation', type: 'literal' },
+    },
+    {
+      subject: {
+        value: 'http://www.w3.org/2004/02/skos/core#Concept',
+        type: 'uri',
+        rawValue: 'http://www.w3.org/2004/02/skos/core#Concept',
+      },
+      predicate: {
+        value: 'http://www.w3.org/2004/02/skos/core#prefLabel',
+        type: 'uri',
+        rawValue: 'http://www.w3.org/2004/02/skos/core#prefLabel',
+      },
+      object: { value: 'Concept', type: 'literal', lang: 'en' },
+      type: { value: 'SKOS namespace abbreviation', type: 'literal' },
+    },
+    {
+      subject: {
+        value: 'http://example.org/custom/namespace/Resource1',
+        type: 'uri',
+        rawValue: 'http://example.org/custom/namespace/Resource1',
+      },
+      predicate: {
+        value: 'http://custom-domain.com/ontology/hasProperty',
+        type: 'uri',
+        rawValue: 'http://custom-domain.com/ontology/hasProperty',
+      },
+      object: { value: 'CustomValue', type: 'literal' },
+      type: { value: 'No prefix match - full IRI displayed', type: 'literal' },
+    },
+  ],
+  rowCount: 6,
+  vars: ['subject', 'predicate', 'object', 'type'],
+};
+
 export const Default: Story = {
   args: {
     data: dbpediaData,
@@ -325,5 +430,56 @@ export const CompactRows: Story = {
     data: dbpediaData,
     virtualScroll: false,
     rowHeight: 24,
+  },
+};
+
+/**
+ * IRI Abbreviation Showcase (Task 22)
+ * Demonstrates automatic IRI abbreviation using prefixes from the SPARQL query:
+ * - Uses PREFIX declarations from the query
+ * - Abbreviates IRIs that match declared prefixes
+ * - Displays full IRI when no matching prefix
+ * - Supports custom namespaces defined by user
+ */
+export const IRIAbbreviation: Story = {
+  args: {
+    data: iriAbbreviationData,
+    virtualScroll: false,
+    rowHeight: 36,
+    // Simulate prefixes from a SPARQL query like:
+    // PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+    // PREFIX foaf: <http://xmlns.com/foaf/0.1/>
+    // etc.
+    prefixes: {
+      rdf: 'http://www.w3.org/1999/02/22-rdf-syntax-ns#',
+      rdfs: 'http://www.w3.org/2000/01/rdf-schema#',
+      owl: 'http://www.w3.org/2002/07/owl#',
+      foaf: 'http://xmlns.com/foaf/0.1/',
+      dbr: 'http://dbpedia.org/resource/',
+      wd: 'http://www.wikidata.org/entity/',
+      wdt: 'http://www.wikidata.org/prop/direct/',
+      schema: 'http://schema.org/',
+      dc: 'http://purl.org/dc/elements/1.1/',
+      dcterms: 'http://purl.org/dc/terms/',
+      skos: 'http://www.w3.org/2004/02/skos/core#',
+    },
+  },
+  play: async ({ canvasElement }) => {
+    // Verify table renders with abbreviated IRIs
+    const gridContainer = canvasElement.querySelector('.data-table-container');
+    expect(gridContainer).toBeTruthy();
+
+    // Verify results count
+    const resultsInfo = canvasElement.querySelector('.results-info');
+    expect(resultsInfo?.textContent).toContain('6 results');
+    expect(resultsInfo?.textContent).toContain('4 variables');
+
+    // Verify grid is rendered (IRIs should be abbreviated in the grid data)
+    const grid = canvasElement.querySelector('.wx-grid');
+    expect(grid).toBeTruthy();
+
+    // Note: The actual abbreviated values (e.g., "rdf:type", "foaf:Person")
+    // are rendered inside wx-svelte-grid's virtual DOM. The abbreviation
+    // happens via getCellDisplayValue() with abbreviateUri: true
   },
 };

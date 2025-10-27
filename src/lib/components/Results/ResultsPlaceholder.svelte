@@ -74,7 +74,7 @@
 
     <!-- SELECT query results - show DataTable -->
     {:else if isTable() && parsedResults()}
-      <DataTable data={parsedResults() as ParsedTableData} />
+      <DataTable data={parsedResults() as ParsedTableData} prefixes={state.prefixes} />
 
     <!-- ASK query results - show boolean -->
     {:else if isBoolean() && parsedResults()}
