@@ -40,18 +40,27 @@ SQUI is a modern SPARQL Query Web Component inspired by YASGUI (Yet Another SPAR
 **BEFORE EVERY COMMIT, YOU MUST RUN:**
 ```bash
 npm run build           # MANDATORY - Catches runtime errors, naming conflicts, type issues, AND warnings
+npm test                # MANDATORY - All tests must pass
 ```
 
-**BUILD MUST COMPLETE WITH:**
-- ✅ Zero errors
-- ✅ Zero warnings (Svelte deprecations, a11y, etc.)
+**BUILD AND TESTS MUST COMPLETE WITH:**
+- ✅ Zero build errors
+- ✅ Zero build warnings (Svelte deprecations, a11y, etc.)
 - ✅ Successful bundle generation
+- ✅ **ALL tests passing (unit + integration)**
 
-**IF BUILD FAILS OR HAS WARNINGS:**
-- ❌ DO NOT COMMIT
+**❌ NEVER COMMIT IF:**
+- Build fails or has warnings
+- **ANY test is failing (even if it was failing before)**
+- TypeScript type errors exist
+- Linting errors exist
+
+**IF BUILD OR TESTS FAIL:**
+- ❌ **DO NOT COMMIT UNDER ANY CIRCUMSTANCES**
 - Fix ALL errors AND warnings
-- Run build again to verify clean output
-- Only commit when build has ZERO errors and ZERO warnings
+- Fix ALL failing tests
+- Run build and tests again to verify clean output
+- Only commit when build AND tests have ZERO errors/warnings and ALL tests pass
 
 **Common build issues to fix:**
 - **Errors:**

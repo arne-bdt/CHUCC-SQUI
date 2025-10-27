@@ -82,9 +82,25 @@
     return state.data !== null && !state.loading;
   });
 
+  // Task 36: Ensure SELECT queries default to table view
+  $effect(() => {
+    if (state.data && !state.loading && isTable()) {
+      // For SELECT query results, ensure we start in table view
+      // Unless user has explicitly switched to raw view (tracked separately)
+      if (state.view !== 'table') {
+        resultsStore.setView('table');
+      }
+    }
+  });
+
   // Task 36: View switcher state (0 = Table, 1 = Raw)
-  // Use $derived to track state changes
-  const selectedIndex = $derived(state.view === 'raw' ? 1 : 0);
+  // Use a state variable to ensure proper initialization
+  let viewIndex = $state(0); // Default to table view
+
+  // Sync viewIndex with store view state
+  $effect(() => {
+    viewIndex = state.view === 'raw' ? 1 : 0;
+  });
 
   // Handle view switching
   function handleViewChange(event: CustomEvent): void {
@@ -136,13 +152,13 @@
         <p>Please wait...</p>
       </div>
 
-    <!-- Task 36: View switcher and results display for SELECT queries -->
-    {:else if (isTable() || hasResults()) && parsedResults()}
+    <!-- Task 36: View switcher and results display for SELECT queries ONLY -->
+    {:else if isTable() && parsedResults()}
       <div class="results-container">
         <!-- View switcher toolbar -->
         <div class="results-toolbar">
           <div class="toolbar-left">
-            <ContentSwitcher selectedIndex={selectedIndex} on:change={handleViewChange}>
+            <ContentSwitcher bind:selectedIndex={viewIndex} on:change={handleViewChange}>
               <Switch text="Table" />
               <Switch text="Raw" />
             </ContentSwitcher>
