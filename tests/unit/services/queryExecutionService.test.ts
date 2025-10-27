@@ -98,33 +98,44 @@ describe('QueryExecutionService', () => {
       expect(Array.isArray(result.data.results.bindings)).toBe(true);
     });
 
-    it.skip('should handle query cancellation', async () => {
+    it('should handle query cancellation via external signal', async () => {
       const controller = new AbortController();
 
-      // Mock fetch to simulate a delay and respond to abort
+      // Mock fetch to properly respond to abort signal
+      // Create a promise that rejects when the signal is aborted
       fetchMock.mockImplementationOnce(
         (_url, options) =>
           new Promise((_resolve, reject) => {
+            // Set up abort listener before any async operations
+            const abortHandler = () => {
+              const error = new Error('The operation was aborted');
+              error.name = 'AbortError';
+              reject(error);
+            };
+
             if (options?.signal) {
-              options.signal.addEventListener('abort', () => {
-                const error = new Error('The operation was aborted');
-                error.name = 'AbortError';
-                reject(error);
-              });
+              options.signal.addEventListener('abort', abortHandler);
+
+              // If already aborted, reject immediately
+              if (options.signal.aborted) {
+                abortHandler();
+              }
             }
+            // Never resolve - simulates long-running query
           })
       );
 
+      // Start query execution
       const promise = service.executeQuery({
         query: 'SELECT * WHERE { ?s ?p ?o }',
         endpoint: 'https://example.org/sparql',
         signal: controller.signal,
       });
 
-      // Give it a moment to start, then cancel
-      await new Promise((resolve) => setTimeout(resolve, 10));
+      // Abort immediately (no setTimeout needed - abort is synchronous)
       controller.abort();
 
+      // Should reject with cancellation error
       await expect(promise).rejects.toThrow('Query execution cancelled');
 
       // Check error was set in results store
@@ -146,31 +157,46 @@ describe('QueryExecutionService', () => {
   });
 
   describe('cancelQuery', () => {
-    it.skip('should cancel running query', async () => {
-      // Mock fetch to simulate a delay and respond to abort
+    it('should cancel running query via cancelQuery() method', async () => {
+      // Mock fetch to properly respond to abort signal
       fetchMock.mockImplementationOnce(
         (_url, options) =>
           new Promise((_resolve, reject) => {
+            // Set up abort listener
+            const abortHandler = () => {
+              const error = new Error('The operation was aborted');
+              error.name = 'AbortError';
+              reject(error);
+            };
+
             if (options?.signal) {
-              options.signal.addEventListener('abort', () => {
-                const error = new Error('The operation was aborted');
-                error.name = 'AbortError';
-                reject(error);
-              });
+              options.signal.addEventListener('abort', abortHandler);
+
+              // If already aborted, reject immediately
+              if (options.signal.aborted) {
+                abortHandler();
+              }
             }
+            // Never resolve - simulates long-running query
           })
       );
 
+      // Start query execution
       const promise = service.executeQuery({
         query: 'SELECT * WHERE { ?s ?p ?o }',
         endpoint: 'https://example.org/sparql',
       });
 
-      // Give it a moment to start, then cancel
-      await new Promise((resolve) => setTimeout(resolve, 10));
+      // Cancel using the service's cancelQuery method (synchronous)
       service.cancelQuery();
 
+      // Should reject with cancellation error
       await expect(promise).rejects.toThrow('Query execution cancelled');
+
+      // Verify results store state
+      const resultsState = get(resultsStore);
+      expect(resultsState.error).toBe('Query execution cancelled');
+      expect(resultsState.loading).toBe(false);
     });
 
     it('should be safe to call when no query is running', () => {

@@ -58,6 +58,7 @@ export class SparqlService {
       format = 'json',
       timeout = this.defaultTimeout,
       headers = {},
+      signal,
     } = options;
 
     // Detect query type
@@ -68,6 +69,12 @@ export class SparqlService {
 
     // Create AbortController for timeout and cancellation
     this.abortController = new AbortController();
+
+    // Link external signal to internal AbortController if provided
+    if (signal) {
+      signal.addEventListener('abort', () => this.abortController?.abort());
+    }
+
     const timeoutId = setTimeout(() => this.abortController?.abort(), timeout);
 
     const startTime = Date.now();

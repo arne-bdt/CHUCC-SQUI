@@ -97,11 +97,18 @@ export class QueryExecutionService {
     } catch (error) {
       const executionTime = Date.now() - startTime;
 
-      // Handle abort (both Error and DOMException with name 'AbortError')
-      if (
+      // Handle abort - check for:
+      // 1. Raw AbortError (name === 'AbortError')
+      // 2. QueryError with type === 'timeout' (from sparqlService.handleError)
+      const isAbortError =
         (error instanceof Error && error.name === 'AbortError') ||
-        (error instanceof DOMException && error.name === 'AbortError')
-      ) {
+        (error instanceof DOMException && error.name === 'AbortError') ||
+        (error &&
+          typeof error === 'object' &&
+          'type' in error &&
+          error.type === 'timeout');
+
+      if (isAbortError) {
         const cancelMessage = 'Query execution cancelled';
         resultsStore.setError(cancelMessage);
         throw new Error(cancelMessage);
