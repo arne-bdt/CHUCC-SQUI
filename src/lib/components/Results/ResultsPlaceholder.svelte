@@ -7,6 +7,7 @@
   import { resultsStore } from '../../stores/resultsStore';
   import ErrorNotification from './ErrorNotification.svelte';
   import DataTable from './DataTable.svelte';
+  import ResultsWarning from './ResultsWarning.svelte';
   import { parseResults, isAskResult, isSelectResult } from '../../utils/resultsParser';
   import type { QueryError, SparqlJsonResults } from '../../types';
   import type { ParsedTableData, ParsedAskResult } from '../../utils/resultsParser';
@@ -14,9 +15,20 @@
   interface Props {
     /** CSS class for the placeholder */
     class?: string;
+    /** Task 34: Maximum allowed results (default: 100,000) */
+    maxResults?: number;
+    /** Task 34: Warning threshold percentage (default: 80%) */
+    warningThreshold?: number;
+    /** Task 34: Callback for downloading results */
+    onDownloadResults?: () => void;
   }
 
-  let { class: className = '' }: Props = $props();
+  let {
+    class: className = '',
+    maxResults = 100000,
+    warningThreshold = 0.8,
+    onDownloadResults,
+  }: Props = $props();
 
   // Subscribe to results store (use $ prefix to auto-subscribe)
   const state = $derived($resultsStore);
@@ -74,6 +86,14 @@
 
     <!-- SELECT query results - show DataTable -->
     {:else if isTable() && parsedResults()}
+      <!-- Task 34: Show warning for large result sets -->
+      <ResultsWarning
+        resultCount={(parsedResults() as ParsedTableData).rowCount}
+        maxResults={maxResults}
+        warningThreshold={warningThreshold}
+        onDownload={onDownloadResults}
+        downloadAvailable={!!onDownloadResults}
+      />
       <DataTable data={parsedResults() as ParsedTableData} prefixes={state.prefixes} />
 
     <!-- ASK query results - show boolean -->

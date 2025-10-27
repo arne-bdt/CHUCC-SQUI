@@ -39,6 +39,14 @@
     onColumnVisibilityChange?: (visibility: Record<string, boolean>) => void;
     /** Enable column visibility toolbar (default: false) - Task 29 */
     enableColumnVisibility?: boolean;
+    /** Task 33: Enable infinite scroll/chunked loading (default: false) */
+    enableInfiniteScroll?: boolean;
+    /** Task 33: Callback when scroll reaches bottom (for loading next chunk) */
+    onLoadMore?: () => void;
+    /** Task 33: Whether more data is being loaded */
+    loadingMore?: boolean;
+    /** Task 33: Whether there are more results to load */
+    hasMore?: boolean;
   }
 
   let {
@@ -52,6 +60,10 @@
     initialColumnVisibility,
     onColumnVisibilityChange,
     enableColumnVisibility = false,
+    enableInfiniteScroll = false,
+    onLoadMore,
+    loadingMore = false,
+    hasMore = true,
   }: Props = $props();
 
   // Task 29: Grid API for column visibility control (bind:this)
@@ -69,6 +81,65 @@
       onColumnVisibilityChange(columnVisibility);
     }
   });
+
+  // Task 33: Infinite scroll detection
+  let scrollContainer: HTMLElement | null = null;
+
+  $effect(() => {
+    if (!enableInfiniteScroll || !onLoadMore) {
+      return;
+    }
+
+    // Wait for grid to mount
+    const interval = setInterval(() => {
+      const gridElement = document.querySelector('.wx-grid');
+      if (gridElement) {
+        // Find the scrollable container (wx-svelte-grid has internal scroll)
+        scrollContainer = gridElement.querySelector('.wx-scroll-view') as HTMLElement;
+        if (!scrollContainer) {
+          // Fallback: use the grid itself
+          scrollContainer = gridElement as HTMLElement;
+        }
+        clearInterval(interval);
+
+        // Add scroll listener
+        if (scrollContainer) {
+          scrollContainer.addEventListener('scroll', handleScroll);
+        }
+      }
+    }, 100);
+
+    // Cleanup
+    return () => {
+      clearInterval(interval);
+      if (scrollContainer) {
+        scrollContainer.removeEventListener('scroll', handleScroll);
+      }
+    };
+  });
+
+  /**
+   * Task 33: Handle scroll event for infinite scroll
+   * Triggers onLoadMore when user scrolls near bottom (within 200px)
+   */
+  function handleScroll(event: Event): void {
+    if (!enableInfiniteScroll || loadingMore || !hasMore || !onLoadMore) {
+      return;
+    }
+
+    const target = event.target as HTMLElement;
+    const scrollTop = target.scrollTop;
+    const scrollHeight = target.scrollHeight;
+    const clientHeight = target.clientHeight;
+
+    // Check if near bottom (within 200px)
+    const threshold = 200;
+    const distanceToBottom = scrollHeight - (scrollTop + clientHeight);
+
+    if (distanceToBottom < threshold) {
+      onLoadMore();
+    }
+  }
 
   /**
    * Convert ParsedTableData to wx-svelte-grid column format
@@ -202,6 +273,17 @@
       <span>{data.rowCount} {data.rowCount === 1 ? 'result' : 'results'}</span>
       <span>•</span>
       <span>{data.columns.length} {data.columns.length === 1 ? 'variable' : 'variables'}</span>
+
+      <!-- Task 33: Infinite scroll status -->
+      {#if enableInfiniteScroll}
+        {#if loadingMore}
+          <span>•</span>
+          <span class="loading-more">Loading more...</span>
+        {:else if !hasMore}
+          <span>•</span>
+          <span class="no-more">All results loaded</span>
+        {/if}
+      {/if}
     </div>
   {/if}
 </div>
@@ -462,6 +544,38 @@
     background-color: var(--cds-layer-02, #393939);
     border-top-color: var(--cds-border-subtle-01, #525252);
     color: var(--cds-text-secondary, #c6c6c6);
+  }
+
+  /* Task 33: Infinite scroll loading indicator */
+  .results-info .loading-more {
+    color: var(--cds-text-primary, #161616);
+    font-style: italic;
+    animation: pulse 1.5s ease-in-out infinite;
+  }
+
+  .results-info .no-more {
+    color: var(--cds-text-helper, #6f6f6f);
+    font-style: italic;
+  }
+
+  @keyframes pulse {
+    0%,
+    100% {
+      opacity: 1;
+    }
+    50% {
+      opacity: 0.5;
+    }
+  }
+
+  :global(.g90) .results-info .loading-more,
+  :global(.g100) .results-info .loading-more {
+    color: var(--cds-text-primary, #f4f4f4);
+  }
+
+  :global(.g90) .results-info .no-more,
+  :global(.g100) .results-info .no-more {
+    color: var(--cds-text-helper, #a8a8a8);
   }
 
   /* ============================================

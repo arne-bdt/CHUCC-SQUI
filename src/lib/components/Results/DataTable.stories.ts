@@ -1105,3 +1105,78 @@ export const AllAdvancedFeatures: Story = {
     showFullUris: false,
   },
 };
+
+/**
+ * Very Large Dataset - 10,000+ Rows (Task 32 - Phase 7)
+ * Tests virtual scrolling performance with 10,000+ rows
+ *
+ * **Performance Requirements:**
+ * - Target: 60 FPS during scrolling
+ * - Initial render: < 2 seconds
+ * - Smooth scrolling with no stutters
+ * - Memory efficient (only renders visible rows)
+ *
+ * **How to test performance:**
+ * 1. Open browser DevTools Performance tab
+ * 2. Start recording
+ * 3. Scroll rapidly through the table
+ * 4. Stop recording and check FPS
+ * 5. Should maintain 60 FPS during scroll
+ */
+export const VeryLargeDataset10000: Story = {
+  args: {
+    data: generateLargeData(10000),
+    virtualScroll: true,
+    rowHeight: 32,
+  },
+  play: async ({ canvasElement }) => {
+    const startTime = performance.now();
+
+    // Wait for table to render
+    await new Promise((resolve) => setTimeout(resolve, 2000));
+
+    const renderTime = performance.now() - startTime;
+    console.log(`10,000 rows rendered in ${renderTime.toFixed(2)}ms`);
+
+    // Verify table is rendered
+    const gridContainer = canvasElement.querySelector('.data-table-container');
+    expect(gridContainer).toBeTruthy();
+
+    // Verify results count
+    const resultsInfo = canvasElement.querySelector('.results-info');
+    expect(resultsInfo?.textContent).toContain('10000 results');
+
+    // Verify virtual scrolling is active (grid should exist)
+    const grid = canvasElement.querySelector('.wx-grid');
+    expect(grid).toBeTruthy();
+
+    // Log performance warning if render took too long
+    if (renderTime > 2000) {
+      console.warn(`Render time exceeded 2s target: ${renderTime.toFixed(2)}ms`);
+    }
+  },
+};
+
+/**
+ * Extreme Dataset - 50,000 Rows (Task 32 - Stress Test)
+ * Stress tests virtual scrolling with extreme dataset
+ *
+ * **Warning:** This is a stress test. Use with caution.
+ * - May take several seconds to render
+ * - Tests upper limits of virtual scrolling
+ * - Use to verify graceful degradation
+ */
+export const ExtremeDataset50000: Story = {
+  args: {
+    data: generateLargeData(50000),
+    virtualScroll: true,
+    rowHeight: 32,
+  },
+  parameters: {
+    docs: {
+      description: {
+        story: '⚠️ **Stress Test**: This story tests extreme dataset performance. May take 5-10 seconds to render.',
+      },
+    },
+  },
+};

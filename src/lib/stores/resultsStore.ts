@@ -26,6 +26,10 @@ export function createResultsStore(): {
   executeQuery: (_options: QueryOptions) => Promise<void>;
   cancelQuery: () => void;
   reset: () => void;
+  // Task 33: Chunked loading methods
+  enableChunkedLoading: (_chunkSize: number) => void;
+  loadNextChunk: (_query: string, _endpoint: string) => Promise<void>;
+  appendChunkData: (_data: SparqlJsonResults) => void;
 } {
   const initialState: ResultsState = {
     data: null,
@@ -204,7 +208,187 @@ export function createResultsStore(): {
     reset: (): void => {
       set(initialState);
     },
+
+    /**
+     * Task 33: Enable chunked loading for large result sets
+     * Initializes the chunked loading state
+     * @param chunkSize - Number of rows to load per chunk (default: 1000)
+     */
+    enableChunkedLoading: (chunkSize: number = 1000): void => {
+      update((state) => ({
+        ...state,
+        chunkedLoading: {
+          loadingChunk: false,
+          currentOffset: 0,
+          chunkSize,
+          hasMore: true,
+          totalLoaded: 0,
+        },
+      }));
+    },
+
+    /**
+     * Task 33: Load next chunk of results
+     * Re-queries with LIMIT/OFFSET to fetch the next batch
+     * @param query - Original SPARQL query (will be modified with LIMIT/OFFSET)
+     * @param endpoint - SPARQL endpoint URL
+     */
+    loadNextChunk: async (query: string, endpoint: string): Promise<void> => {
+      let currentState: ResultsState;
+      const unsubscribe = subscribe((state) => {
+        currentState = state;
+      });
+      unsubscribe();
+
+      const chunkedLoading = currentState!.chunkedLoading;
+      if (!chunkedLoading || chunkedLoading.loadingChunk || !chunkedLoading.hasMore) {
+        return; // Already loading or no more data
+      }
+
+      // Set loading state for chunk
+      update((state) => ({
+        ...state,
+        chunkedLoading: state.chunkedLoading
+          ? { ...state.chunkedLoading, loadingChunk: true }
+          : undefined,
+      }));
+
+      try {
+        // Modify query to add LIMIT and OFFSET
+        const modifiedQuery = addLimitOffset(query, chunkedLoading.chunkSize, chunkedLoading.currentOffset);
+
+        // Execute query for the chunk
+        const result = await sparqlService.executeQuery({
+          endpoint,
+          query: modifiedQuery,
+        });
+
+        // Handle string responses (non-JSON)
+        if (typeof result.data === 'string') {
+          console.warn('Chunked loading only works with JSON results');
+          update((state) => ({
+            ...state,
+            chunkedLoading: state.chunkedLoading
+              ? {
+                  ...state.chunkedLoading,
+                  loadingChunk: false,
+                  hasMore: false,
+                }
+              : undefined,
+          }));
+          return;
+        }
+
+        // Check if we got any results
+        const resultData = result.data as SparqlJsonResults;
+        const hasResults = resultData.results && resultData.results.bindings.length > 0;
+        const receivedCount = resultData.results?.bindings.length || 0;
+
+        // Append the chunk data to existing results
+        if (hasResults) {
+          update((state) => {
+            if (!state.data || !state.data.results) {
+              return state; // No initial data, can't append
+            }
+
+            // Merge bindings
+            const mergedBindings = [
+              ...state.data.results.bindings,
+              ...resultData.results!.bindings,
+            ];
+
+            return {
+              ...state,
+              data: {
+                ...state.data,
+                results: {
+                  bindings: mergedBindings,
+                },
+              },
+              chunkedLoading: state.chunkedLoading
+                ? {
+                    ...state.chunkedLoading,
+                    loadingChunk: false,
+                    currentOffset: state.chunkedLoading.currentOffset + receivedCount,
+                    totalLoaded: state.chunkedLoading.totalLoaded + receivedCount,
+                    hasMore: receivedCount === chunkedLoading.chunkSize, // If we got fewer, no more data
+                  }
+                : undefined,
+            };
+          });
+        } else {
+          // No more results
+          update((state) => ({
+            ...state,
+            chunkedLoading: state.chunkedLoading
+              ? {
+                  ...state.chunkedLoading,
+                  loadingChunk: false,
+                  hasMore: false,
+                }
+              : undefined,
+          }));
+        }
+      } catch (error) {
+        // Handle error but don't clear existing data
+        console.error('Failed to load chunk:', error);
+        update((state) => ({
+          ...state,
+          chunkedLoading: state.chunkedLoading
+            ? {
+                ...state.chunkedLoading,
+                loadingChunk: false,
+                hasMore: false, // Stop trying if we hit an error
+              }
+            : undefined,
+        }));
+      }
+    },
+
+    /**
+     * Task 33: Append chunk data to existing results
+     * @param data - Chunk data to append
+     */
+    appendChunkData: (data: SparqlJsonResults): void => {
+      update((state) => {
+        if (!state.data || !state.data.results || !data.results) {
+          return state; // Can't append without existing data
+        }
+
+        const mergedBindings = [...state.data.results.bindings, ...data.results.bindings];
+
+        return {
+          ...state,
+          data: {
+            ...state.data,
+            results: {
+              bindings: mergedBindings,
+            },
+          },
+        };
+      });
+    },
   };
+}
+
+/**
+ * Helper: Add LIMIT and OFFSET to a SPARQL query
+ * Handles queries with or without existing LIMIT/OFFSET clauses
+ * @param query - Original SPARQL query
+ * @param limit - Number of results to fetch
+ * @param offset - Offset in the result set
+ * @returns Modified query with LIMIT and OFFSET
+ */
+function addLimitOffset(query: string, limit: number, offset: number): string {
+  // Remove existing LIMIT and OFFSET clauses (case-insensitive)
+  let modifiedQuery = query.replace(/\s+LIMIT\s+\d+/gi, '');
+  modifiedQuery = modifiedQuery.replace(/\s+OFFSET\s+\d+/gi, '');
+
+  // Add new LIMIT and OFFSET at the end
+  modifiedQuery = modifiedQuery.trim();
+  modifiedQuery += ` LIMIT ${limit} OFFSET ${offset}`;
+
+  return modifiedQuery;
 }
 
 /**

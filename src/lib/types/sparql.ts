@@ -99,6 +99,19 @@ export interface ResultsState {
   executionTime?: number;
   /** Prefixes from the query for IRI abbreviation */
   prefixes?: Record<string, string>;
+  /** Task 33: Chunked loading state */
+  chunkedLoading?: {
+    /** Currently loading next chunk */
+    loadingChunk: boolean;
+    /** Current offset in the result set */
+    currentOffset: number;
+    /** Chunk size for each fetch */
+    chunkSize: number;
+    /** Whether there are more results to load */
+    hasMore: boolean;
+    /** Total number of results loaded so far */
+    totalLoaded: number;
+  };
 }
 
 /**
