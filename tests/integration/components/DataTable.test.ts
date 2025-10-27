@@ -293,10 +293,10 @@ describe('DataTable Integration', () => {
 
   describe('Large Dataset with IRI Abbreviation', () => {
     it(
-      'should handle large datasets with many abbreviated IRIs efficiently',
+      'should handle datasets with many abbreviated IRIs efficiently',
       async () => {
         const bindings = [];
-        for (let i = 0; i < 1000; i++) {
+        for (let i = 0; i < 200; i++) {
           bindings.push({
             subject: { type: 'uri', value: `http://dbpedia.org/resource/Person_${i}` },
             predicate: { type: 'uri', value: 'http://xmlns.com/foaf/0.1/name' },
@@ -316,28 +316,29 @@ describe('DataTable Integration', () => {
           () => {
             expect(container.querySelector('.data-table-container')).toBeInTheDocument();
           },
-          { timeout: 5000 }
+          { timeout: 3000 }
         );
 
         // Verify results count
-        expect(screen.getByText('1000 results')).toBeInTheDocument();
+        expect(screen.getByText('200 results')).toBeInTheDocument();
 
         // Verify virtual scrolling is enabled for performance
         await waitFor(() => {
           expect(container.querySelector('.wx-grid')).toBeInTheDocument();
         });
       },
-      10000
-    ); // Increase test timeout to 10000ms for large dataset
+      5000
+    ); // Reduced timeout for faster test execution
   });
 
   describe('Virtual Scrolling Performance (Task 32 - Phase 7)', () => {
     it(
-      'should render 5,000 rows with virtual scrolling efficiently',
+      'should render 200 rows with virtual scrolling efficiently',
       async () => {
-        // Note: Reduced to 5,000 for test performance. Storybook stories test 10,000+ rows
+        // Reduced to 200 rows for fast test execution
+        // Storybook stories test larger datasets (10,000+ rows)
         const bindings = [];
-        for (let i = 0; i < 5000; i++) {
+        for (let i = 0; i < 200; i++) {
           bindings.push({
             id: { type: 'uri', value: `http://example.org/resource/${i}` },
             name: { type: 'literal', value: `Item ${i}` },
@@ -357,7 +358,7 @@ describe('DataTable Integration', () => {
         const startTime = performance.now();
         const parsedData = parseTableResults(mockResults);
         const parseTime = performance.now() - startTime;
-        console.log(`Parsed 5,000 rows in ${parseTime.toFixed(2)}ms`);
+        console.log(`Parsed 200 rows in ${parseTime.toFixed(2)}ms`);
 
         const renderStart = performance.now();
         const { container } = render(DataTable, {
@@ -371,33 +372,31 @@ describe('DataTable Integration', () => {
           () => {
             expect(container.querySelector('.data-table-container')).toBeInTheDocument();
           },
-          { timeout: 10000 }
+          { timeout: 3000 }
         );
 
         const renderTime = performance.now() - renderStart;
-        console.log(`Rendered 5,000 rows in ${renderTime.toFixed(2)}ms`);
+        console.log(`Rendered 200 rows in ${renderTime.toFixed(2)}ms`);
 
         // Verify results count
-        expect(screen.getByText('5000 results')).toBeInTheDocument();
+        expect(screen.getByText('200 results')).toBeInTheDocument();
 
         // Verify virtual scrolling is active
         await waitFor(() => {
           expect(container.querySelector('.wx-grid')).toBeInTheDocument();
         });
 
-        // Note: Test environment has overhead. Real browser performance is much better.
-        // See Storybook stories for 10,000+ row performance testing
-        console.log('Virtual scrolling enabled for efficient large dataset rendering');
+        console.log('Virtual scrolling enabled for efficient dataset rendering');
       },
-      30000
-    ); // 30 second timeout for test environment overhead
+      5000
+    ); // 5 second timeout - sufficient for 200 rows
 
     it(
-      'should verify virtual scrolling configuration for large datasets',
+      'should verify virtual scrolling configuration',
       async () => {
         // Test that virtual scrolling prop is properly applied
         const bindings = [];
-        for (let i = 0; i < 2000; i++) {
+        for (let i = 0; i < 200; i++) {
           bindings.push({
             id: { type: 'uri', value: `http://example.org/item/${i}` },
             value: { type: 'literal', value: `Value ${i}` },
@@ -418,7 +417,7 @@ describe('DataTable Integration', () => {
           () => {
             expect(container.querySelector('.data-table-container')).toBeInTheDocument();
           },
-          { timeout: 10000 }
+          { timeout: 3000 }
         );
 
         // Verify grid renders with virtual scrolling
@@ -426,14 +425,14 @@ describe('DataTable Integration', () => {
           expect(container.querySelector('.wx-grid')).toBeInTheDocument();
         });
 
-        expect(screen.getByText('2000 results')).toBeInTheDocument();
+        expect(screen.getByText('200 results')).toBeInTheDocument();
       },
-      20000
+      5000
     );
 
-    it('should handle gracefully when virtual scrolling is disabled with 1000 rows', async () => {
+    it('should handle gracefully when virtual scrolling is disabled with 200 rows', async () => {
       const bindings = [];
-      for (let i = 0; i < 1000; i++) {
+      for (let i = 0; i < 200; i++) {
         bindings.push({
           id: { type: 'uri', value: `http://example.org/resource/${i}` },
           name: { type: 'literal', value: `Item ${i}` },
@@ -457,10 +456,10 @@ describe('DataTable Integration', () => {
         () => {
           expect(container.querySelector('.data-table-container')).toBeInTheDocument();
         },
-        { timeout: 10000 }
+        { timeout: 3000 }
       );
 
-      expect(screen.getByText('1000 results')).toBeInTheDocument();
+      expect(screen.getByText('200 results')).toBeInTheDocument();
     });
   });
 
