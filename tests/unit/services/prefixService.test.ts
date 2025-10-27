@@ -294,9 +294,14 @@ describe('PrefixService', () => {
       const service = new PrefixService();
       global.fetch = vi.fn().mockRejectedValue(new Error('Network error'));
 
+      // Suppress expected console.warn
+      const consoleWarnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
+
       const suggestions = await service.searchPrefixes('test');
 
       expect(suggestions).toEqual([]);
+
+      consoleWarnSpy.mockRestore();
     });
 
     it('should handle non-ok responses', async () => {
@@ -346,9 +351,14 @@ describe('PrefixService', () => {
       const mockHook = vi.fn().mockRejectedValue(new Error('Discovery failed'));
       const service = new PrefixService({ discoveryHook: mockHook });
 
+      // Suppress expected console.warn
+      const consoleWarnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
+
       const result = await service.discoverPrefixes('http://endpoint.example/');
 
       expect(result).toEqual({});
+
+      consoleWarnSpy.mockRestore();
     });
   });
 

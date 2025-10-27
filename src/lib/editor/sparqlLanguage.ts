@@ -200,7 +200,7 @@ const sparqlParser: StreamParser<unknown> = {
       if (sparqlBuiltins.has(word.toLowerCase())) {
         return 'atom';
       }
-      return 'word';
+      return null; // No special highlighting for regular words
     }
 
     // Default: advance one character
