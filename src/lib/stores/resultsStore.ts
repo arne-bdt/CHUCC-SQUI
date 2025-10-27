@@ -49,14 +49,20 @@ export function createResultsStore(): {
     /**
      * Set query results data
      * Automatically clears loading and error states
+     * Task 38: Now also sets rawData for download/raw view functionality
      * @param data - SPARQL JSON results
      * @param executionTime - Query execution time in ms
      * @param prefixes - Prefixes from the query for IRI abbreviation
      */
     setData: (data: SparqlJsonResults, executionTime?: number, prefixes?: Record<string, string>): void => {
+      // Generate raw data from JSON for raw view and downloads
+      const rawData = JSON.stringify(data, null, 2);
+
       update((state) => ({
         ...state,
         data,
+        rawData,
+        contentType: 'application/sparql-results+json',
         loading: false,
         error: null,
         executionTime,
