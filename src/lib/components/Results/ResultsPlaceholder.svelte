@@ -86,7 +86,6 @@
   $effect(() => {
     if (state.data && !state.loading && isTable()) {
       // For SELECT query results, ensure we start in table view
-      // Unless user has explicitly switched to raw view (tracked separately)
       if (state.view !== 'table') {
         resultsStore.setView('table');
       }
@@ -94,8 +93,8 @@
   });
 
   // Task 36: View switcher state (0 = Table, 1 = Raw)
-  // Use a state variable to ensure proper initialization
-  let viewIndex = $state(0); // Default to table view
+  // Use state variable for two-way binding with ContentSwitcher
+  let viewIndex = $state(0);
 
   // Sync viewIndex with store view state
   $effect(() => {
@@ -106,6 +105,10 @@
   function handleViewChange(event: CustomEvent): void {
     const newIndex = event.detail.index;
     const newView = newIndex === 0 ? 'table' : 'raw';
+
+    // Log for debugging in Storybook
+    console.log('View switching:', { oldView: state.view, newView, newIndex });
+
     resultsStore.setView(newView);
   }
 
@@ -126,8 +129,17 @@
 
   // Task 38: Handle download
   function handleDownload(format: ResultFormat): void {
+    console.log('Download clicked:', { format, hasRawData: !!state.rawData });
+
     if (state.rawData) {
-      downloadResults(state.rawData, format);
+      try {
+        downloadResults(state.rawData, format);
+        console.log('Download initiated successfully');
+      } catch (error) {
+        console.error('Download failed:', error);
+      }
+    } else {
+      console.warn('No raw data available for download');
     }
   }
 
@@ -292,12 +304,23 @@
     display: flex;
     align-items: center;
     gap: var(--cds-spacing-05, 1rem);
+    flex: 1;
   }
 
   .toolbar-right {
     display: flex;
     align-items: center;
     gap: var(--cds-spacing-05, 1rem);
+  }
+
+  /* Fix ContentSwitcher button width - prevent truncation */
+  .toolbar-left :global(.bx--content-switcher) {
+    min-width: max-content;
+  }
+
+  .toolbar-left :global(.bx--content-switcher-btn) {
+    min-width: 80px;
+    white-space: nowrap;
   }
 
   .execution-time-badge {
