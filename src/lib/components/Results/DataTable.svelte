@@ -7,7 +7,8 @@
    * @component
    */
 
-  import { Grid } from 'wx-svelte-grid';
+  import { Grid, HeaderMenu } from 'wx-svelte-grid';
+  import type { IApi } from 'wx-svelte-grid';
   import type { ParsedTableData } from '../../utils/resultsParser';
   import {
     getCellDisplayValue,
@@ -32,6 +33,12 @@
     enableFilter?: boolean;
     /** Show full URIs instead of abbreviated (default: false) - Task 30 */
     showFullUris?: boolean;
+    /** Initial column visibility (default: all visible) - Task 29 */
+    initialColumnVisibility?: Record<string, boolean>;
+    /** Callback when column visibility changes - Task 29 */
+    onColumnVisibilityChange?: (visibility: Record<string, boolean>) => void;
+    /** Enable column visibility toolbar (default: false) - Task 29 */
+    enableColumnVisibility?: boolean;
   }
 
   let {
@@ -42,7 +49,26 @@
     prefixes,
     enableFilter = false,
     showFullUris = false,
+    initialColumnVisibility,
+    onColumnVisibilityChange,
+    enableColumnVisibility = false,
   }: Props = $props();
+
+  // Task 29: Grid API for column visibility control (bind:this)
+  let gridApi: IApi | undefined = $state();
+
+  // Task 29: Column visibility state (all visible by default)
+  let columnVisibility = $state<Record<string, boolean>>(
+    initialColumnVisibility ||
+      Object.fromEntries(data.columns.map((col) => [col, true]))
+  );
+
+  // Task 29: Notify parent of visibility changes
+  $effect(() => {
+    if (onColumnVisibilityChange) {
+      onColumnVisibilityChange(columnVisibility);
+    }
+  });
 
   /**
    * Convert ParsedTableData to wx-svelte-grid column format
@@ -56,6 +82,7 @@
       sort: true, // Task 25: Column sorting enabled
       editor: false,
       resizable: true, // Task 27: Column resizing enabled
+      hidden: !columnVisibility[varName], // Task 29: Hide if not visible
       cell: CellRenderer, // Minimal component with ZERO reactive computations
       // Task 26: Column filtering - add filter config when enabled
       header: enableFilter
@@ -132,21 +159,42 @@
       <p class="hint">Try modifying your query</p>
     </div>
   {:else}
-    <!-- SVAR DataGrid -->
+    <!-- SVAR DataGrid with optional HeaderMenu wrapper -->
     <div class="grid-wrapper">
-      <Grid
-        columns={columns}
-        data={gridData}
-        autoWidth={false}
-        rowHeight={rowHeight}
-        headerRowHeight={enableFilter ? 80 : 40}
-        header={true}
-        virtual={virtualScroll}
-        selection={true}
-        sort={true}
-        filter={enableFilter}
-        resize={true}
-      />
+      {#if enableColumnVisibility}
+        <!-- Task 29: HeaderMenu wraps Grid for column visibility -->
+        <HeaderMenu columns={columnVisibility} api={gridApi}>
+          <Grid
+            bind:this={gridApi}
+            columns={columns}
+            data={gridData}
+            autoWidth={false}
+            rowHeight={rowHeight}
+            headerRowHeight={enableFilter ? 80 : 40}
+            header={true}
+            virtual={virtualScroll}
+            selection={true}
+            sort={true}
+            filter={enableFilter}
+            resize={true}
+          />
+        </HeaderMenu>
+      {:else}
+        <!-- Grid without column visibility -->
+        <Grid
+          columns={columns}
+          data={gridData}
+          autoWidth={false}
+          rowHeight={rowHeight}
+          headerRowHeight={enableFilter ? 80 : 40}
+          header={true}
+          virtual={virtualScroll}
+          selection={true}
+          sort={true}
+          filter={enableFilter}
+          resize={true}
+        />
+      {/if}
     </div>
 
     <!-- Results info footer -->
@@ -171,6 +219,21 @@
     flex: 1;
     overflow: hidden;
     position: relative;
+  }
+
+  /* Task 29: Column visibility toolbar */
+  .column-visibility-toolbar {
+    padding: var(--cds-spacing-03, 0.5rem) var(--cds-spacing-05, 1rem);
+    border-bottom: 1px solid var(--cds-border-subtle-01, #e0e0e0);
+    background-color: var(--cds-layer-02, #ffffff);
+    display: flex;
+    justify-content: flex-end;
+  }
+
+  :global(.g90) .column-visibility-toolbar,
+  :global(.g100) .column-visibility-toolbar {
+    background-color: var(--cds-layer-02, #393939);
+    border-bottom-color: var(--cds-border-subtle-01, #525252);
   }
 
   /* Carbon-compatible styling for wx-svelte-grid */

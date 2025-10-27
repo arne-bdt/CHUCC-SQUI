@@ -1050,11 +1050,47 @@ export const ColumnResizing: Story = {
 };
 
 /**
+ * Show/Hide Columns (Task 29)
+ * Demonstrates column visibility control:
+ * - Column visibility menu (HeaderMenu from SVAR Grid)
+ * - Toggle columns on/off without losing data
+ * - Hidden columns don't render but data preserved
+ * - Works with all other features (sorting, filtering, etc.)
+ * - Initial visibility can be configured
+ *
+ * **How to use:**
+ * 1. Click the column menu button (top right of table)
+ * 2. Check/uncheck columns to show/hide them
+ * 3. Hidden columns are removed from view
+ * 4. Data is preserved when re-showing columns
+ */
+export const ShowHideColumns: Story = {
+  args: {
+    data: dbpediaData,
+    virtualScroll: false,
+    rowHeight: 36,
+    enableColumnVisibility: true, // Task 29: Enable column visibility control
+    initialColumnVisibility: {
+      person: true,
+      name: true,
+      birthDate: false, // Hidden by default
+      nationality: true,
+    },
+    prefixes: {
+      rdf: 'http://www.w3.org/1999/02/22-rdf-syntax-ns#',
+      foaf: 'http://xmlns.com/foaf/0.1/',
+      dbr: 'http://dbpedia.org/resource/',
+    },
+  },
+};
+
+/**
  * All Advanced Features Combined (Phase 6 Complete)
  * Demonstrates all Phase 6 features together:
  * - Column Sorting (click headers)
  * - Column Filtering (type in filter row)
  * - Column Resizing (drag column separators)
+ * - Column Visibility (show/hide columns menu)
  * - IRI Abbreviation (with prefixes)
  * - Virtual Scrolling (for large dataset)
  * - Cell Ellipsis with tooltips
@@ -1065,6 +1101,7 @@ export const AllAdvancedFeatures: Story = {
     virtualScroll: true,
     rowHeight: 32,
     enableFilter: true,
+    enableColumnVisibility: true, // Task 29: Enable column visibility
     showFullUris: false,
   },
 };
