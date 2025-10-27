@@ -221,19 +221,109 @@
     position: relative;
   }
 
-  /* Task 29: Column visibility toolbar */
-  .column-visibility-toolbar {
-    padding: var(--cds-spacing-03, 0.5rem) var(--cds-spacing-05, 1rem);
-    border-bottom: 1px solid var(--cds-border-subtle-01, #e0e0e0);
-    background-color: var(--cds-layer-02, #ffffff);
-    display: flex;
-    justify-content: flex-end;
+  /* Task 29: HeaderMenu styling (Carbon Design System theme) */
+
+  /* Menu trigger button in header */
+  :global(.wx-menu-trigger) {
+    background-color: transparent;
+    border: 1px solid var(--cds-border-subtle-01, #e0e0e0);
+    border-radius: 4px;
+    padding: var(--cds-spacing-03, 0.5rem);
+    cursor: pointer;
+    color: var(--cds-text-primary, #161616);
+    font-family: 'IBM Plex Sans', 'Helvetica Neue', Arial, sans-serif;
+    font-size: 0.875rem;
   }
 
-  :global(.g90) .column-visibility-toolbar,
-  :global(.g100) .column-visibility-toolbar {
-    background-color: var(--cds-layer-02, #393939);
-    border-bottom-color: var(--cds-border-subtle-01, #525252);
+  :global(.wx-menu-trigger:hover) {
+    background-color: var(--cds-layer-hover-01, #e5e5e5);
+  }
+
+  /* Menu dropdown container */
+  :global(.wx-menu),
+  :global(.svar-menu) {
+    background-color: var(--cds-layer-01, #ffffff);
+    border: 1px solid var(--cds-border-subtle-01, #e0e0e0);
+    border-radius: 4px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+    padding: var(--cds-spacing-02, 0.25rem) 0;
+    min-width: 200px;
+    z-index: 1000;
+  }
+
+  /* Menu items */
+  :global(.wx-menu-item),
+  :global(.svar-menu-item) {
+    padding: var(--cds-spacing-03, 0.5rem) var(--cds-spacing-05, 1rem);
+    cursor: pointer;
+    color: var(--cds-text-primary, #161616);
+    font-family: 'IBM Plex Sans', 'Helvetica Neue', Arial, sans-serif;
+    font-size: 0.875rem;
+    display: flex;
+    align-items: center;
+    gap: var(--cds-spacing-03, 0.5rem);
+  }
+
+  :global(.wx-menu-item:hover),
+  :global(.svar-menu-item:hover) {
+    background-color: var(--cds-layer-hover-01, #e5e5e5);
+  }
+
+  /* Checkbox in menu items */
+  :global(.wx-menu-item input[type="checkbox"]),
+  :global(.svar-menu-item input[type="checkbox"]) {
+    margin-right: var(--cds-spacing-03, 0.5rem);
+    cursor: pointer;
+  }
+
+  /* Menu icons */
+  :global(.wx-menu-icon),
+  :global(.svar-menu-icon) {
+    width: 16px;
+    height: 16px;
+    fill: var(--cds-icon-primary, #161616);
+  }
+
+  /* Dark theme support for HeaderMenu */
+  :global(.g90 .wx-menu),
+  :global(.g100 .wx-menu),
+  :global(.g90 .svar-menu),
+  :global(.g100 .svar-menu) {
+    background-color: var(--cds-layer-01, #262626);
+    border-color: var(--cds-border-subtle-01, #525252);
+    color: var(--cds-text-primary, #f4f4f4);
+  }
+
+  :global(.g90 .wx-menu-item),
+  :global(.g100 .wx-menu-item),
+  :global(.g90 .svar-menu-item),
+  :global(.g100 .svar-menu-item) {
+    color: var(--cds-text-primary, #f4f4f4);
+  }
+
+  :global(.g90 .wx-menu-item:hover),
+  :global(.g100 .wx-menu-item:hover),
+  :global(.g90 .svar-menu-item:hover),
+  :global(.g100 .svar-menu-item:hover) {
+    background-color: var(--cds-layer-hover-01, #353535);
+  }
+
+  :global(.g90 .wx-menu-trigger),
+  :global(.g100 .wx-menu-trigger) {
+    border-color: var(--cds-border-subtle-01, #525252);
+    color: var(--cds-text-primary, #f4f4f4);
+  }
+
+  :global(.g90 .wx-menu-trigger:hover),
+  :global(.g100 .wx-menu-trigger:hover) {
+    background-color: var(--cds-layer-hover-01, #353535);
+  }
+
+  :global(.g90 .wx-menu-icon),
+  :global(.g100 .wx-menu-icon),
+  :global(.g90 .svar-menu-icon),
+  :global(.g100 .svar-menu-icon) {
+    fill: var(--cds-icon-primary, #f4f4f4);
   }
 
   /* Carbon-compatible styling for wx-svelte-grid */
