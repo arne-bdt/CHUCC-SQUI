@@ -9,8 +9,13 @@
 
   import { Grid } from 'wx-svelte-grid';
   import type { ParsedTableData, ParsedCell } from '../../utils/resultsParser';
-  import { getCellDisplayValue } from '../../utils/resultsParser';
-  import UriCell from './UriCell.svelte';
+  import {
+    getCellDisplayValue,
+    getCellAnnotation,
+    getCellAnnotationType,
+    isRdfHtmlLiteral,
+    escapeHtml,
+  } from '../../utils/resultsParser';
 
   interface Props {
     /** Parsed table data from resultsParser */
@@ -29,7 +34,7 @@
 
   /**
    * Convert ParsedTableData to wx-svelte-grid column format
-   * All columns use UriCell component which handles both URIs and literals
+   * Uses template function to return HTML (no Svelte components = maximum performance)
    */
   const columns = $derived(
     data.columns.map((varName) => ({
@@ -39,36 +44,73 @@
       sort: true, // Use default string sorting on display values
       editor: false,
       resizable: true,
-      cell: UriCell, // Custom cell renderer for clickable IRI links (Task 23)
+      // Template function returns HTML string for fast rendering (no component overhead)
+      template: (value: any, row: any, col: any) => {
+        const cellMeta = row[`__meta_${varName}`];
+        if (!cellMeta) return escapeHtml(String(value));
+
+        // URI: Return clickable link
+        if (cellMeta.isUri) {
+          return `<a class="uri-link" href="${escapeHtml(cellMeta.href)}" target="_blank" rel="noopener noreferrer" title="${escapeHtml(cellMeta.href)}">${escapeHtml(cellMeta.displayText)}</a>`;
+        }
+
+        // rdf:HTML: Return XSS-protected span
+        if (cellMeta.isRdfHtml) {
+          return `<span class="rdf-html-literal" title="HTML content (rendered as text for security)">${escapeHtml(cellMeta.displayText)}</span>`;
+        }
+
+        // Literal with annotation: Return styled spans
+        if (cellMeta.annotation && cellMeta.annotationType) {
+          return `<span class="literal-value">${escapeHtml(cellMeta.literalValue)}</span><span class="literal-annotation ${cellMeta.annotationType}">${escapeHtml(cellMeta.annotation)}</span>`;
+        }
+
+        // Plain text
+        return escapeHtml(cellMeta.displayText);
+      },
     }))
   );
 
   /**
    * Convert ParsedTableData rows to wx-svelte-grid data format
-   * Stores display strings for sorting, with original cell data in __cellData__ for UriCell
+   * Pre-computes ALL display metadata ONCE for maximum performance
    */
   const gridData = $derived.by(() => {
     return data.rows.map((row, index) => {
       const gridRow: Record<string, any> = {
         id: index, // Grid requires unique id
-        __cellData__: {}, // Store original ParsedCell objects here
       };
 
-      // Convert each cell to display value (string) for sorting
-      // Store original cell data in __cellData__ for UriCell access
+      // Pre-compute display metadata for each cell (happens ONCE, not per render)
       for (const varName of data.columns) {
         const cell = row[varName];
 
-        // Store original cell data
-        gridRow.__cellData__[varName] = cell;
-
-        // Store display string for grid
-        gridRow[varName] = getCellDisplayValue(cell, {
+        // Get display value for sorting
+        const displayValue = getCellDisplayValue(cell, {
           showDatatype: true,
           showLang: true,
           abbreviateUri: true, // Enable IRI abbreviation (Task 22)
           prefixes: prefixes, // Use prefixes from query
         });
+
+        // Store display string for sorting
+        gridRow[varName] = displayValue;
+
+        // Pre-compute all display metadata (no reactive computations later!)
+        const annotation = getCellAnnotation(cell, {
+          showDatatype: true,
+          showLang: true,
+          abbreviateDatatype: true,
+        });
+
+        gridRow[`__meta_${varName}`] = {
+          displayText: displayValue,
+          literalValue: cell.value || '', // Raw literal value without quotes/annotations
+          isUri: cell.type === 'uri',
+          href: cell.rawValue || cell.value || '',
+          isRdfHtml: isRdfHtmlLiteral(cell),
+          annotation: annotation,
+          annotationType: getCellAnnotationType(cell),
+        };
       }
 
       return gridRow;
@@ -264,5 +306,126 @@
     background-color: var(--cds-layer-02, #393939);
     border-top-color: var(--cds-border-subtle-01, #525252);
     color: var(--cds-text-secondary, #c6c6c6);
+  }
+
+  /* ============================================
+   * Cell Content Styles (from former UriCell component)
+   * Rendered via template function for maximum performance
+   * ============================================ */
+
+  /**
+   * URI Link Styles (Task 23: Clickable IRI Links)
+   * Carbon Design System link styles
+   */
+  :global(.uri-link) {
+    color: var(--cds-link-primary, #0f62fe);
+    text-decoration: none;
+    cursor: pointer;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: inline-block;
+    max-width: 100%;
+  }
+
+  :global(.uri-link:hover) {
+    text-decoration: underline;
+    color: var(--cds-link-primary-hover, #0043ce);
+  }
+
+  :global(.uri-link:visited) {
+    color: var(--cds-link-visited, #8a3ffc);
+  }
+
+  :global(.uri-link:active) {
+    color: var(--cds-link-primary, #0f62fe);
+  }
+
+  :global(.uri-link:focus) {
+    outline: 2px solid var(--cds-focus, #0f62fe);
+    outline-offset: 2px;
+  }
+
+  /* Dark theme support for URI links */
+  :global(.g90 .uri-link),
+  :global(.g100 .uri-link) {
+    color: var(--cds-link-primary, #78a9ff);
+  }
+
+  :global(.g90 .uri-link:hover),
+  :global(.g100 .uri-link:hover) {
+    color: var(--cds-link-primary-hover, #a6c8ff);
+  }
+
+  :global(.g90 .uri-link:visited),
+  :global(.g100 .uri-link:visited) {
+    color: var(--cds-link-visited, #be95ff);
+  }
+
+  :global(.g90 .uri-link:active),
+  :global(.g100 .uri-link:active) {
+    color: var(--cds-link-primary, #78a9ff);
+  }
+
+  /**
+   * Literal Annotation Styles (Task 24: Literal Type and Language Display)
+   * Subtle styling for language tags and datatypes
+   */
+  :global(.literal-value) {
+    color: var(--cds-text-primary, #161616);
+  }
+
+  :global(.literal-annotation) {
+    font-size: 0.875em;
+    font-style: italic;
+    color: var(--cds-text-secondary, #525252);
+    opacity: 0.85;
+  }
+
+  :global(.literal-annotation.lang) {
+    color: var(--cds-support-info, #0043ce);
+  }
+
+  :global(.literal-annotation.datatype) {
+    color: var(--cds-support-warning, #f1c21b);
+    /* Override dark text color for better visibility */
+    filter: brightness(0.7);
+  }
+
+  /* Dark theme support for literals */
+  :global(.g90 .literal-value),
+  :global(.g100 .literal-value) {
+    color: var(--cds-text-primary, #f4f4f4);
+  }
+
+  :global(.g90 .literal-annotation),
+  :global(.g100 .literal-annotation) {
+    color: var(--cds-text-secondary, #c6c6c6);
+  }
+
+  :global(.g90 .literal-annotation.lang),
+  :global(.g100 .literal-annotation.lang) {
+    color: var(--cds-support-info, #78a9ff);
+  }
+
+  :global(.g90 .literal-annotation.datatype),
+  :global(.g100 .literal-annotation.datatype) {
+    color: var(--cds-support-warning, #f1c21b);
+    filter: none; /* Remove brightness filter in dark mode */
+  }
+
+  /**
+   * rdf:HTML Literal Warning Style (Task 24)
+   * XSS protection: HTML content rendered as text
+   */
+  :global(.rdf-html-literal) {
+    color: var(--cds-text-error, #da1e28);
+    font-style: italic;
+    cursor: help;
+  }
+
+  :global(.g90 .rdf-html-literal),
+  :global(.g100 .rdf-html-literal) {
+    color: var(--cds-support-error, #ff8389);
   }
 </style>

@@ -22,6 +22,23 @@ export function clearAbbreviationCache(): void {
 }
 
 /**
+ * Escape HTML special characters for safe rendering in template strings
+ * Prevents XSS attacks when rendering user-provided content
+ * @param text Raw text to escape
+ * @returns HTML-safe text
+ */
+export function escapeHtml(text: string): string {
+  const htmlEscapeMap: Record<string, string> = {
+    '&': '&amp;',
+    '<': '&lt;',
+    '>': '&gt;',
+    '"': '&quot;',
+    "'": '&#39;',
+  };
+  return text.replace(/[&<>"']/g, (char) => htmlEscapeMap[char]);
+}
+
+/**
  * Parsed table cell with display value and metadata
  */
 export interface ParsedCell {
@@ -229,6 +246,76 @@ export function isAskResult(results: SparqlJsonResults): boolean {
  */
 export function isSelectResult(results: SparqlJsonResults): boolean {
   return results.results !== undefined && results.results.bindings !== undefined;
+}
+
+/**
+ * Get annotation string for a literal cell (language tag or datatype)
+ * @param cell Parsed cell
+ * @param options Display options
+ * @returns Annotation string (e.g., "@en" or "^^xsd:integer") or empty string
+ */
+export function getCellAnnotation(
+  cell: ParsedCell,
+  options: {
+    showDatatype?: boolean;
+    showLang?: boolean;
+    abbreviateDatatype?: boolean;
+  } = {}
+): string {
+  const { showDatatype = true, showLang = true, abbreviateDatatype: shouldAbbreviate = true } = options;
+
+  if (cell.type !== 'literal') {
+    return '';
+  }
+
+  // Language tag takes precedence
+  if (cell.lang && showLang) {
+    return `@${cell.lang}`;
+  }
+
+  // Datatype (if not a plain literal and no language tag)
+  if (cell.datatype && showDatatype && !cell.lang) {
+    const datatypeAbbrev = shouldAbbreviate
+      ? abbreviateDatatype(cell.datatype)
+      : cell.datatype;
+    return `^^${datatypeAbbrev}`;
+  }
+
+  return '';
+}
+
+/**
+ * Get annotation type for a literal cell
+ * @param cell Parsed cell
+ * @returns 'lang' | 'datatype' | null
+ */
+export function getCellAnnotationType(cell: ParsedCell): 'lang' | 'datatype' | null {
+  if (cell.type !== 'literal') {
+    return null;
+  }
+
+  if (cell.lang) {
+    return 'lang';
+  }
+
+  if (cell.datatype) {
+    return 'datatype';
+  }
+
+  return null;
+}
+
+/**
+ * Check if a cell contains rdf:HTML literal (requires XSS protection)
+ * @param cell Parsed cell
+ * @returns True if rdf:HTML literal
+ */
+export function isRdfHtmlLiteral(cell: ParsedCell): boolean {
+  return (
+    cell.type === 'literal' &&
+    (cell.datatype === 'http://www.w3.org/1999/02/22-rdf-syntax-ns#HTML' ||
+      cell.datatype === 'rdf:HTML')
+  );
 }
 
 /**
