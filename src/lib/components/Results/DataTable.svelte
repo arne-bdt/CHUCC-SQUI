@@ -14,8 +14,8 @@
     getCellAnnotation,
     getCellAnnotationType,
     isRdfHtmlLiteral,
-    escapeHtml,
   } from '../../utils/resultsParser';
+  import CellRenderer from './CellRenderer.svelte';
 
   interface Props {
     /** Parsed table data from resultsParser */
@@ -34,7 +34,7 @@
 
   /**
    * Convert ParsedTableData to wx-svelte-grid column format
-   * Uses template function to return HTML (no Svelte components = maximum performance)
+   * Uses minimal CellRenderer component (no reactive overhead, just renders pre-computed data)
    */
   const columns = $derived(
     data.columns.map((varName) => ({
@@ -44,29 +44,7 @@
       sort: true, // Use default string sorting on display values
       editor: false,
       resizable: true,
-      // Template function returns HTML string for fast rendering (no component overhead)
-      template: (value: any, row: any, col: any) => {
-        const cellMeta = row[`__meta_${varName}`];
-        if (!cellMeta) return escapeHtml(String(value));
-
-        // URI: Return clickable link
-        if (cellMeta.isUri) {
-          return `<a class="uri-link" href="${escapeHtml(cellMeta.href)}" target="_blank" rel="noopener noreferrer" title="${escapeHtml(cellMeta.href)}">${escapeHtml(cellMeta.displayText)}</a>`;
-        }
-
-        // rdf:HTML: Return XSS-protected span
-        if (cellMeta.isRdfHtml) {
-          return `<span class="rdf-html-literal" title="HTML content (rendered as text for security)">${escapeHtml(cellMeta.displayText)}</span>`;
-        }
-
-        // Literal with annotation: Return styled spans
-        if (cellMeta.annotation && cellMeta.annotationType) {
-          return `<span class="literal-value">${escapeHtml(cellMeta.literalValue)}</span><span class="literal-annotation ${cellMeta.annotationType}">${escapeHtml(cellMeta.annotation)}</span>`;
-        }
-
-        // Plain text
-        return escapeHtml(cellMeta.displayText);
-      },
+      cell: CellRenderer, // Minimal component with ZERO reactive computations
     }))
   );
 

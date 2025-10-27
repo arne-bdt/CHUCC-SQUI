@@ -15,7 +15,8 @@
       "Bash(tree:*)",
       "Bash(npx vitest:*)",
       "Bash(npx storybook@latest init:*)",
-      "Bash(curl:*)"
+      "Bash(curl:*)",
+      "Bash(del \"src\\lib\\components\\Results\\DataTable.stories.minimal.ts\")"
     ],
     "deny": [],
     "ask": [],
