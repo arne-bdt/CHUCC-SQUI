@@ -776,4 +776,128 @@ describe('DataTable Integration', () => {
       });
     });
   });
+
+  describe('Styled Literal Annotations (Task 24)', () => {
+    it('should render language tags with styling', async () => {
+      const mockResults: SparqlJsonResults = {
+        head: { vars: ['name'] },
+        results: {
+          bindings: [
+            {
+              name: { type: 'literal', value: 'Hello', 'xml:lang': 'en' },
+            },
+          ],
+        },
+      };
+
+      const parsedData = parseTableResults(mockResults);
+      const { container } = render(DataTable, { props: { data: parsedData } });
+
+      await waitFor(() => {
+        expect(container.querySelector('.data-table-container')).toBeInTheDocument();
+      });
+
+      await waitFor(() => {
+        // Should have styled literal annotation
+        const literalAnnotation = container.querySelector('.literal-annotation.lang');
+        expect(literalAnnotation).toBeTruthy();
+        expect(literalAnnotation?.textContent).toBe('@en');
+      });
+    });
+
+    it('should render datatypes with styling', async () => {
+      const mockResults: SparqlJsonResults = {
+        head: { vars: ['age'] },
+        results: {
+          bindings: [
+            {
+              age: {
+                type: 'literal',
+                value: '42',
+                datatype: 'http://www.w3.org/2001/XMLSchema#integer',
+              },
+            },
+          ],
+        },
+      };
+
+      const parsedData = parseTableResults(mockResults);
+      const { container } = render(DataTable, { props: { data: parsedData } });
+
+      await waitFor(() => {
+        expect(container.querySelector('.data-table-container')).toBeInTheDocument();
+      });
+
+      await waitFor(() => {
+        // Should have styled datatype annotation
+        const datatypeAnnotation = container.querySelector('.literal-annotation.datatype');
+        expect(datatypeAnnotation).toBeTruthy();
+        expect(datatypeAnnotation?.textContent).toContain('^^');
+      });
+    });
+
+    it('should handle rdf:HTML with XSS protection', async () => {
+      const mockResults: SparqlJsonResults = {
+        head: { vars: ['html'] },
+        results: {
+          bindings: [
+            {
+              html: {
+                type: 'literal',
+                value: '<script>alert("XSS")</script>',
+                datatype: 'http://www.w3.org/1999/02/22-rdf-syntax-ns#HTML',
+              },
+            },
+          ],
+        },
+      };
+
+      const parsedData = parseTableResults(mockResults);
+      const { container } = render(DataTable, { props: { data: parsedData } });
+
+      await waitFor(() => {
+        expect(container.querySelector('.data-table-container')).toBeInTheDocument();
+      });
+
+      await waitFor(() => {
+        // Should have XSS protection warning class
+        const rdfHtmlElement = container.querySelector('.rdf-html-literal');
+        expect(rdfHtmlElement).toBeTruthy();
+
+        // Should render as plain text, not execute
+        expect(rdfHtmlElement?.textContent).toContain('<script>');
+        expect(rdfHtmlElement?.textContent).toContain('alert'); // Script visible as text, not executed
+      });
+    });
+
+    it('should render mixed content with annotations and plain values', async () => {
+      const mockResults: SparqlJsonResults = {
+        head: { vars: ['name', 'uri', 'plain'] },
+        results: {
+          bindings: [
+            {
+              name: { type: 'literal', value: 'Alice', 'xml:lang': 'en' },
+              uri: { type: 'uri', value: 'http://example.org/alice' },
+              plain: { type: 'literal', value: 'No annotation' },
+            },
+          ],
+        },
+      };
+
+      const parsedData = parseTableResults(mockResults);
+      const { container } = render(DataTable, { props: { data: parsedData } });
+
+      await waitFor(() => {
+        expect(container.querySelector('.data-table-container')).toBeInTheDocument();
+      });
+
+      // Note: wx-svelte-grid may only render visible columns in test environment
+      // So we only check for the language annotation which is in the first column
+      await waitFor(() => {
+        const langAnnotation = container.querySelector('.literal-annotation.lang');
+        expect(langAnnotation).toBeTruthy();
+        expect(langAnnotation?.textContent).toBe('@en');
+      });
+    });
+  });
 });

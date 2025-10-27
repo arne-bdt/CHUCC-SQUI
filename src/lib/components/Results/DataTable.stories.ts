@@ -641,3 +641,160 @@ export const ClickableIRILinks: Story = {
     expect(literalLinks.length).toBe(0);
   },
 };
+
+/**
+ * Styled Literal Annotations (Task 24)
+ * Demonstrates subtle styling of language tags and datatypes:
+ * - Language tags (@en, @de, @fr) styled with info color
+ * - Datatypes (^^xsd:integer, ^^xsd:date) styled with warning color
+ * - rdf:HTML literals protected from XSS (rendered as text)
+ * - Plain literals without annotations shown as normal text
+ * - Dark theme support
+ */
+export const StyledLiteralAnnotations: Story = {
+  args: {
+    data: {
+      columns: ['label', 'count', 'date', 'description', 'html'],
+      rows: [
+        {
+          label: { value: 'Hello World', type: 'literal', lang: 'en' },
+          count: {
+            value: '42',
+            type: 'literal',
+            datatype: 'http://www.w3.org/2001/XMLSchema#integer',
+          },
+          date: {
+            value: '2024-01-15',
+            type: 'literal',
+            datatype: 'http://www.w3.org/2001/XMLSchema#date',
+          },
+          description: { value: 'Plain literal without annotation', type: 'literal' },
+          html: {
+            value: '<script>alert("XSS")</script>',
+            type: 'literal',
+            datatype: 'http://www.w3.org/1999/02/22-rdf-syntax-ns#HTML',
+          },
+        },
+        {
+          label: { value: 'Bonjour le monde', type: 'literal', lang: 'fr' },
+          count: {
+            value: '123',
+            type: 'literal',
+            datatype: 'http://www.w3.org/2001/XMLSchema#integer',
+          },
+          date: {
+            value: '2024-02-20',
+            type: 'literal',
+            datatype: 'http://www.w3.org/2001/XMLSchema#date',
+          },
+          description: { value: 'French translation', type: 'literal' },
+          html: {
+            value: '<img src=x onerror=alert(1)>',
+            type: 'literal',
+            datatype: 'http://www.w3.org/1999/02/22-rdf-syntax-ns#HTML',
+          },
+        },
+        {
+          label: { value: 'Hallo Welt', type: 'literal', lang: 'de' },
+          count: {
+            value: '999',
+            type: 'literal',
+            datatype: 'http://www.w3.org/2001/XMLSchema#integer',
+          },
+          date: {
+            value: '2024-03-10',
+            type: 'literal',
+            datatype: 'http://www.w3.org/2001/XMLSchema#date',
+          },
+          description: { value: 'German translation', type: 'literal' },
+          html: {
+            value: '<p>Safe content</p>',
+            type: 'literal',
+            datatype: 'http://www.w3.org/1999/02/22-rdf-syntax-ns#HTML',
+          },
+        },
+        {
+          label: { value: 'Hola Mundo', type: 'literal', lang: 'es' },
+          count: {
+            value: '3.14159',
+            type: 'literal',
+            datatype: 'http://www.w3.org/2001/XMLSchema#decimal',
+          },
+          date: {
+            value: '2024-12-25T00:00:00Z',
+            type: 'literal',
+            datatype: 'http://www.w3.org/2001/XMLSchema#dateTime',
+          },
+          description: { value: 'Spanish translation', type: 'literal' },
+          html: {
+            value: '<b>Bold</b> text',
+            type: 'literal',
+            datatype: 'http://www.w3.org/1999/02/22-rdf-syntax-ns#HTML',
+          },
+        },
+      ],
+      rowCount: 4,
+      vars: ['label', 'count', 'date', 'description', 'html'],
+    },
+    virtualScroll: false,
+    rowHeight: 40,
+  },
+  play: async ({ canvasElement }) => {
+    // Verify table renders
+    const gridContainer = canvasElement.querySelector('.data-table-container');
+    expect(gridContainer).toBeTruthy();
+
+    // Wait for grid to render
+    await new Promise((resolve) => setTimeout(resolve, 500));
+
+    // Verify language annotations exist and have correct styling
+    const langAnnotations = canvasElement.querySelectorAll('.literal-annotation.lang');
+    expect(langAnnotations.length).toBeGreaterThan(0);
+
+    // Check language annotation content and styling
+    if (langAnnotations.length > 0) {
+      const firstLang = langAnnotations[0] as HTMLElement;
+      // Should have lang class for blue/info color
+      expect(firstLang.classList.contains('lang')).toBe(true);
+      // Should be italic (from CSS)
+      const styles = window.getComputedStyle(firstLang);
+      expect(styles.fontStyle).toBe('italic');
+    }
+
+    // Verify datatype annotations exist and have correct styling
+    const datatypeAnnotations = canvasElement.querySelectorAll('.literal-annotation.datatype');
+    expect(datatypeAnnotations.length).toBeGreaterThan(0);
+
+    // Check datatype annotation styling
+    if (datatypeAnnotations.length > 0) {
+      const firstDatatype = datatypeAnnotations[0] as HTMLElement;
+      // Should have datatype class for yellow/warning color
+      expect(firstDatatype.classList.contains('datatype')).toBe(true);
+      // Should be italic
+      const styles = window.getComputedStyle(firstDatatype);
+      expect(styles.fontStyle).toBe('italic');
+    }
+
+    // Verify rdf:HTML literals are protected (rendered as text, not HTML)
+    const rdfHtmlElements = canvasElement.querySelectorAll('.rdf-html-literal');
+    expect(rdfHtmlElements.length).toBeGreaterThan(0);
+
+    if (rdfHtmlElements.length > 0) {
+      const firstHtml = rdfHtmlElements[0] as HTMLElement;
+      // Should contain the script tag as TEXT, not execute it
+      expect(firstHtml.textContent).toContain('<script>');
+      expect(firstHtml.textContent).toContain('alert');
+
+      // Should have warning styling (red/error color)
+      expect(firstHtml.classList.contains('rdf-html-literal')).toBe(true);
+
+      // Should have warning title
+      expect(firstHtml.hasAttribute('title')).toBe(true);
+      expect(firstHtml.getAttribute('title')).toContain('security');
+    }
+
+    // Verify literal values are separated from annotations
+    const literalValues = canvasElement.querySelectorAll('.literal-value');
+    expect(literalValues.length).toBeGreaterThan(0);
+  },
+};

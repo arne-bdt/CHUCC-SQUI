@@ -375,4 +375,163 @@ describe('UriCell', () => {
       );
     });
   });
+
+  describe('Styled Literal Annotations (Task 24)', () => {
+    it('applies styling to language tag annotation', () => {
+      const literalCell: ParsedCell & { displayValue: string } = {
+        type: 'literal',
+        value: 'Hello World',
+        lang: 'en',
+        displayValue: '"Hello World"@en',
+      };
+
+      const { container } = render(UriCell, {
+        props: {
+          row: { subject: literalCell },
+          column: mockColumn,
+        },
+      });
+
+      // Should have literal-cell wrapper
+      const literalContainer = container.querySelector('.literal-cell');
+      expect(literalContainer).toBeTruthy();
+
+      // Should have separate value and annotation spans
+      const literalValue = container.querySelector('.literal-value');
+      const literalAnnotation = container.querySelector('.literal-annotation');
+
+      expect(literalValue).toBeTruthy();
+      expect(literalAnnotation).toBeTruthy();
+
+      expect(literalValue?.textContent).toBe('"Hello World"');
+      expect(literalAnnotation?.textContent).toBe('@en');
+
+      // Should have lang class on annotation
+      expect(literalAnnotation?.classList.contains('lang')).toBe(true);
+    });
+
+    it('applies styling to datatype annotation', () => {
+      const literalCell: ParsedCell & { displayValue: string } = {
+        type: 'literal',
+        value: '42',
+        datatype: 'http://www.w3.org/2001/XMLSchema#integer',
+        displayValue: '"42"^^xsd:integer',
+      };
+
+      const { container } = render(UriCell, {
+        props: {
+          row: { subject: literalCell },
+          column: mockColumn,
+        },
+      });
+
+      // Should have literal-cell wrapper
+      const literalContainer = container.querySelector('.literal-cell');
+      expect(literalContainer).toBeTruthy();
+
+      // Should have separate value and annotation spans
+      const literalValue = container.querySelector('.literal-value');
+      const literalAnnotation = container.querySelector('.literal-annotation');
+
+      expect(literalValue).toBeTruthy();
+      expect(literalAnnotation).toBeTruthy();
+
+      expect(literalValue?.textContent).toBe('"42"');
+      expect(literalAnnotation?.textContent).toBe('^^xsd:integer');
+
+      // Should have datatype class on annotation
+      expect(literalAnnotation?.classList.contains('datatype')).toBe(true);
+    });
+
+    it('handles rdf:HTML literals with XSS protection', () => {
+      const htmlLiteral: ParsedCell & { displayValue: string } = {
+        type: 'literal',
+        value: '<script>alert("XSS")</script>',
+        datatype: 'http://www.w3.org/1999/02/22-rdf-syntax-ns#HTML',
+        displayValue: '"<script>alert("XSS")</script>"^^rdf:HTML',
+      };
+
+      const { container } = render(UriCell, {
+        props: {
+          row: { subject: htmlLiteral },
+          column: mockColumn,
+        },
+      });
+
+      // Should have rdf-html-literal class for warning styling
+      const rdfHtmlElement = container.querySelector('.rdf-html-literal');
+      expect(rdfHtmlElement).toBeTruthy();
+
+      // Should render as plain text, not execute script
+      expect(rdfHtmlElement?.textContent).toContain('<script>');
+      expect(rdfHtmlElement?.textContent).toContain('alert');
+
+      // Should have warning title
+      expect(rdfHtmlElement?.getAttribute('title')).toContain('security');
+    });
+
+    it('handles literals without annotations as plain text', () => {
+      const plainLiteral: ParsedCell & { displayValue: string } = {
+        type: 'literal',
+        value: 'Plain text',
+        displayValue: 'Plain text',
+      };
+
+      const { container } = render(UriCell, {
+        props: {
+          row: { subject: plainLiteral },
+          column: mockColumn,
+        },
+      });
+
+      // Should NOT have literal-cell wrapper
+      const literalContainer = container.querySelector('.literal-cell');
+      expect(literalContainer).toBeNull();
+
+      // Should render as plain text
+      expect(container.textContent).toBe('Plain text');
+    });
+
+    it('handles complex datatype URIs', () => {
+      const literalCell: ParsedCell & { displayValue: string } = {
+        type: 'literal',
+        value: '2024-01-15',
+        datatype: 'http://www.w3.org/2001/XMLSchema#date',
+        displayValue: '"2024-01-15"^^xsd:date',
+      };
+
+      const { container } = render(UriCell, {
+        props: {
+          row: { subject: literalCell },
+          column: mockColumn,
+        },
+      });
+
+      const literalValue = container.querySelector('.literal-value');
+      const literalAnnotation = container.querySelector('.literal-annotation');
+
+      expect(literalValue?.textContent).toBe('"2024-01-15"');
+      expect(literalAnnotation?.textContent).toBe('^^xsd:date');
+      expect(literalAnnotation?.classList.contains('datatype')).toBe(true);
+    });
+
+    it('preserves textContent for testing compatibility', () => {
+      const literalCell: ParsedCell & { displayValue: string } = {
+        type: 'literal',
+        value: 'Hello',
+        lang: 'fr',
+        displayValue: '"Hello"@fr',
+      };
+
+      const { container } = render(UriCell, {
+        props: {
+          row: { subject: literalCell },
+          column: mockColumn,
+        },
+      });
+
+      // Even with styled HTML, textContent should match displayValue
+      expect(container.textContent).toBe('"Hello"@fr');
+    });
+  });
 });
