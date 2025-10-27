@@ -322,7 +322,7 @@ export const Default: Story = {
     virtualScroll: true,
     rowHeight: 32,
   },
-  play: async ({ canvasElement }) => {
+  play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
     // Verify DataTable renders
     const resultsInfo = canvasElement.querySelector('.results-info');
     expect(resultsInfo).toBeTruthy();
@@ -361,9 +361,9 @@ export const LargeDataset: Story = {
       table: { disable: true }, // Hide complex data object from controls
     },
   },
-  render: (args, context) => {
+  render: (args: any) => {
     // Get rowCount from args (updated by Storybook control)
-    const rowCount = (args as any).rowCount || 50;
+    const rowCount = args.rowCount || 50;
     const data = generateLargeData(rowCount);
 
     return {
@@ -399,7 +399,7 @@ export const EmptyResults: Story = {
     virtualScroll: false,
     rowHeight: 32,
   },
-  play: async ({ canvasElement }) => {
+  play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
     // Should show empty state
     const emptyState = canvasElement.querySelector('.empty-state');
     expect(emptyState).toBeTruthy();
@@ -459,7 +459,7 @@ export const IRIAbbreviation: Story = {
       skos: 'http://www.w3.org/2004/02/skos/core#',
     },
   },
-  play: async ({ canvasElement }) => {
+  play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
     // Verify table renders with abbreviated IRIs
     const gridContainer = canvasElement.querySelector('.data-table-container');
     expect(gridContainer).toBeTruthy();
@@ -592,7 +592,7 @@ export const ClickableIRILinks: Story = {
       dcterms: 'http://purl.org/dc/terms/',
     },
   },
-  play: async ({ canvasElement }) => {
+  play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
     // Verify table renders
     const gridContainer = canvasElement.querySelector('.data-table-container');
     expect(gridContainer).toBeTruthy();
@@ -734,7 +734,7 @@ export const StyledLiteralAnnotations: Story = {
     virtualScroll: false,
     rowHeight: 40,
   },
-  play: async ({ canvasElement }) => {
+  play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
     // Verify table renders
     const gridContainer = canvasElement.querySelector('.data-table-container');
     expect(gridContainer).toBeTruthy();
