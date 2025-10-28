@@ -65,6 +65,9 @@
   // Store unsubscribe functions for cleanup
   let storeUnsubscribers: Array<() => void> = [];
 
+  // Guard flag to prevent circular updates between editor and store
+  let isUpdatingFromStore = false;
+
   // Computed state for execution
   const hasQuery = $derived(queryState.text.trim().length > 0);
   const hasEndpoint = $derived(endpoint.trim().length > 0);
@@ -158,8 +161,14 @@
         // Update listener - sync with store
         EditorView.updateListener.of((update) => {
           if (update.docChanged) {
-            const newText = update.state.doc.toString();
-            queryStore.setText(newText);
+            // Don't update store if we're currently updating FROM the store (prevents circular updates)
+            if (!isUpdatingFromStore) {
+              const newText = update.state.doc.toString();
+              console.log('[SparqlEditor] updateListener - calling queryStore.setText');
+              queryStore.setText(newText);
+            } else {
+              console.log('[SparqlEditor] updateListener - SKIPPED (isUpdatingFromStore=true)');
+            }
           }
         }),
 
@@ -282,6 +291,10 @@
         // DIRECTLY update editor if text changed
         if (editorView && value.text !== editorView.state.doc.toString()) {
           console.log('[SparqlEditor] DIRECTLY updating editor to:', value.text.substring(0, 50));
+
+          // Set guard flag to prevent updateListener from calling queryStore.setText()
+          isUpdatingFromStore = true;
+
           editorView.dispatch({
             changes: {
               from: 0,
@@ -289,6 +302,13 @@
               insert: value.text,
             },
           });
+
+          // Reset guard flag after editor update completes
+          // Use setTimeout to ensure updateListener has finished
+          setTimeout(() => {
+            isUpdatingFromStore = false;
+            console.log('[SparqlEditor] Guard flag cleared (isUpdatingFromStore=false)');
+          }, 0);
         }
       })
     );

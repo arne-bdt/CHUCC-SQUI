@@ -25,14 +25,39 @@ export function createQueryStore(): {
 
   const { subscribe, set, update } = writable<QueryState>(initialState);
 
+  // Track subscriber count for debugging
+  let subscriberCount = 0;
+  const originalSubscribe = subscribe;
+  const wrappedSubscribe = (run: (value: QueryState) => void) => {
+    subscriberCount++;
+    console.log('[queryStore] NEW SUBSCRIPTION - Total subscribers:', subscriberCount);
+    const unsubscribe = originalSubscribe(run);
+    return () => {
+      subscriberCount--;
+      console.log('[queryStore] UNSUBSCRIBE - Remaining subscribers:', subscriberCount);
+      unsubscribe();
+    };
+  };
+
   return {
-    subscribe,
+    subscribe: wrappedSubscribe,
 
     /**
      * Set the complete query text
      */
     setText: (text: string): void => {
-      update((state) => ({ ...state, text }));
+      console.log('[queryStore] setText ENTRY:', {
+        text: text.substring(0, 50),
+        subscriberCount,
+      });
+      update((state) => {
+        console.log('[queryStore] setText - update callback executing:', {
+          oldText: state.text.substring(0, 50),
+          newText: text.substring(0, 50),
+        });
+        return { ...state, text };
+      });
+      console.log('[queryStore] setText EXIT');
     },
 
     /**
@@ -81,7 +106,21 @@ export function createQueryStore(): {
      * Update the entire query state
      */
     setState: (newState: Partial<QueryState>): void => {
-      update((state) => ({ ...state, ...newState }));
+      console.log('[queryStore] setState ENTRY:', {
+        newText: newState.text?.substring(0, 50) || '(no text)',
+        newEndpoint: newState.endpoint || '(no endpoint)',
+        subscriberCount,
+      });
+      update((state) => {
+        const result = { ...state, ...newState };
+        console.log('[queryStore] setState - update callback executing:', {
+          oldText: state.text.substring(0, 50),
+          newText: result.text.substring(0, 50),
+          changed: state.text !== result.text,
+        });
+        return result;
+      });
+      console.log('[queryStore] setState EXIT');
     },
 
     /**

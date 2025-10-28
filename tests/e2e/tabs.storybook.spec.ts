@@ -7,6 +7,20 @@ import { test, expect, type Page } from '@playwright/test';
 
 test.describe('Tab Switching in Storybook', () => {
   test.beforeEach(async ({ page }) => {
+    // Capture console logs from the browser for debugging
+    page.on('console', (msg) => {
+      const text = msg.text();
+      // Only log our debug messages (queryStore, SparqlEditor, SparqlQueryUI, QueryTabs)
+      if (
+        text.includes('[queryStore]') ||
+        text.includes('[SparqlEditor]') ||
+        text.includes('[SparqlQueryUI]') ||
+        text.includes('[QueryTabs]')
+      ) {
+        console.log(`[BROWSER CONSOLE] ${text}`);
+      }
+    });
+
     // Navigate to a story with tabs enabled
     // Note: Storybook converts 'SQUI/SparqlQueryUI' → 'squi-sparqlqueryui' and 'DBpediaEndpoint' → 'dbpediaendpoint'
     await page.goto('/?path=/story/squi-sparqlqueryui--d-bpedia-endpoint');
