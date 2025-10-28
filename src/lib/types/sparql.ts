@@ -177,3 +177,31 @@ export interface QueryError {
   /** Original error object */
   originalError?: Error;
 }
+
+/**
+ * Tab state for managing multiple query tabs
+ * Each tab has its own query, endpoint, and results state
+ */
+export interface Tab {
+  /** Unique tab identifier */
+  id: string;
+  /** Display name for the tab */
+  name: string;
+  /** Query state for this tab */
+  query: QueryState;
+  /** Results state for this tab */
+  results: ResultsState;
+  /** Timestamp of last modification (for persistence expiry) */
+  lastModified: number;
+}
+
+/**
+ * Tabs state management
+ * Manages multiple tabs and tracks the active tab
+ */
+export interface TabsState {
+  /** Array of all tabs */
+  tabs: Tab[];
+  /** ID of the currently active tab */
+  activeTabId: string | null;
+}

@@ -18,7 +18,8 @@
       "Bash(curl:*)",
       "Bash(del \"src\\lib\\components\\Results\\DataTable.stories.minimal.ts\")",
       "Bash(timeout 15 bash:*)",
-      "Bash(timeout:*)"
+      "Bash(timeout:*)",
+      "Bash(del:*)"
     ],
     "deny": [],
     "ask": [],

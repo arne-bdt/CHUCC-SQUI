@@ -19,5 +19,8 @@ export type { UIState } from './uiStore';
 // Endpoint store
 export { endpointCatalogue, defaultEndpoint } from './endpointStore';
 
+// Tab store
+export { tabStore } from './tabStore';
+
 // Re-export types from config
 export type { CarbonTheme } from '../types/config';

@@ -218,6 +218,22 @@
   }
 
   /**
+   * Sync store changes back to editor (for tab switching)
+   * Only updates if the store content differs from editor content
+   */
+  $effect(() => {
+    if (!editorView) return;
+
+    const storeText = queryState.text;
+    const editorText = editorView.state.doc.toString();
+
+    // Only update if content actually differs (prevents infinite loops)
+    if (storeText !== editorText) {
+      setValue(storeText);
+    }
+  });
+
+  /**
    * Update theme when theme store changes
    */
   $effect(() => {
