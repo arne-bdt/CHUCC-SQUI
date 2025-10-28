@@ -2,14 +2,17 @@ import { describe, it, expect, beforeEach, afterEach } from 'vitest';
 import { render, screen, waitFor } from '@testing-library/svelte';
 import userEvent from '@testing-library/user-event';
 import QueryTabs from '../../src/lib/components/Tabs/QueryTabs.svelte';
-import { tabStore } from '../../src/lib/stores/tabStore';
+import { createTabStore } from '../../src/lib/stores/tabStore';
 import { get } from 'svelte/store';
+import QueryTabsTestWrapper from './QueryTabsTestWrapper.svelte';
 
 describe('QueryTabs Integration', () => {
+  let testTabStore: ReturnType<typeof createTabStore>;
+
   beforeEach(() => {
-    // Clear localStorage and reset tab store
+    // Clear localStorage and create fresh tab store with persistence disabled for tests
     localStorage.clear();
-    tabStore.reset();
+    testTabStore = createTabStore({ disablePersistence: true });
   });
 
   afterEach(() => {
@@ -18,7 +21,7 @@ describe('QueryTabs Integration', () => {
 
   describe('rendering', () => {
     it('should render initial tab', async () => {
-      const { container } = render(QueryTabs);
+      const { container } = render(QueryTabsTestWrapper, { props: { tabStore: testTabStore } });
 
       await waitFor(() => {
         // Check that the tab is visible
@@ -28,7 +31,7 @@ describe('QueryTabs Integration', () => {
     });
 
     it('should render add tab button', async () => {
-      render(QueryTabs);
+      render(QueryTabsTestWrapper, { props: { tabStore: testTabStore } });
 
       await waitFor(() => {
         const addButton = screen.getByLabelText(/add new tab/i);
@@ -37,7 +40,7 @@ describe('QueryTabs Integration', () => {
     });
 
     it('should render tab with correct name', async () => {
-      const { container } = render(QueryTabs);
+      const { container } = render(QueryTabsTestWrapper, { props: { tabStore: testTabStore } });
 
       await waitFor(() => {
         const tabName = container.querySelector('.tab-name');
@@ -46,7 +49,7 @@ describe('QueryTabs Integration', () => {
     });
 
     it('should not show close button on single tab', async () => {
-      const { container } = render(QueryTabs);
+      const { container } = render(QueryTabsTestWrapper, { props: { tabStore: testTabStore } });
 
       await waitFor(() => {
         const closeButtons = container.querySelectorAll('.close-button');
@@ -58,20 +61,20 @@ describe('QueryTabs Integration', () => {
   describe('adding tabs', () => {
     it('should add new tab when clicking add button', async () => {
       const user = userEvent.setup();
-      const { container } = render(QueryTabs);
+      const { container } = render(QueryTabsTestWrapper, { props: { tabStore: testTabStore } });
 
       const addButton = await waitFor(() => screen.getByLabelText(/add new tab/i));
       await user.click(addButton);
 
       await waitFor(() => {
-        const state = get(tabStore);
+        const state = get(testTabStore);
         expect(state.tabs).toHaveLength(2);
       });
     });
 
     it('should show new tab name', async () => {
       const user = userEvent.setup();
-      const { container } = render(QueryTabs);
+      const { container } = render(QueryTabsTestWrapper, { props: { tabStore: testTabStore } });
 
       const addButton = await waitFor(() => screen.getByLabelText(/add new tab/i));
       await user.click(addButton);
@@ -85,7 +88,7 @@ describe('QueryTabs Integration', () => {
 
     it('should show close buttons when multiple tabs exist', async () => {
       const user = userEvent.setup();
-      const { container } = render(QueryTabs);
+      const { container } = render(QueryTabsTestWrapper, { props: { tabStore: testTabStore } });
 
       const addButton = await waitFor(() => screen.getByLabelText(/add new tab/i));
       await user.click(addButton);
@@ -98,13 +101,13 @@ describe('QueryTabs Integration', () => {
 
     it('should auto-switch to new tab', async () => {
       const user = userEvent.setup();
-      render(QueryTabs);
+      render(QueryTabsTestWrapper, { props: { tabStore: testTabStore } });
 
       const addButton = await waitFor(() => screen.getByLabelText(/add new tab/i));
       await user.click(addButton);
 
       await waitFor(() => {
-        const state = get(tabStore);
+        const state = get(testTabStore);
         const newTab = state.tabs[1];
         expect(state.activeTabId).toBe(newTab.id);
       });
@@ -114,7 +117,7 @@ describe('QueryTabs Integration', () => {
   describe('closing tabs', () => {
     it('should close tab when clicking close button', async () => {
       const user = userEvent.setup();
-      const { container } = render(QueryTabs);
+      const { container } = render(QueryTabsTestWrapper, { props: { tabStore: testTabStore } });
 
       // Add a second tab
       const addButton = await waitFor(() => screen.getByLabelText(/add new tab/i));
@@ -131,14 +134,14 @@ describe('QueryTabs Integration', () => {
       await user.click(closeButtons[0] as HTMLElement);
 
       await waitFor(() => {
-        const state = get(tabStore);
+        const state = get(testTabStore);
         expect(state.tabs).toHaveLength(1);
       });
     });
 
     it('should not close last tab', async () => {
       const user = userEvent.setup();
-      const { container } = render(QueryTabs);
+      const { container } = render(QueryTabsTestWrapper, { props: { tabStore: testTabStore } });
 
       // Add second tab
       const addButton = await waitFor(() => screen.getByLabelText(/add new tab/i));
@@ -152,7 +155,7 @@ describe('QueryTabs Integration', () => {
 
       await user.click(closeButtons[0] as HTMLElement);
       await waitFor(() => {
-        expect(get(tabStore).tabs).toHaveLength(1);
+        expect(get(testTabStore).tabs).toHaveLength(1);
       });
 
       // Try to close last tab - close button should be gone
@@ -164,18 +167,18 @@ describe('QueryTabs Integration', () => {
 
     it('should switch to adjacent tab when closing active tab', async () => {
       const user = userEvent.setup();
-      const { container } = render(QueryTabs);
+      const { container } = render(QueryTabsTestWrapper, { props: { tabStore: testTabStore } });
 
       // Add two more tabs
       const addButton = await waitFor(() => screen.getByLabelText(/add new tab/i));
       await user.click(addButton);
       await user.click(addButton);
 
-      const state1 = get(tabStore);
+      const state1 = get(testTabStore);
       const tab2Id = state1.tabs[1].id;
 
       // Switch to tab 2
-      tabStore.switchTab(tab2Id);
+      testTabStore.switchTab(tab2Id);
 
       // Close tab 2
       await waitFor(() => {
@@ -187,7 +190,7 @@ describe('QueryTabs Integration', () => {
       await user.click(closeButtons[1] as HTMLElement);
 
       await waitFor(() => {
-        const state2 = get(tabStore);
+        const state2 = get(testTabStore);
         expect(state2.activeTabId).not.toBe(tab2Id);
         expect(state2.tabs).toHaveLength(2);
       });
@@ -197,10 +200,10 @@ describe('QueryTabs Integration', () => {
   describe('tab switching', () => {
     it('should switch tabs programmatically', async () => {
       const user = userEvent.setup();
-      render(QueryTabs);
+      render(QueryTabsTestWrapper, { props: { tabStore: testTabStore } });
 
       // Get first tab ID before adding second tab
-      const state0 = get(tabStore);
+      const state0 = get(testTabStore);
       const firstTabId = state0.tabs[0].id;
 
       // Add second tab (this will auto-switch to the new tab)
@@ -209,25 +212,25 @@ describe('QueryTabs Integration', () => {
 
       // Wait for second tab to be added and become active
       await waitFor(() => {
-        const state1 = get(tabStore);
+        const state1 = get(testTabStore);
         expect(state1.tabs).toHaveLength(2);
         // Active tab should now be the second tab (new tabs auto-activate)
         expect(state1.activeTabId).not.toBe(firstTabId);
       });
 
       // Switch back to first tab programmatically
-      tabStore.switchTab(firstTabId);
+      testTabStore.switchTab(firstTabId);
 
       // Verify that first tab is now active
       await waitFor(() => {
-        const state2 = get(tabStore);
+        const state2 = get(testTabStore);
         expect(state2.activeTabId).toBe(firstTabId);
       });
     });
 
     it('should update UI when active tab changes', async () => {
       const user = userEvent.setup();
-      const { container } = render(QueryTabs);
+      const { container } = render(QueryTabsTestWrapper, { props: { tabStore: testTabStore } });
 
       // Add second tab
       const addButton = await waitFor(() => screen.getByLabelText(/add new tab/i));
@@ -252,7 +255,9 @@ describe('QueryTabs Integration', () => {
   describe('localStorage persistence', () => {
     it('should save tabs to localStorage when adding tab', async () => {
       const user = userEvent.setup();
-      render(QueryTabs);
+      // Create store with persistence enabled for this specific test
+      const persistentStore = createTabStore({ disablePersistence: false });
+      render(QueryTabsTestWrapper, { props: { tabStore: persistentStore } });
 
       const addButton = await waitFor(() => screen.getByLabelText(/add new tab/i));
       await user.click(addButton);
@@ -268,7 +273,9 @@ describe('QueryTabs Integration', () => {
 
     it('should save tabs to localStorage when closing tab', async () => {
       const user = userEvent.setup();
-      const { container } = render(QueryTabs);
+      // Create store with persistence enabled for this specific test
+      const persistentStore = createTabStore({ disablePersistence: false });
+      const { container } = render(QueryTabsTestWrapper, { props: { tabStore: persistentStore } });
 
       // Add two tabs
       const addButton = await waitFor(() => screen.getByLabelText(/add new tab/i));
@@ -294,19 +301,19 @@ describe('QueryTabs Integration', () => {
   describe('endpoint copying', () => {
     it('should copy endpoint to new tab', async () => {
       const user = userEvent.setup();
-      render(QueryTabs);
+      render(QueryTabsTestWrapper, { props: { tabStore: testTabStore } });
 
       // Set endpoint on first tab
-      const state1 = get(tabStore);
+      const state1 = get(testTabStore);
       const firstTabId = state1.tabs[0].id;
-      tabStore.updateTabQuery(firstTabId, { endpoint: 'https://dbpedia.org/sparql' });
+      testTabStore.updateTabQuery(firstTabId, { endpoint: 'https://dbpedia.org/sparql' });
 
       // Add new tab
       const addButton = await waitFor(() => screen.getByLabelText(/add new tab/i));
       await user.click(addButton);
 
       await waitFor(() => {
-        const state2 = get(tabStore);
+        const state2 = get(testTabStore);
         const newTab = state2.tabs[1];
         expect(newTab.query.endpoint).toBe('https://dbpedia.org/sparql');
       });

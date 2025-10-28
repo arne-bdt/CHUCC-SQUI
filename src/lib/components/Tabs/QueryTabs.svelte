@@ -16,8 +16,12 @@
 
   import { Tabs, Tab, TabContent, Button } from 'carbon-components-svelte';
   import { Add, Close } from 'carbon-icons-svelte';
-  import { tabStore } from '../../stores';
+  import { getContext } from 'svelte';
+  import type { createTabStore } from '../../stores/tabStore';
   import type { TabsState } from '../../types';
+
+  // Get instance-specific tab store from context
+  const tabStore = getContext<ReturnType<typeof createTabStore>>('tabStore');
 
   // Subscribe to tab store - use $state to track the store value
   let tabsState: TabsState = $state({
@@ -39,6 +43,11 @@
   function handleTabChange(event: CustomEvent<{ selectedIndex: number }>): void {
     const selectedIndex = event.detail.selectedIndex;
     const selectedTab = tabsState.tabs[selectedIndex];
+    console.log('[QueryTabs] handleTabChange:', {
+      selectedIndex,
+      selectedTab: selectedTab ? { id: selectedTab.id, name: selectedTab.name } : null,
+      totalTabs: tabsState.tabs.length,
+    });
     if (selectedTab) {
       tabStore.switchTab(selectedTab.id);
     }
@@ -63,17 +72,30 @@
 
   /**
    * Get the index of the active tab
+   * Use $state so it can be bound to Carbon Tabs
    */
-  const selectedIndex = $derived(
-    tabsState.activeTabId
+  let selectedIndex = $state(0);
+
+  // Update selectedIndex when tabsState changes
+  $effect(() => {
+    const newIndex = tabsState.activeTabId
       ? tabsState.tabs.findIndex((tab) => tab.id === tabsState.activeTabId)
-      : 0
-  );
+      : 0;
+    console.log('[QueryTabs] $effect updating selectedIndex:', {
+      activeTabId: tabsState.activeTabId,
+      newIndex,
+      oldSelectedIndex: selectedIndex,
+      tabs: tabsState.tabs.map(t => ({ id: t.id, name: t.name })),
+    });
+    if (newIndex !== -1) {
+      selectedIndex = newIndex;
+    }
+  });
 </script>
 
 <div class="query-tabs-container">
   <div class="tabs-header">
-    <Tabs type="container" selected={selectedIndex} on:change={handleTabChange}>
+    <Tabs type="container" bind:selected={selectedIndex} on:change={handleTabChange}>
       {#each tabsState.tabs as tab (tab.id)}
         <Tab label={tab.name}>
           <div class="tab-label">

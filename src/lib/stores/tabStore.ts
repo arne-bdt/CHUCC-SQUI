@@ -53,8 +53,15 @@ function createNewTab(name: string, endpoint: string = ''): Tab {
 /**
  * Tab store for managing multiple query tabs
  * Provides isolated state for each tab (query, endpoint, results)
+ *
+ * @param options - Configuration options
+ * @param options.instanceId - Unique identifier for localStorage isolation (prevents cross-instance pollution)
+ * @param options.disablePersistence - Disable localStorage persistence (useful for testing/Storybook)
  */
-export function createTabStore(): {
+export function createTabStore(options: {
+  instanceId?: string;
+  disablePersistence?: boolean;
+} = {}): {
   subscribe: (_run: (_value: TabsState) => void) => () => void;
   addTab: (_endpoint?: string) => string;
   removeTab: (_tabId: string) => void;
@@ -70,8 +77,10 @@ export function createTabStore(): {
   saveToStorage: () => void;
   clearStorage: () => void;
 } {
-  const STORAGE_KEY = 'squi-tabs';
+  // Use instance-specific localStorage key if provided, otherwise use global key
+  const STORAGE_KEY = options.instanceId ? `squi-tabs-${options.instanceId}` : 'squi-tabs';
   const STORAGE_EXPIRY_DAYS = 30;
+  const persistenceEnabled = !options.disablePersistence;
 
   // Create initial state with one tab
   const initialState: TabsState = {
@@ -91,8 +100,11 @@ export function createTabStore(): {
 
   /**
    * Save tabs to localStorage
+   * No-op if persistence is disabled
    */
   function saveToStorage(): void {
+    if (!persistenceEnabled) return;
+
     try {
       const state = getState();
       const storageData = {
@@ -108,8 +120,11 @@ export function createTabStore(): {
 
   /**
    * Load tabs from localStorage
+   * No-op if persistence is disabled
    */
   function loadFromStorage(): void {
+    if (!persistenceEnabled) return;
+
     try {
       const stored = localStorage.getItem(STORAGE_KEY);
       if (!stored) {
@@ -144,8 +159,11 @@ export function createTabStore(): {
 
   /**
    * Clear tabs from localStorage
+   * No-op if persistence is disabled
    */
   function clearStorage(): void {
+    if (!persistenceEnabled) return;
+
     try {
       localStorage.removeItem(STORAGE_KEY);
     } catch (error) {

@@ -18,7 +18,8 @@
 
   import type { SquiConfig } from './lib/types';
   import type { CarbonTheme, ResultFormat } from './lib/types';
-  import { themeStore, queryStore, resultsStore, tabStore } from './lib/stores';
+  import { themeStore, queryStore, resultsStore } from './lib/stores';
+  import { createTabStore } from './lib/stores/tabStore';
   import { defaultEndpoint } from './lib/stores/endpointStore';
   import Toolbar from './lib/components/Toolbar/Toolbar.svelte';
   import RunButton from './lib/components/Toolbar/RunButton.svelte';
@@ -28,6 +29,7 @@
   import SparqlEditor from './lib/components/Editor/SparqlEditor.svelte';
   import ResultsPlaceholder from './lib/components/Results/ResultsPlaceholder.svelte';
   import QueryTabs from './lib/components/Tabs/QueryTabs.svelte';
+  import { setContext } from 'svelte';
 
   /**
    * Component props interface
@@ -41,6 +43,8 @@
     prefixes = { default: {} },
     theme = { theme: 'white' },
     localization = { locale: 'en' },
+    instanceId,
+    disablePersistence = false,
     features = {
       enableTabs: true,
       enableFilters: true,
@@ -65,14 +69,21 @@
   const themeState = $derived(themeStore);
   const currentTheme = $derived(themeState ? themeState.current : 'white');
 
-  // Tab management - simplified to prevent infinite loops
+  // Tab management - Create instance-specific tab store
+  // Each component instance gets its own tab store to prevent sharing across instances
+  const instanceTabStore = createTabStore({
+    instanceId,
+    disablePersistence,
+  });
+  setContext('tabStore', instanceTabStore);
+
   let tabsInitialized = false;
   let currentActiveTabId: string | null = null;
 
   // Initialize tabs from localStorage on mount
   if (features.enableTabs !== false) {
-    tabStore.loadFromStorage();
-    const initialTab = tabStore.getActiveTab();
+    instanceTabStore.loadFromStorage();
+    const initialTab = instanceTabStore.getActiveTab();
     if (initialTab) {
       currentActiveTabId = initialTab.id;
       queryStore.setState(initialTab.query);
@@ -86,18 +97,28 @@
   }
 
   // Watch for tab switches and load new tab state
-  // This effect ONLY reads from tabStore and writes to queryStore/resultsStore
+  // This effect ONLY reads from instanceTabStore and writes to queryStore/resultsStore
   // It never writes back to tabStore, preventing circular updates
   $effect(() => {
     if (!tabsInitialized) return;
 
-    const unsubscribe = tabStore.subscribe((state) => {
+    const unsubscribe = instanceTabStore.subscribe((state) => {
       // Check if active tab changed
+      console.log('[SparqlQueryUI] Tab store subscription triggered:', {
+        activeTabId: state.activeTabId,
+        currentActiveTabId,
+        tabCount: state.tabs.length,
+      });
       if (state.activeTabId && state.activeTabId !== currentActiveTabId) {
         currentActiveTabId = state.activeTabId;
 
         // Find and load the new active tab
         const newActiveTab = state.tabs.find((t) => t.id === state.activeTabId);
+        console.log('[SparqlQueryUI] Switching to tab:', {
+          tabId: newActiveTab?.id,
+          tabName: newActiveTab?.name,
+          queryText: newActiveTab?.query.text.substring(0, 50),
+        });
         if (newActiveTab) {
           // Load tab state into global stores (but don't save back)
           queryStore.setState(newActiveTab.query);

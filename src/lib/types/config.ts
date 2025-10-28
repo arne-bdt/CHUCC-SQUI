@@ -27,6 +27,18 @@ export interface SquiConfig {
   features?: FeatureFlags;
   /** Limits for query execution and results */
   limits?: LimitsConfig;
+  /**
+   * Unique instance ID for localStorage isolation
+   * When multiple instances exist on same page, use different IDs to prevent state sharing
+   * @example "story-1", "widget-main", "embed-123"
+   */
+  instanceId?: string;
+  /**
+   * Disable localStorage persistence (useful for testing/Storybook)
+   * When true, tabs won't persist across page refreshes
+   * @default false
+   */
+  disablePersistence?: boolean;
 }
 
 /**

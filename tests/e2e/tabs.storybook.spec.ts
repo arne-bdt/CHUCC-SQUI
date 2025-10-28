@@ -8,6 +8,7 @@ import { test, expect, type Page } from '@playwright/test';
 test.describe('Tab Switching in Storybook', () => {
   test.beforeEach(async ({ page }) => {
     // Navigate to a story with tabs enabled
+    // Note: Storybook converts 'SQUI/SparqlQueryUI' → 'squi-sparqlqueryui' and 'DBpediaEndpoint' → 'dbpediaendpoint'
     await page.goto('/?path=/story/squi-sparqlqueryui--dbpediaendpoint');
 
     // Wait for the component to load

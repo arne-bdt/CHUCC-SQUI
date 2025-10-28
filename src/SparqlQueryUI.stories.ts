@@ -74,7 +74,10 @@ type Story = StoryObj<typeof meta>;
  * Shows the basic component structure.
  */
 export const Default: Story = {
-  args: {},
+  args: {
+    instanceId: 'story-default',
+    disablePersistence: true,
+  },
 };
 
 /**
@@ -83,6 +86,8 @@ export const Default: Story = {
  */
 export const DBpediaEndpoint: Story = {
   args: {
+    instanceId: 'story-dbpedia',
+    disablePersistence: true,
     endpoint: {
       url: 'https://dbpedia.org/sparql',
       hideSelector: false,
@@ -96,6 +101,8 @@ export const DBpediaEndpoint: Story = {
  */
 export const WikidataEndpoint: Story = {
   args: {
+    instanceId: 'story-wikidata',
+    disablePersistence: true,
     endpoint: {
       url: 'https://query.wikidata.org/sparql',
       hideSelector: false,
@@ -116,6 +123,8 @@ export const WikidataEndpoint: Story = {
  */
 export const CustomLimits: Story = {
   args: {
+    instanceId: 'story-custom-limits',
+    disablePersistence: true,
     endpoint: { url: 'https://dbpedia.org/sparql' },
     limits: {
       maxRows: 50000,
@@ -131,6 +140,8 @@ export const CustomLimits: Story = {
  */
 export const AllFeaturesEnabled: Story = {
   args: {
+    instanceId: 'story-all-features',
+    disablePersistence: true,
     endpoint: { url: 'https://dbpedia.org/sparql' },
     features: {
       enableTabs: true,
@@ -148,6 +159,8 @@ export const AllFeaturesEnabled: Story = {
  */
 export const MinimalFeatures: Story = {
   args: {
+    instanceId: 'story-minimal',
+    disablePersistence: true,
     endpoint: { url: 'https://dbpedia.org/sparql' },
     features: {
       enableTabs: false,
@@ -165,6 +178,8 @@ export const MinimalFeatures: Story = {
  */
 export const FixedEndpoint: Story = {
   args: {
+    instanceId: 'story-fixed',
+    disablePersistence: true,
     endpoint: {
       url: 'https://dbpedia.org/sparql',
       hideSelector: true,
@@ -178,6 +193,8 @@ export const FixedEndpoint: Story = {
  */
 export const FullConfiguration: Story = {
   args: {
+    instanceId: 'story-full',
+    disablePersistence: true,
     endpoint: {
       url: 'https://query.wikidata.org/sparql',
       hideSelector: false,
