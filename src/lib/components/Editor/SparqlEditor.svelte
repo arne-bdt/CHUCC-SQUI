@@ -57,15 +57,35 @@
   let currentTheme = $state<CarbonTheme>('white');
 
   // Store subscriptions for query execution
-  // Use $state with manual subscription to ensure reactivity
+  // Use $state to track current store values
   let queryState = $state($queryStore);
   let resultsState = $state($resultsStore);
   let endpoint = $state($defaultEndpoint);
 
-  // Manually subscribe to stores to ensure editor updates when store changes
+  // CRITICAL: Subscribe to queryStore and DIRECTLY update editor when it changes
+  // This bypasses the intermediate queryState variable to avoid reactivity issues
   $effect(() => {
     const unsubscribe = queryStore.subscribe((value) => {
+      console.log('[SparqlEditor] queryStore subscription fired:', {
+        newText: value.text.substring(0, 50),
+        currentEditorText: editorView?.state.doc.toString().substring(0, 50) || 'no editor',
+        willUpdate: editorView && value.text !== editorView.state.doc.toString(),
+      });
+
+      // Update queryState for other derived values
       queryState = value;
+
+      // DIRECTLY update editor if text changed
+      if (editorView && value.text !== editorView.state.doc.toString()) {
+        console.log('[SparqlEditor] DIRECTLY updating editor to:', value.text.substring(0, 50));
+        editorView.dispatch({
+          changes: {
+            from: 0,
+            to: editorView.state.doc.length,
+            insert: value.text,
+          },
+        });
+      }
     });
     return unsubscribe;
   });
@@ -229,27 +249,28 @@
   }
 
   /**
-   * Sync store changes back to editor (for tab switching)
-   * Only updates if the store content differs from editor content
+   * OLD APPROACH: Sync store changes back to editor (for tab switching)
+   * REPLACED BY: Direct update in queryStore subscription above
+   * Keeping this commented out for reference
    */
-  $effect(() => {
-    if (!editorView) return;
+  // $effect(() => {
+  //   if (!editorView) return;
 
-    const storeText = queryState.text;
-    const editorText = editorView.state.doc.toString();
+  //   const storeText = queryState.text;
+  //   const editorText = editorView.state.doc.toString();
 
-    console.log('[SparqlEditor] $effect - checking if editor needs update:', {
-      storeText: storeText.substring(0, 50),
-      editorText: editorText.substring(0, 50),
-      needsUpdate: storeText !== editorText,
-    });
+  //   console.log('[SparqlEditor] $effect - checking if editor needs update:', {
+  //     storeText: storeText.substring(0, 50),
+  //     editorText: editorText.substring(0, 50),
+  //     needsUpdate: storeText !== editorText,
+  //   });
 
-    // Only update if content actually differs (prevents infinite loops)
-    if (storeText !== editorText) {
-      console.log('[SparqlEditor] Updating editor to:', storeText.substring(0, 50));
-      setValue(storeText);
-    }
-  });
+  //   // Only update if content actually differs (prevents infinite loops)
+  //   if (storeText !== editorText) {
+  //     console.log('[SparqlEditor] Updating editor to:', storeText.substring(0, 50));
+  //     setValue(storeText);
+  //   }
+  // });
 
   /**
    * Update theme when theme store changes

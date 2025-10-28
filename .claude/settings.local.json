@@ -21,7 +21,9 @@
       "Bash(timeout:*)",
       "Bash(del:*)",
       "Bash(tee:*)",
-      "Bash(taskkill /F /IM node.exe /T)"
+      "Bash(taskkill /F /IM node.exe /T)",
+      "Bash(taskkill:*)",
+      "Bash(npx playwright test:*)"
     ],
     "deny": [],
     "ask": [],

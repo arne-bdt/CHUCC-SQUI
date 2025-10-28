@@ -79,6 +79,7 @@
 
   let tabsInitialized = false;
   let currentActiveTabId: string | null = null;
+  let isSwitching = false; // Guard against re-entrant calls from updateTabQuery
 
   // Initialize tabs from localStorage on mount
   if (features.enableTabs !== false) {
@@ -103,6 +104,12 @@
     if (!tabsInitialized) return;
 
     const unsubscribe = instanceTabStore.subscribe((state) => {
+      // Guard against re-entrant calls (updateTabQuery triggers subscription)
+      if (isSwitching) {
+        console.log('[SparqlQueryUI] Ignoring re-entrant subscription call');
+        return;
+      }
+
       // Check if active tab changed
       console.log('[SparqlQueryUI] Tab store subscription triggered:', {
         activeTabId: state.activeTabId,
@@ -110,6 +117,8 @@
         tabCount: state.tabs.length,
       });
       if (state.activeTabId && state.activeTabId !== currentActiveTabId) {
+        isSwitching = true; // Set guard
+
         // CRITICAL: Save current tab's state before switching
         if (currentActiveTabId) {
           const oldTab = state.tabs.find((t) => t.id === currentActiveTabId);
@@ -141,6 +150,8 @@
             _currentEndpoint = newActiveTab.query.endpoint;
           }
         }
+
+        isSwitching = false; // Clear guard
       }
     });
 
