@@ -134,15 +134,17 @@
 
         currentActiveTabId = state.activeTabId;
 
-        // Find and load the new active tab
-        const newActiveTab = state.tabs.find((t) => t.id === state.activeTabId);
-        console.log('[SparqlQueryUI] Switching to tab:', {
+        // CRITICAL FIX: Get fresh tab data using getTab() instead of stale 'state' parameter
+        // After updateTabQuery, the 'state' parameter is stale - we need current data
+        const newActiveTab = instanceTabStore.getTab(state.activeTabId);
+        console.log('[SparqlQueryUI] Switching to tab (FRESH DATA):', {
           tabId: newActiveTab?.id,
           tabName: newActiveTab?.name,
           queryText: newActiveTab?.query.text.substring(0, 50),
         });
         if (newActiveTab) {
           // Load tab state into global stores (but don't save back)
+          console.log('[SparqlQueryUI] Calling queryStore.setState with:', newActiveTab.query.text.substring(0, 50));
           queryStore.setState(newActiveTab.query);
           resultsStore.setState(newActiveTab.results);
           if (newActiveTab.query.endpoint) {

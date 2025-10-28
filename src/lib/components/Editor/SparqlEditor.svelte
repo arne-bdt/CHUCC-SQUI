@@ -62,47 +62,8 @@
   let resultsState = $state($resultsStore);
   let endpoint = $state($defaultEndpoint);
 
-  // CRITICAL: Subscribe to queryStore and DIRECTLY update editor when it changes
-  // This bypasses the intermediate queryState variable to avoid reactivity issues
-  $effect(() => {
-    const unsubscribe = queryStore.subscribe((value) => {
-      console.log('[SparqlEditor] queryStore subscription fired:', {
-        newText: value.text.substring(0, 50),
-        currentEditorText: editorView?.state.doc.toString().substring(0, 50) || 'no editor',
-        willUpdate: editorView && value.text !== editorView.state.doc.toString(),
-      });
-
-      // Update queryState for other derived values
-      queryState = value;
-
-      // DIRECTLY update editor if text changed
-      if (editorView && value.text !== editorView.state.doc.toString()) {
-        console.log('[SparqlEditor] DIRECTLY updating editor to:', value.text.substring(0, 50));
-        editorView.dispatch({
-          changes: {
-            from: 0,
-            to: editorView.state.doc.length,
-            insert: value.text,
-          },
-        });
-      }
-    });
-    return unsubscribe;
-  });
-
-  $effect(() => {
-    const unsubscribe = resultsStore.subscribe((value) => {
-      resultsState = value;
-    });
-    return unsubscribe;
-  });
-
-  $effect(() => {
-    const unsubscribe = defaultEndpoint.subscribe((value) => {
-      endpoint = value;
-    });
-    return unsubscribe;
-  });
+  // Store unsubscribe functions for cleanup
+  let storeUnsubscribers: Array<() => void> = [];
 
   // Computed state for execution
   const hasQuery = $derived(queryState.text.trim().length > 0);
@@ -301,9 +262,60 @@
   // Lifecycle
   onMount(() => {
     initializeEditor();
+
+    // CRITICAL: Subscribe to stores AFTER editor is initialized
+    // This ensures editorView is available when subscriptions fire
+    console.log('[SparqlEditor] onMount - Setting up store subscriptions');
+
+    // Subscribe to queryStore and DIRECTLY update editor when it changes
+    storeUnsubscribers.push(
+      queryStore.subscribe((value) => {
+        console.log('[SparqlEditor] queryStore subscription fired:', {
+          newText: value.text.substring(0, 50),
+          currentEditorText: editorView?.state.doc.toString().substring(0, 50) || 'no editor',
+          willUpdate: editorView && value.text !== editorView.state.doc.toString(),
+        });
+
+        // Update queryState for other derived values
+        queryState = value;
+
+        // DIRECTLY update editor if text changed
+        if (editorView && value.text !== editorView.state.doc.toString()) {
+          console.log('[SparqlEditor] DIRECTLY updating editor to:', value.text.substring(0, 50));
+          editorView.dispatch({
+            changes: {
+              from: 0,
+              to: editorView.state.doc.length,
+              insert: value.text,
+            },
+          });
+        }
+      })
+    );
+
+    // Subscribe to resultsStore
+    storeUnsubscribers.push(
+      resultsStore.subscribe((value) => {
+        resultsState = value;
+      })
+    );
+
+    // Subscribe to endpointStore
+    storeUnsubscribers.push(
+      defaultEndpoint.subscribe((value) => {
+        endpoint = value;
+      })
+    );
+
+    console.log('[SparqlEditor] onMount complete - subscriptions active');
   });
 
   onDestroy(() => {
+    // Clean up store subscriptions
+    storeUnsubscribers.forEach((unsub) => unsub());
+    storeUnsubscribers = [];
+
+    // Destroy editor
     editorView?.destroy();
   });
 </script>
