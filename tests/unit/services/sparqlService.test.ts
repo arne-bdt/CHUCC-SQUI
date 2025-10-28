@@ -32,6 +32,7 @@ describe('SparqlService', () => {
         ok: true,
         status: 200,
         headers: new Headers({ 'Content-Type': 'application/sparql-results+json' }),
+        text: async () => JSON.stringify(mockResults),
         json: async () => mockResults,
       });
 
@@ -60,6 +61,7 @@ describe('SparqlService', () => {
         ok: true,
         status: 200,
         headers: new Headers({ 'Content-Type': 'application/sparql-results+json' }),
+        text: async () => JSON.stringify(mockResults),
         json: async () => mockResults,
       });
 
@@ -113,6 +115,7 @@ describe('SparqlService', () => {
         ok: true,
         status: 200,
         headers: new Headers({ 'Content-Type': 'application/sparql-results+json' }),
+        text: async () => JSON.stringify(mockResults),
         json: async () => mockResults,
       });
 
@@ -139,6 +142,7 @@ describe('SparqlService', () => {
         ok: true,
         status: 200,
         headers: new Headers({ 'Content-Type': 'application/sparql-results+json' }),
+        text: async () => JSON.stringify(mockResults),
         json: async () => mockResults,
       });
 
@@ -170,6 +174,7 @@ describe('SparqlService', () => {
         ok: true,
         status: 200,
         headers: new Headers({ 'Content-Type': 'application/sparql-results+json' }),
+        text: async () => JSON.stringify(mockResults),
         json: async () => mockResults,
       });
 
@@ -196,6 +201,7 @@ describe('SparqlService', () => {
         ok: true,
         status: 200,
         headers: new Headers({ 'Content-Type': 'application/sparql-results+json' }),
+        text: async () => JSON.stringify(mockResults),
         json: async () => mockResults,
       });
 
@@ -238,6 +244,7 @@ describe('SparqlService', () => {
         ok: true,
         status: 200,
         headers: new Headers({ 'Content-Type': 'application/sparql-results+json' }),
+        text: async () => JSON.stringify(mockResults),
         json: async () => mockResults,
       });
 
@@ -316,6 +323,7 @@ describe('SparqlService', () => {
         status: 500,
         statusText: 'Internal Server Error',
         headers: new Headers({ 'Content-Type': 'application/json' }),
+        text: async () => JSON.stringify({ message: 'Database connection failed' }),
         json: async () => ({ message: 'Database connection failed' }),
       });
 
@@ -565,6 +573,9 @@ describe('SparqlService', () => {
         status: 400,
         statusText: 'Bad Request',
         headers: new Headers({ 'Content-Type': 'application/json' }),
+        text: async () => JSON.stringify({
+          message: 'Lexical error at line 1, column 2. Encountered: "L"',
+        }),
         json: async () => ({
           message: 'Lexical error at line 1, column 2. Encountered: "L"',
         }),
@@ -595,6 +606,7 @@ describe('SparqlService', () => {
         ok: true,
         status: 200,
         headers: new Headers({ 'Content-Type': 'application/sparql-results+json' }),
+        text: async () => JSON.stringify(mockResults),
         json: async () => mockResults,
       });
 
@@ -654,6 +666,7 @@ describe('SparqlService', () => {
                 ok: true,
                 status: 200,
                 headers: new Headers({ 'Content-Type': 'application/sparql-results+json' }),
+                text: async () => JSON.stringify(mockResults),
                 json: async () => mockResults,
               });
             }, 50);
@@ -682,6 +695,7 @@ describe('SparqlService', () => {
           ok: true,
           status: 200,
           headers: new Headers({ 'Content-Type': 'application/sparql-results+json' }),
+          text: async () => JSON.stringify(mockResults),
           json: async () => mockResults,
         });
 
@@ -789,6 +803,7 @@ describe('SparqlService', () => {
           ok: true,
           status: 200,
           headers: new Headers({ 'Content-Type': 'application/sparql-results+json' }),
+          text: async () => JSON.stringify(mockResults),
           json: async () => mockResults,
         });
 
@@ -983,6 +998,7 @@ describe('SparqlService', () => {
           ok: true,
           status: 200,
           headers: new Headers({ 'Content-Type': 'application/sparql-results+json' }),
+          text: async () => JSON.stringify(mockResults),
           json: async () => mockResults,
         });
 

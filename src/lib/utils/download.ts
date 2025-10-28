@@ -59,25 +59,73 @@ export function generateFilename(format: ResultFormat, prefix: string = 'results
  * @param mimeType MIME type for the file
  */
 export function downloadFile(data: string | object, filename: string, mimeType: string): void {
-  // Convert object to string if needed
-  const content = typeof data === 'string' ? data : JSON.stringify(data, null, 2);
+  try {
+    // Convert object to string if needed
+    const content = typeof data === 'string' ? data : JSON.stringify(data, null, 2);
 
-  // Create blob
-  const blob = new Blob([content], { type: mimeType });
+    // Create blob
+    const blob = new Blob([content], { type: mimeType });
 
-  // Create temporary download link
-  const url = URL.createObjectURL(blob);
-  const link = document.createElement('a');
-  link.href = url;
-  link.download = filename;
+    // Check if we're in an iframe (like Storybook)
+    const inIframe = window.self !== window.top;
 
-  // Trigger download
-  document.body.appendChild(link);
-  link.click();
+    // Create temporary download link
+    const url = URL.createObjectURL(blob);
 
-  // Cleanup
-  document.body.removeChild(link);
-  URL.revokeObjectURL(url);
+    if (inIframe) {
+      // In iframe (Storybook): open in new window so browser can handle download
+      const newWindow = window.open(url, '_blank');
+      if (newWindow) {
+        // Set a title that hints at downloading
+        setTimeout(() => {
+          try {
+            newWindow.document.title = `Download: ${filename}`;
+          } catch (e) {
+            // May fail due to CORS, ignore
+          }
+        }, 100);
+      } else {
+        console.warn('[Download] Popup blocked - please allow popups to download files');
+      }
+
+      // Cleanup blob URL after a delay
+      setTimeout(() => {
+        URL.revokeObjectURL(url);
+      }, 1000);
+    } else {
+      // Normal context: use download attribute
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = filename;
+
+      // Make link invisible and set attributes for better compatibility
+      // Check if methods exist (may not in test environments)
+      if (link.style) {
+        link.style.display = 'none';
+      }
+      if (typeof link.setAttribute === 'function') {
+        link.setAttribute('target', '_blank');
+      }
+
+      // Append to DOM and trigger click
+      document.body.appendChild(link);
+
+      // Trigger click
+      link.click();
+
+      // Cleanup after a small delay to ensure download triggers
+      setTimeout(() => {
+        // Check if link still exists in DOM before removing (important for test environments)
+        if (link.parentNode) {
+          document.body.removeChild(link);
+        }
+        URL.revokeObjectURL(url);
+      }, 100);
+    }
+  } catch (error) {
+    console.error('[Download] Download failed:', error);
+    throw error;
+  }
 }
 
 /**

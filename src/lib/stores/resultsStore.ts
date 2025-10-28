@@ -49,6 +49,7 @@ export function createResultsStore(): {
     /**
      * Set query results data
      * Automatically clears loading and error states
+     * Task 36: Resets view to 'table' when new data arrives
      * Task 38: Now also sets rawData for download/raw view functionality
      * @param data - SPARQL JSON results
      * @param executionTime - Query execution time in ms
@@ -63,6 +64,7 @@ export function createResultsStore(): {
         data,
         rawData,
         contentType: 'application/sparql-results+json',
+        view: 'table', // Reset to table view when new data arrives
         loading: false,
         error: null,
         executionTime,
@@ -140,45 +142,36 @@ export function createResultsStore(): {
         const result = await sparqlService.executeQuery(options);
 
         // Parse the result data based on content type
+        // Use the raw response text from the server (preserves original formatting)
+        // For JSON: server's original formatting
+        // For XML/CSV/TSV: raw text as received
+        const rawData = result.raw;
+
         let parsedData: SparqlJsonResults;
-        let rawData: string;
 
         if (typeof result.data === 'string') {
-          // For non-JSON responses, create a minimal results structure
-          // This will be used in the raw view
+          // For non-JSON responses (XML, CSV, TSV, RDF formats)
+          // Create a minimal results structure for compatibility
           parsedData = {
             head: { vars: [] },
             results: { bindings: [] },
           };
-          rawData = result.data;
-
-          // Store both parsed and raw data in the state
-          update((state) => ({
-            ...state,
-            data: parsedData,
-            rawData,
-            contentType: result.contentType,
-            loading: false,
-            error: null,
-            executionTime: result.executionTime,
-            prefixes: queryPrefixes,
-          }));
         } else {
-          // JSON response - stringify for raw view
+          // JSON response - already parsed by service
           parsedData = result.data;
-          rawData = JSON.stringify(result.data, null, 2);
-
-          update((state) => ({
-            ...state,
-            data: parsedData,
-            rawData,
-            contentType: result.contentType,
-            loading: false,
-            error: null,
-            executionTime: result.executionTime,
-            prefixes: queryPrefixes,
-          }));
         }
+
+        // Store both parsed and raw data in the state
+        update((state) => ({
+          ...state,
+          data: parsedData,
+          rawData, // Original server response (preserves formatting)
+          contentType: result.contentType,
+          loading: false,
+          error: null,
+          executionTime: result.executionTime,
+          prefixes: queryPrefixes,
+        }));
       } catch (error) {
         // Handle errors - preserve QueryError structure or create error message
         let errorValue: string;

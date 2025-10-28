@@ -17,12 +17,13 @@
    */
 
   import type { SquiConfig } from './lib/types';
-  import type { CarbonTheme } from './lib/types';
-  import { themeStore } from './lib/stores';
+  import type { CarbonTheme, ResultFormat } from './lib/types';
+  import { themeStore, queryStore, resultsStore } from './lib/stores';
   import { defaultEndpoint } from './lib/stores/endpointStore';
   import Toolbar from './lib/components/Toolbar/Toolbar.svelte';
   import RunButton from './lib/components/Toolbar/RunButton.svelte';
   import EndpointSelector from './lib/components/Endpoint/EndpointSelector.svelte';
+  import FormatSelector from './lib/components/Results/FormatSelector.svelte';
   import SplitPane from './lib/components/Layout/SplitPane.svelte';
   import SparqlEditor from './lib/components/Editor/SparqlEditor.svelte';
   import ResultsPlaceholder from './lib/components/Results/ResultsPlaceholder.svelte';
@@ -90,6 +91,22 @@
     defaultEndpoint.set(newUrl);
   }
 
+  // Handle format changes from selector
+  async function handleFormatChange(newFormat: ResultFormat): Promise<void> {
+    // Update format in store
+    resultsStore.setFormat(newFormat);
+
+    // Re-execute query with new format if we have query and endpoint
+    const currentQuery = queryStore.getText();
+    if (currentQuery && _currentEndpoint) {
+      await resultsStore.executeQuery({
+        query: currentQuery,
+        endpoint: _currentEndpoint,
+        format: newFormat,
+      });
+    }
+  }
+
   // Prevent unused variable warnings - these will be used in future tasks
   $effect(() => {
     if (prefixes || localization || features || limits) {
@@ -131,6 +148,16 @@
             />
           </div>
         {/if}
+
+        <!-- Format Selector - controls Accept header for queries -->
+        <div class="format-selector-wrapper">
+          <FormatSelector
+            value={$resultsStore.format}
+            queryType={$queryStore.type}
+            onchange={handleFormatChange}
+            disabled={$resultsStore.loading}
+          />
+        </div>
       </div>
     {/snippet}
   </Toolbar>
@@ -174,6 +201,10 @@
     flex: 1;
     min-width: 300px;
     max-width: 600px;
+  }
+
+  .format-selector-wrapper {
+    min-width: 140px;
   }
 
   .toolbar-info {

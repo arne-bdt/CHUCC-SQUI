@@ -12,7 +12,6 @@
   import DataTable from './DataTable.svelte';
   import RawView from './RawView.svelte';
   import ResultsWarning from './ResultsWarning.svelte';
-  import FormatSelector from './FormatSelector.svelte';
   import DownloadButton from './DownloadButton.svelte';
   import { ContentSwitcher, Switch } from 'carbon-components-svelte';
   import { parseResults, isAskResult, isSelectResult } from '../../utils/resultsParser';
@@ -38,29 +37,23 @@
     onDownloadResults,
   }: Props = $props();
 
-  // Subscribe to results store (use $ prefix to auto-subscribe)
-  const state = $derived($resultsStore);
-
-  // Subscribe to query store to get current query for re-execution
-  const queryState = $derived($queryStore);
-
-  // Get current theme for RawView
-  const currentTheme = $derived($themeStore.current);
+  // In Svelte 5 runes mode, access stores directly for proper reactivity
+  // Don't wrap in $derived - that creates a snapshot, not a reactive binding
 
   // Convert error string to QueryError object
   const errorObject = $derived<QueryError | null>(() => {
-    if (!state.error) return null;
-    if (typeof state.error === 'string') {
-      return { message: state.error };
+    if (!$resultsStore.error) return null;
+    if (typeof $resultsStore.error === 'string') {
+      return { message: $resultsStore.error };
     }
-    return state.error as QueryError;
+    return $resultsStore.error as QueryError;
   });
 
   // Parse results when available
   const parsedResults = $derived(() => {
-    if (!state.data) return null;
+    if (!$resultsStore.data) return null;
     try {
-      return parseResults(state.data as SparqlJsonResults);
+      return parseResults($resultsStore.data as SparqlJsonResults);
     } catch (error) {
       console.error('Error parsing results:', error);
       return null;
@@ -79,67 +72,54 @@
 
   // Check if we have results to display (not just the placeholder)
   const hasResults = $derived(() => {
-    return state.data !== null && !state.loading;
+    return $resultsStore.data !== null && !$resultsStore.loading;
   });
 
-  // Task 36: Ensure SELECT queries default to table view
-  $effect(() => {
-    if (state.data && !state.loading && isTable()) {
-      // For SELECT query results, ensure we start in table view
-      if (state.view !== 'table') {
-        resultsStore.setView('table');
-      }
-    }
-  });
+  // Task 36: Extract view for proper reactivity
+  const currentView = $derived($resultsStore.view);
 
   // Task 36: View switcher state (0 = Table, 1 = Raw)
-  // Use state variable for two-way binding with ContentSwitcher
-  let viewIndex = $state(0);
-
-  // Sync viewIndex with store view state
-  $effect(() => {
-    viewIndex = state.view === 'raw' ? 1 : 0;
-  });
+  // Derived directly from store state for reactive sync
+  const viewIndex = $derived(currentView === 'raw' ? 1 : 0);
 
   // Handle view switching
   function handleViewChange(event: CustomEvent): void {
     const newIndex = event.detail.index;
+
+    // Guard: Ignore events with undefined index (fired by ContentSwitcher during initialization)
+    if (newIndex === undefined || newIndex === null) {
+      return;
+    }
+
     const newView = newIndex === 0 ? 'table' : 'raw';
 
-    // Log for debugging in Storybook
-    console.log('View switching:', { oldView: state.view, newView, newIndex });
-
-    resultsStore.setView(newView);
+    // Only update if the view actually changed (prevent circular updates)
+    if ($resultsStore.view !== newView) {
+      resultsStore.setView(newView);
+    }
   }
 
-  // Task 37: Handle format change and re-query
-  async function handleFormatChange(newFormat: ResultFormat): Promise<void> {
-    // Update format in store
-    resultsStore.setFormat(newFormat);
+  // Direct handlers for switch buttons
+  function handleTableClick(): void {
+    if ($resultsStore.view !== 'table') {
+      resultsStore.setView('table');
+    }
+  }
 
-    // Re-execute query with new format if we have query and endpoint
-    if (queryState.text && queryState.endpoint) {
-      await resultsStore.executeQuery({
-        query: queryState.text,
-        endpoint: queryState.endpoint,
-        format: newFormat,
-      });
+  function handleRawClick(): void {
+    if ($resultsStore.view !== 'raw') {
+      resultsStore.setView('raw');
     }
   }
 
   // Task 38: Handle download
   function handleDownload(format: ResultFormat): void {
-    console.log('Download clicked:', { format, hasRawData: !!state.rawData });
-
-    if (state.rawData) {
+    if ($resultsStore.rawData) {
       try {
-        downloadResults(state.rawData, format);
-        console.log('Download initiated successfully');
+        downloadResults($resultsStore.rawData, format);
       } catch (error) {
         console.error('Download failed:', error);
       }
-    } else {
-      console.warn('No raw data available for download');
     }
   }
 
@@ -156,9 +136,9 @@
   {/if}
 
   <!-- Show results when no error -->
-  {#if !state.error}
+  {#if !$resultsStore.error}
     <!-- Loading state -->
-    {#if state.loading}
+    {#if $resultsStore.loading}
       <div class="placeholder-content">
         <h3>Executing Query</h3>
         <p>Please wait...</p>
@@ -170,40 +150,30 @@
         <!-- View switcher toolbar -->
         <div class="results-toolbar">
           <div class="toolbar-left">
-            <ContentSwitcher bind:selectedIndex={viewIndex} on:change={handleViewChange}>
-              <Switch text="Table" />
-              <Switch text="Raw" />
+            <ContentSwitcher selectedIndex={viewIndex} on:change={handleViewChange}>
+              <Switch text="Table" on:click={handleTableClick} />
+              <Switch text="Raw" on:click={handleRawClick} />
             </ContentSwitcher>
-
-            <!-- Task 37: Format selector (shown only in raw view) -->
-            {#if state.view === 'raw'}
-              <FormatSelector
-                value={state.format}
-                queryType={queryState.type}
-                onchange={handleFormatChange}
-                disabled={state.loading}
-              />
-            {/if}
           </div>
 
           <div class="toolbar-right">
-            {#if state.executionTime}
+            {#if $resultsStore.executionTime}
               <span class="execution-time-badge">
-                Executed in {state.executionTime}ms
+                Executed in {$resultsStore.executionTime}ms
               </span>
             {/if}
 
             <!-- Task 38: Download button -->
             <DownloadButton
-              currentFormat={state.format}
+              currentFormat={$resultsStore.format}
               ondownload={handleDownload}
-              disabled={state.loading || !state.rawData}
+              disabled={$resultsStore.loading || !$resultsStore.rawData}
             />
           </div>
         </div>
 
         <!-- Task 34: Show warning for large result sets (only in table view) -->
-        {#if state.view === 'table' && isTable()}
+        {#if currentView === 'table' && isTable()}
           <ResultsWarning
             resultCount={(parsedResults() as ParsedTableData).rowCount}
             maxResults={maxResults}
@@ -215,23 +185,23 @@
 
         <!-- Results content area -->
         <div class="results-content">
-          {#if state.view === 'table'}
+          {#if currentView === 'table'}
             <!-- Table view - show DataTable -->
             {#if isTable()}
-              <DataTable data={parsedResults() as ParsedTableData} prefixes={state.prefixes} />
+              <DataTable data={parsedResults() as ParsedTableData} prefixes={$resultsStore.prefixes} />
             {:else}
               <div class="placeholder-content">
                 <p>No tabular data available for this query result.</p>
                 <p class="hint">Switch to Raw view to see the response.</p>
               </div>
             {/if}
-          {:else if state.view === 'raw'}
+          {:else if currentView === 'raw'}
             <!-- Raw view - show raw response -->
-            {#if state.rawData}
+            {#if $resultsStore.rawData}
               <RawView
-                data={state.rawData}
-                contentType={state.contentType}
-                theme={currentTheme}
+                data={$resultsStore.rawData}
+                contentType={$resultsStore.contentType}
+                theme={$themeStore.current}
               />
             {:else}
               <div class="placeholder-content">
@@ -249,8 +219,8 @@
         <p class="ask-result {(parsedResults() as ParsedAskResult).value ? 'true' : 'false'}">
           {(parsedResults() as ParsedAskResult).value ? 'TRUE' : 'FALSE'}
         </p>
-        {#if state.executionTime}
-          <p class="execution-time">Executed in {state.executionTime}ms</p>
+        {#if $resultsStore.executionTime}
+          <p class="execution-time">Executed in {$resultsStore.executionTime}ms</p>
         {/if}
       </div>
 
@@ -313,13 +283,14 @@
     gap: var(--cds-spacing-05, 1rem);
   }
 
-  /* Fix ContentSwitcher button width - prevent truncation */
+  /* Fix ContentSwitcher button width - prevent truncation but keep reasonable size */
   .toolbar-left :global(.bx--content-switcher) {
-    min-width: max-content;
+    width: auto;
   }
 
   .toolbar-left :global(.bx--content-switcher-btn) {
-    min-width: 80px;
+    min-width: 60px;
+    padding: 0 var(--cds-spacing-04, 0.75rem);
     white-space: nowrap;
   }
 

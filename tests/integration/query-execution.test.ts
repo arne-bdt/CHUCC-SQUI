@@ -41,6 +41,7 @@ describe('Query Execution Integration', () => {
         ok: true,
         status: 200,
         headers: new Headers({ 'Content-Type': 'application/sparql-results+json' }),
+        text: async () => JSON.stringify(mockResults),
         json: async () => mockResults,
       });
 
@@ -138,6 +139,7 @@ describe('Query Execution Integration', () => {
         ok: true,
         status: 200,
         headers: new Headers({ 'Content-Type': 'application/sparql-results+json' }),
+        text: async () => JSON.stringify(mockResults),
         json: async () => mockResults,
       });
 
@@ -168,6 +170,7 @@ describe('Query Execution Integration', () => {
                 ok: true,
                 status: 200,
                 headers: new Headers({ 'Content-Type': 'application/sparql-results+json' }),
+                text: async () => JSON.stringify(mockResults),
                 json: async () => mockResults,
               });
             }, 50);
@@ -223,6 +226,7 @@ describe('Query Execution Integration', () => {
         ok: true,
         status: 200,
         headers: new Headers({ 'Content-Type': 'application/sparql-results+json' }),
+        text: async () => JSON.stringify(mockResults),
         json: async () => mockResults,
       });
 
@@ -273,6 +277,7 @@ describe('Query Execution Integration', () => {
         ok: true,
         status: 200,
         headers: new Headers({ 'Content-Type': 'application/sparql-results+json' }),
+        text: async () => JSON.stringify(mockResults),
         json: async () => mockResults,
       });
 

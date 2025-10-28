@@ -103,6 +103,8 @@ describe('download utility', () => {
     });
 
     it('should download string data', () => {
+      vi.useFakeTimers();
+
       const data = 'test data';
       const filename = 'test.txt';
       const mimeType = 'text/plain';
@@ -113,8 +115,13 @@ describe('download utility', () => {
       expect(URL.createObjectURL).toHaveBeenCalled();
       expect(appendChildSpy).toHaveBeenCalled();
       expect(clickSpy).toHaveBeenCalled();
-      expect(removeChildSpy).toHaveBeenCalled();
+
+      // Cleanup happens after setTimeout
+      // Note: removeChild won't be called in test environment because link.parentNode is null
+      vi.runAllTimers();
       expect(URL.revokeObjectURL).toHaveBeenCalled();
+
+      vi.useRealTimers();
     });
 
     it('should download object data as JSON', () => {

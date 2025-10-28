@@ -24,7 +24,9 @@ export interface ExtendedQueryOptions extends QueryOptions {
  * Internal query result with raw data
  */
 interface InternalQueryResult {
-  /** Raw or parsed data */
+  /** Raw response text from server (original formatting preserved) */
+  raw: string;
+  /** Parsed data (JSON object for JSON responses, same as raw for others) */
   data: SparqlJsonResults | string;
   /** Content type from response */
   contentType: string;
@@ -96,7 +98,7 @@ export class SparqlService {
 
       const executionTime = Date.now() - startTime;
       const contentType = response.headers.get('Content-Type') || 'text/plain';
-      const data = await this.parseResponse(response, contentType);
+      const parseResult = await this.parseResponse(response, contentType);
 
       // Extract headers
       const responseHeaders: Record<string, string> = {};
@@ -105,7 +107,8 @@ export class SparqlService {
       });
 
       return {
-        data,
+        raw: parseResult.raw,
+        data: parseResult.data,
         contentType,
         status: response.status,
         headers: responseHeaders,
@@ -250,27 +253,28 @@ export class SparqlService {
 
   /**
    * Parse response based on content type
+   * Returns both raw text and parsed data to preserve original server formatting
    * @param response Fetch response
    * @param contentType Content-Type header value
-   * @returns Parsed JSON or raw text
+   * @returns Object with raw text and parsed data
    */
   private async parseResponse(
     response: Response,
     contentType: string
-  ): Promise<SparqlJsonResults | string> {
+  ): Promise<{ raw: string; data: SparqlJsonResults | string }> {
+    // Always get the raw text first (before parsing consumes the stream)
+    const rawText = await response.text();
+
+    // Then parse if it's JSON
     if (
       contentType.includes('application/json') ||
       contentType.includes('application/sparql-results+json')
     ) {
-      return (await response.json()) as SparqlJsonResults;
-    } else if (
-      contentType.includes('application/xml') ||
-      contentType.includes('application/sparql-results+xml')
-    ) {
-      return await response.text();
+      const parsedData = JSON.parse(rawText) as SparqlJsonResults;
+      return { raw: rawText, data: parsedData };
     } else {
-      // Return raw text for RDF formats and other content types
-      return await response.text();
+      // For XML, CSV, TSV, RDF formats - raw text is the data
+      return { raw: rawText, data: rawText };
     }
   }
 
