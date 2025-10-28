@@ -38,17 +38,22 @@
   });
 
   /**
-   * Handle tab selection change
+   * Handle tab selection change from Carbon Tabs
+   * CRITICAL: Use only on:change, NOT bind:selected, to avoid circular updates
    */
   function handleTabChange(event: CustomEvent<{ selectedIndex: number }>): void {
-    const selectedIndex = event.detail.selectedIndex;
-    const selectedTab = tabsState.tabs[selectedIndex];
-    console.log('[QueryTabs] handleTabChange:', {
-      selectedIndex,
+    const newIndex = event.detail.selectedIndex;
+    const selectedTab = tabsState.tabs[newIndex];
+    console.log('[QueryTabs] handleTabChange from Carbon Tabs:', {
+      newIndex,
       selectedTab: selectedTab ? { id: selectedTab.id, name: selectedTab.name } : null,
+      currentActiveTabId: tabsState.activeTabId,
       totalTabs: tabsState.tabs.length,
     });
-    if (selectedTab) {
+
+    // Switch to the selected tab
+    if (selectedTab && selectedTab.id !== tabsState.activeTabId) {
+      console.log('[QueryTabs] Switching to tab:', selectedTab.id);
       tabStore.switchTab(selectedTab.id);
     }
   }
@@ -71,23 +76,17 @@
   }
 
   /**
-   * Get the index of the active tab
-   * Use $state so it can be bound to Carbon Tabs
+   * Get the index of the active tab for Carbon Tabs
+   * Must be $state (not $derived) because Carbon Tabs may write to it internally
    */
   let selectedIndex = $state(0);
 
-  // Update selectedIndex when tabsState changes
+  // Keep selectedIndex in sync with tabsState
   $effect(() => {
     const newIndex = tabsState.activeTabId
       ? tabsState.tabs.findIndex((tab) => tab.id === tabsState.activeTabId)
       : 0;
-    console.log('[QueryTabs] $effect updating selectedIndex:', {
-      activeTabId: tabsState.activeTabId,
-      newIndex,
-      oldSelectedIndex: selectedIndex,
-      tabs: tabsState.tabs.map(t => ({ id: t.id, name: t.name })),
-    });
-    if (newIndex !== -1) {
+    if (newIndex !== -1 && newIndex !== selectedIndex) {
       selectedIndex = newIndex;
     }
   });
@@ -95,7 +94,7 @@
 
 <div class="query-tabs-container">
   <div class="tabs-header">
-    <Tabs type="container" bind:selected={selectedIndex} on:change={handleTabChange}>
+    <Tabs type="container" selected={selectedIndex} on:change={handleTabChange}>
       {#each tabsState.tabs as tab (tab.id)}
         <Tab label={tab.name}>
           <div class="tab-label">

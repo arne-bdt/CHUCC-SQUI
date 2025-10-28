@@ -57,20 +57,31 @@
   let currentTheme = $state<CarbonTheme>('white');
 
   // Store subscriptions for query execution
+  // Use $state with manual subscription to ensure reactivity
   let queryState = $state($queryStore);
   let resultsState = $state($resultsStore);
   let endpoint = $state($defaultEndpoint);
 
+  // Manually subscribe to stores to ensure editor updates when store changes
   $effect(() => {
-    queryState = $queryStore;
+    const unsubscribe = queryStore.subscribe((value) => {
+      queryState = value;
+    });
+    return unsubscribe;
   });
 
   $effect(() => {
-    resultsState = $resultsStore;
+    const unsubscribe = resultsStore.subscribe((value) => {
+      resultsState = value;
+    });
+    return unsubscribe;
   });
 
   $effect(() => {
-    endpoint = $defaultEndpoint;
+    const unsubscribe = defaultEndpoint.subscribe((value) => {
+      endpoint = value;
+    });
+    return unsubscribe;
   });
 
   // Computed state for execution
@@ -227,8 +238,15 @@
     const storeText = queryState.text;
     const editorText = editorView.state.doc.toString();
 
+    console.log('[SparqlEditor] $effect - checking if editor needs update:', {
+      storeText: storeText.substring(0, 50),
+      editorText: editorText.substring(0, 50),
+      needsUpdate: storeText !== editorText,
+    });
+
     // Only update if content actually differs (prevents infinite loops)
     if (storeText !== editorText) {
+      console.log('[SparqlEditor] Updating editor to:', storeText.substring(0, 50));
       setValue(storeText);
     }
   });

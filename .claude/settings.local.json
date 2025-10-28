@@ -19,7 +19,9 @@
       "Bash(del \"src\\lib\\components\\Results\\DataTable.stories.minimal.ts\")",
       "Bash(timeout 15 bash:*)",
       "Bash(timeout:*)",
-      "Bash(del:*)"
+      "Bash(del:*)",
+      "Bash(tee:*)",
+      "Bash(taskkill /F /IM node.exe /T)"
     ],
     "deny": [],
     "ask": [],

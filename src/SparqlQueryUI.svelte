@@ -110,6 +110,19 @@
         tabCount: state.tabs.length,
       });
       if (state.activeTabId && state.activeTabId !== currentActiveTabId) {
+        // CRITICAL: Save current tab's state before switching
+        if (currentActiveTabId) {
+          const oldTab = state.tabs.find((t) => t.id === currentActiveTabId);
+          if (oldTab) {
+            console.log('[SparqlQueryUI] Saving old tab before switch:', {
+              tabId: oldTab.id,
+              queryText: $queryStore.text.substring(0, 50),
+            });
+            instanceTabStore.updateTabQuery(oldTab.id, $queryStore);
+            instanceTabStore.updateTabResults(oldTab.id, $resultsStore);
+          }
+        }
+
         currentActiveTabId = state.activeTabId;
 
         // Find and load the new active tab
