@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="SQUI - Modern SPARQL Query Interface">
+  <meta name="keywords" content="SPARQL, RDF, Semantic Web, Query, Linked Data">
+  <title>SQUI - SPARQL Query UI</title>
+
+  <!-- Carbon Design System Styles -->
+  <link rel="stylesheet" href="https://unpkg.com/carbon-components-svelte@0.90.1/css/all.css">
+
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html, body {
+      height: 100%;
+      overflow: hidden;
+      font-family: 'IBM Plex Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    }
+
+    #app {
+      height: 100vh;
+      width: 100vw;
+      overflow: hidden;
+    }
+
+    /* Loading spinner */
+    .loading {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      background: var(--cds-ui-background, #f4f4f4);
+    }
+
+    .spinner {
+      width: 48px;
+      height: 48px;
+      border: 4px solid rgba(0, 0, 0, 0.1);
+      border-radius: 50%;
+      border-top-color: #0f62fe;
+      animation: spin 1s ease-in-out infinite;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    .loading-text {
+      margin-top: 16px;
+      font-size: 14px;
+      color: var(--cds-text-secondary, #525252);
+    }
+
+    /* Error display */
+    .error {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      padding: 32px;
+      background: var(--cds-ui-background, #f4f4f4);
+    }
+
+    .error-icon {
+      font-size: 64px;
+      color: #da1e28;
+      margin-bottom: 16px;
+    }
+
+    .error-title {
+      font-size: 24px;
+      font-weight: 600;
+      color: var(--cds-text-primary, #161616);
+      margin-bottom: 8px;
+    }
+
+    .error-message {
+      font-size: 14px;
+      color: var(--cds-text-secondary, #525252);
+      text-align: center;
+      max-width: 600px;
+    }
+  </style>
+</head>
+<body>
+  <div id="app">
+    <div class="loading">
+      <div class="spinner"></div>
+      <div class="loading-text">Loading SQUI...</div>
+    </div>
+  </div>
+
+  <script type="module">
+    // Parse URL parameters
+    function parseURLParams() {
+      const params = new URLSearchParams(window.location.search);
+      const config = {};
+
+      // Parse endpoint parameter
+      const endpoint = params.get('endpoint');
+      if (endpoint) {
+        config.endpoint = { url: decodeURIComponent(endpoint) };
+      }
+
+      // Parse query parameter
+      const query = params.get('query');
+      if (query) {
+        config.templates = { default: decodeURIComponent(query) };
+      }
+
+      // Parse theme parameter
+      const theme = params.get('theme');
+      if (theme && ['white', 'g10', 'g90', 'g100'].includes(theme)) {
+        config.theme = { theme };
+      }
+
+      // Parse hideSelector parameter
+      const hideSelector = params.get('hideSelector');
+      if (hideSelector === 'true') {
+        config.endpoint = config.endpoint || {};
+        config.endpoint.hideSelector = true;
+      }
+
+      // Parse disablePersistence parameter
+      const disablePersistence = params.get('disablePersistence');
+      if (disablePersistence === 'true') {
+        config.disablePersistence = true;
+      }
+
+      return config;
+    }
+
+    // Show error message
+    function showError(title, message) {
+      const app = document.getElementById('app');
+      app.innerHTML = `
+        <div class="error">
+          <div class="error-icon">⚠️</div>
+          <h1 class="error-title">${title}</h1>
+          <p class="error-message">${message}</p>
+        </div>
+      `;
+    }
+
+    // Initialize application
+    async function init() {
+      try {
+        // Import the built application
+        const { default: App } = await import('./dist/sparql-query-ui.js');
+
+        // Parse URL parameters
+        const urlConfig = parseURLParams();
+
+        // Default configuration
+        const defaultConfig = {
+          endpoint: {
+            url: 'https://dbpedia.org/sparql',
+            catalogue: [
+              {
+                name: 'DBpedia',
+                url: 'https://dbpedia.org/sparql',
+                description: 'DBpedia SPARQL endpoint - Structured data from Wikipedia'
+              },
+              {
+                name: 'Wikidata',
+                url: 'https://query.wikidata.org/sparql',
+                description: 'Wikidata Query Service - Free knowledge base'
+              },
+              {
+                name: 'LOD Cache',
+                url: 'https://lod.openlinksw.com/sparql',
+                description: 'OpenLink LOD Cache'
+              }
+            ]
+          },
+          prefixes: {
+            default: {
+              rdf: 'http://www.w3.org/1999/02/22-rdf-syntax-ns#',
+              rdfs: 'http://www.w3.org/2000/01/rdf-schema#',
+              owl: 'http://www.w3.org/2002/07/owl#',
+              xsd: 'http://www.w3.org/2001/XMLSchema#',
+              foaf: 'http://xmlns.com/foaf/0.1/',
+              dbo: 'http://dbpedia.org/ontology/',
+              dbr: 'http://dbpedia.org/resource/'
+            }
+          },
+          theme: {
+            theme: 'g10'
+          },
+          features: {
+            enableTabs: true,
+            enableFilters: true,
+            enableDownloads: true
+          },
+          limits: {
+            maxRows: 100000,
+            chunkSize: 1000,
+            timeout: 30000
+          },
+          instanceId: 'standalone'
+        };
+
+        // Merge URL config with defaults (URL params take precedence)
+        const config = {
+          ...defaultConfig,
+          ...urlConfig,
+          endpoint: {
+            ...defaultConfig.endpoint,
+            ...(urlConfig.endpoint || {})
+          }
+        };
+
+        // Mount the application
+        const app = new App({
+          target: document.getElementById('app'),
+          props: {
+            config
+          }
+        });
+
+        // Store app instance globally for debugging
+        window.__SQUI__ = app;
+
+        console.log('SQUI initialized with config:', config);
+
+      } catch (error) {
+        console.error('Failed to initialize SQUI:', error);
+        showError(
+          'Failed to Load',
+          `Could not initialize SQUI: ${error.message}. Please check the console for details.`
+        );
+      }
+    }
+
+    // Start initialization when DOM is ready
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', init);
+    } else {
+      init();
+    }
+  </script>
+
+  <!-- Documentation link -->
+  <script>
+    // Add keyboard shortcut for help (F1)
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'F1') {
+        e.preventDefault();
+        window.open('https://github.com/yourusername/sparql-query-ui', '_blank');
+      }
+    });
+
+    // Log welcome message
+    console.log('%cSQUI - SPARQL Query UI', 'font-size: 24px; font-weight: bold; color: #0f62fe');
+    console.log('%cURL Parameters:', 'font-size: 14px; font-weight: bold');
+    console.log('  ?endpoint=<url>         - Set default SPARQL endpoint');
+    console.log('  ?query=<sparql>         - Set default query');
+    console.log('  ?theme=<white|g10|g90|g100> - Set theme');
+    console.log('  ?hideSelector=true      - Hide endpoint selector');
+    console.log('  ?disablePersistence=true - Disable localStorage');
+    console.log('%cKeyboard Shortcuts:', 'font-size: 14px; font-weight: bold');
+    console.log('  Ctrl+Enter - Execute query');
+    console.log('  Ctrl+Space - Autocomplete');
+    console.log('  F1         - Open documentation');
+    console.log('%cGlobal object: window.__SQUI__', 'font-size: 12px; color: #525252');
+  </script>
+</body>
+</html>

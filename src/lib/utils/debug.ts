@@ -5,14 +5,16 @@
 
 /**
  * Check if debug mode is enabled
- * - In tests: Check import.meta.env.VITEST_DEBUG or process.env.DEBUG
+ * - In tests: Check process.env.VITEST_DEBUG or process.env.DEBUG
  * - In browser: Check localStorage.getItem('DEBUG')
- * - In dev: import.meta.env.DEV
+ * - In dev: Check globalThis.__DEV__ or localStorage
  */
 function isDebugEnabled(): boolean {
-  // Check Vitest environment
-  if (typeof import.meta.env !== 'undefined' && import.meta.env.VITEST) {
-    return import.meta.env.VITEST_DEBUG === 'true' || import.meta.env.DEBUG === 'true';
+  // Check Node.js/test environment
+  if (typeof process !== 'undefined' && typeof process.env === 'object') {
+    if (process.env.VITEST_DEBUG === 'true' || process.env.DEBUG === 'true') {
+      return true;
+    }
   }
 
   // Check browser environment
@@ -25,8 +27,8 @@ function isDebugEnabled(): boolean {
     }
   }
 
-  // Check Node.js environment
-  if (typeof process !== 'undefined' && process.env?.DEBUG === 'true') {
+  // Check global dev flag (can be set by bundler)
+  if (typeof globalThis !== 'undefined' && (globalThis as { __DEV__?: boolean }).__DEV__) {
     return true;
   }
 

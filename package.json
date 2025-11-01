@@ -3,10 +3,33 @@
   "version": "0.1.0",
   "description": "Modern SPARQL query interface built with Svelte 5",
   "type": "module",
+  "main": "./package/index.js",
+  "module": "./package/index.js",
+  "types": "./package/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./package/index.d.ts",
+      "svelte": "./package/index.js",
+      "default": "./package/index.js"
+    },
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "package",
+    "README.md",
+    "LICENSE",
+    "CHANGELOG.md"
+  ],
+  "svelte": "./package/index.js",
   "scripts": {
     "dev": "vite",
     "build": "npm run type-check && vite build",
+    "build:analyze": "cross-env ANALYZE=true npm run build",
+    "build:standalone": "npm run build && npm run copy-standalone",
+    "copy-standalone": "node scripts/copy-standalone.js",
+    "package": "svelte-package -o package",
     "preview": "vite preview",
+    "preview:standalone": "vite preview --outDir dist-standalone",
     "type-check": "tsc --noEmit",
     "test": "vitest",
     "test:unit": "vitest run --dir tests/unit",
@@ -22,6 +45,7 @@
     "format": "prettier --write src tests",
     "format:check": "prettier --check src tests",
     "check": "npm run type-check && npm run lint && npm run format:check && npm run test:unit && npm run build-storybook",
+    "prepublishOnly": "npm run check && npm test && npm run package",
     "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build --quiet",
     "test:storybook": "test-storybook",
@@ -33,12 +57,30 @@
     "semantic-web",
     "query",
     "svelte",
+    "svelte-component",
+    "web-component",
     "carbon",
+    "carbon-design-system",
     "yasgui",
-    "typescript"
+    "typescript",
+    "query-editor",
+    "linked-data"
   ],
   "author": "Arne Bernhardt",
   "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/yourusername/sparql-query-ui.git"
+  },
+  "bugs": {
+    "url": "https://github.com/yourusername/sparql-query-ui/issues"
+  },
+  "homepage": "https://github.com/yourusername/sparql-query-ui#readme",
+  "peerDependencies": {
+    "carbon-components-svelte": "^0.90.0",
+    "carbon-icons-svelte": "^13.0.0",
+    "svelte": "^5.0.0"
+  },
   "devDependencies": {
     "@chromatic-com/storybook": "^4.1.2",
     "@eslint/js": "^9.39.0",
@@ -60,6 +102,7 @@
     "@vitest/coverage-v8": "^3.2.4",
     "@vitest/ui": "^3.2.4",
     "carbon-preprocess-svelte": "^0.11.12",
+    "cross-env": "^10.1.0",
     "eslint": "^9.39.0",
     "eslint-plugin-storybook": "^10.0.2",
     "eslint-plugin-svelte": "^3.13.0",
@@ -68,11 +111,14 @@
     "playwright": "^1.56.1",
     "prettier": "^3.6.2",
     "prettier-plugin-svelte": "^3.4.0",
+    "rollup-plugin-visualizer": "^6.0.5",
     "storybook": "^10.0.2",
     "svelte": "^5.43.2",
     "svelte-eslint-parser": "^1.4.0",
+    "terser": "^5.44.0",
     "typescript": "^5.9.3",
     "vite": "^7.1.12",
+    "vite-bundle-visualizer": "^1.2.1",
     "vitest": "^3.2.4"
   },
   "dependencies": {
@@ -85,9 +131,15 @@
     "@codemirror/state": "^6.5.2",
     "@codemirror/theme-one-dark": "^6.1.3",
     "@codemirror/view": "^6.38.6",
-    "carbon-components-svelte": "^0.90.1",
-    "carbon-icons-svelte": "^13.6.0",
     "codemirror": "^6.0.2",
     "wx-svelte-grid": "^2.3.0"
+  },
+  "peerDependenciesMeta": {
+    "carbon-components-svelte": {
+      "optional": false
+    },
+    "carbon-icons-svelte": {
+      "optional": false
+    }
   }
 }
