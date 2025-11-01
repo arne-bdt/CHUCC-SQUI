@@ -41,6 +41,7 @@ type Story = StoryObj<typeof meta>;
  */
 export const Default: Story = {
   name: 'Default (Single Tab)',
+  args: {} as any,
   parameters: {
     docs: {
       description: {
@@ -55,6 +56,7 @@ export const Default: Story = {
  */
 export const MultipleTabs: Story = {
   name: 'Multiple Tabs',
+  args: {} as any,
   parameters: {
     docs: {
       description: {
@@ -72,6 +74,7 @@ export const MultipleTabs: Story = {
  */
 export const WithQueryContent: Story = {
   name: 'Tab with Query',
+  args: {} as any,
   parameters: {
     docs: {
       description: {
@@ -88,6 +91,7 @@ export const WithQueryContent: Story = {
  */
 export const DarkTheme: Story = {
   name: 'Dark Theme (G90)',
+  args: {} as any,
   parameters: {
     backgrounds: { default: 'dark' },
     docs: {
@@ -114,6 +118,7 @@ export const DarkTheme: Story = {
  */
 export const AccessibilityTest: Story = {
   name: 'Accessibility',
+  args: {} as any,
   parameters: {
     docs: {
       description: {

@@ -23,7 +23,12 @@
       "Bash(tee:*)",
       "Bash(taskkill /F /IM node.exe /T)",
       "Bash(taskkill:*)",
-      "Bash(npx playwright test:*)"
+      "Bash(npx playwright test:*)",
+      "Bash(npx storybook:*)",
+      "Bash(if exist node_modules rmdir /s /q node_modules)",
+      "Bash(if exist package-lock.json del package-lock.json)",
+      "Bash(findstr:*)",
+      "Bash(test-output.txt)"
     ],
     "deny": [],
     "ask": [],

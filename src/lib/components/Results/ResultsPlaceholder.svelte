@@ -13,7 +13,7 @@
   import RawView from './RawView.svelte';
   import ResultsWarning from './ResultsWarning.svelte';
   import DownloadButton from './DownloadButton.svelte';
-  import { ContentSwitcher, Switch } from 'carbon-components-svelte';
+  import { RadioButtonGroup, RadioButton } from 'carbon-components-svelte';
   import { parseResults, isAskResult, isSelectResult } from '../../utils/resultsParser';
   import { downloadResults } from '../../utils/download';
   import type { QueryError, SparqlJsonResults, ResultFormat } from '../../types';
@@ -78,39 +78,21 @@
   // Task 36: Extract view for proper reactivity
   const currentView = $derived($resultsStore.view);
 
-  // Task 36: View switcher state (0 = Table, 1 = Raw)
-  // Derived directly from store state for reactive sync
-  const viewIndex = $derived(currentView === 'raw' ? 1 : 0);
+  // Task 36: View selection state (bound to RadioButtonGroup)
+  // Sync with store using $effect
+  let selectedView = $state<'table' | 'raw'>('table');
 
-  // Handle view switching
-  function handleViewChange(event: CustomEvent): void {
-    const newIndex = event.detail.index;
+  // Sync selectedView with store
+  $effect(() => {
+    selectedView = $resultsStore.view;
+  });
 
-    // Guard: Ignore events with undefined index (fired by ContentSwitcher during initialization)
-    if (newIndex === undefined || newIndex === null) {
-      return;
+  // When selectedView changes (from user interaction), update store
+  $effect(() => {
+    if ($resultsStore.view !== selectedView) {
+      resultsStore.setView(selectedView);
     }
-
-    const newView = newIndex === 0 ? 'table' : 'raw';
-
-    // Only update if the view actually changed (prevent circular updates)
-    if ($resultsStore.view !== newView) {
-      resultsStore.setView(newView);
-    }
-  }
-
-  // Direct handlers for switch buttons
-  function handleTableClick(): void {
-    if ($resultsStore.view !== 'table') {
-      resultsStore.setView('table');
-    }
-  }
-
-  function handleRawClick(): void {
-    if ($resultsStore.view !== 'raw') {
-      resultsStore.setView('raw');
-    }
-  }
+  });
 
   // Task 38: Handle download
   function handleDownload(format: ResultFormat): void {
@@ -150,10 +132,15 @@
         <!-- View switcher toolbar -->
         <div class="results-toolbar">
           <div class="toolbar-left">
-            <ContentSwitcher selectedIndex={viewIndex} on:change={handleViewChange}>
-              <Switch text="Table" on:click={handleTableClick} />
-              <Switch text="Raw" on:click={handleRawClick} />
-            </ContentSwitcher>
+            <RadioButtonGroup
+              bind:selected={selectedView}
+              orientation="horizontal"
+              legendText="View"
+              hideLegend={true}
+            >
+              <RadioButton labelText="Table" value="table" />
+              <RadioButton labelText="Raw" value="raw" />
+            </RadioButtonGroup>
           </div>
 
           <div class="toolbar-right">
@@ -283,15 +270,10 @@
     gap: var(--cds-spacing-05, 1rem);
   }
 
-  /* Fix ContentSwitcher button width - prevent truncation but keep reasonable size */
-  .toolbar-left :global(.bx--content-switcher) {
-    width: auto;
-  }
-
-  .toolbar-left :global(.bx--content-switcher-btn) {
-    min-width: 60px;
-    padding: 0 var(--cds-spacing-04, 0.75rem);
-    white-space: nowrap;
+  /* RadioButtonGroup styling */
+  .toolbar-left :global(.bx--radio-button-group) {
+    display: flex;
+    gap: var(--cds-spacing-05, 1rem);
   }
 
   .execution-time-badge {

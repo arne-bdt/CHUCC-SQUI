@@ -21,7 +21,7 @@
   import { themeStore, queryStore, resultsStore } from './lib/stores';
   import { createTabStore } from './lib/stores/tabStore';
   import { defaultEndpoint } from './lib/stores/endpointStore';
-  import Toolbar from './lib/components/Toolbar/Toolbar.svelte';
+  import { Toolbar, ToolbarContent } from 'carbon-components-svelte';
   import RunButton from './lib/components/Toolbar/RunButton.svelte';
   import EndpointSelector from './lib/components/Endpoint/EndpointSelector.svelte';
   import FormatSelector from './lib/components/Results/FormatSelector.svelte';
@@ -225,7 +225,7 @@
 
   <!-- Top toolbar for controls and endpoint selector -->
   <Toolbar>
-    {#snippet children()}
+    <ToolbarContent>
       <div class="toolbar-content">
         <!-- Run Query Button -->
         <RunButton />
@@ -261,7 +261,7 @@
           />
         </div>
       </div>
-    {/snippet}
+    </ToolbarContent>
   </Toolbar>
 
   <!-- Main content area with resizable editor and results panes -->
@@ -293,20 +293,43 @@
   }
 
   .toolbar-content {
-    display: flex;
+    display: grid;
+    grid-template-columns: minmax(140px, max-content) 1fr auto;
     align-items: center;
-    gap: var(--cds-spacing-05, 1rem);
+    gap: var(--cds-spacing-04, 0.75rem);
     width: 100%;
   }
 
-  .endpoint-selector-wrapper {
-    flex: 1;
-    min-width: 300px;
-    max-width: 600px;
+  /* Buttons take only what they need (min 140px for both Run + Cancel) */
+  .toolbar-content > :global(.run-button-container) {
+    grid-column: 1;
+    min-width: 140px;
   }
 
+  /* Endpoint selector fills available space */
+  .endpoint-selector-wrapper {
+    grid-column: 2;
+    min-width: 0; /* Allow shrinking below content size */
+  }
+
+  /* Format selector takes fixed space */
   .format-selector-wrapper {
+    grid-column: 3;
     min-width: 140px;
+  }
+
+  /* Responsive: stack on small screens */
+  @media (max-width: 768px) {
+    .toolbar-content {
+      grid-template-columns: 1fr;
+      grid-template-rows: auto auto auto;
+    }
+
+    .toolbar-content > :global(.run-button-container),
+    .endpoint-selector-wrapper,
+    .format-selector-wrapper {
+      grid-column: 1;
+    }
   }
 
   .toolbar-info {

@@ -18,6 +18,39 @@ SQUI is a modern SPARQL Query Web Component inspired by YASGUI (Yet Another SPAR
 
 ## Development Guidelines
 
+### Component Documentation - Consult First!
+
+**CRITICAL: ALWAYS consult official documentation BEFORE implementing or debugging components**
+
+**⚠️ MANDATORY: Check Documentation First ⚠️**
+
+Before using any third-party component or library:
+
+1. **Read the official documentation** for usage patterns and best practices
+2. **Check for examples** in the documentation that match your use case
+3. **Review API reference** for props, events, and bindings
+4. **Look for common patterns** (e.g., controlled vs uncontrolled components)
+
+**Carbon Design System Components:**
+- 📚 **Always check**: https://svelte.carbondesignsystem.com/components/
+- ⚠️ **Pay special attention to**:
+  - Reactive examples (often show `bind:` directives)
+  - Event handling patterns
+  - Two-way binding recommendations
+  - Component-specific quirks and best practices
+- 🔍 **Example**: Carbon Tabs requires `bind:selected` for two-way binding, NOT `selected={value}` + `on:change`
+
+**Other Libraries:**
+- **wx-svelte-grid**: Check https://svar.dev/svelte/grid/
+- **CodeMirror 6**: Check https://codemirror.net/docs/
+- **Svelte 5**: Check https://svelte.dev/docs/svelte/overview
+
+**Why This Matters:**
+- Prevents hours of debugging by using correct patterns from the start
+- Ensures compatibility with library expectations
+- Avoids fighting against the library's design
+- Saves time by learning from official examples
+
 ### TypeScript Requirements
 
 **CRITICAL: All code must be written in TypeScript**
@@ -79,6 +112,8 @@ npm test                # MANDATORY - All tests must pass
 
 #### Build Process Requirements
 
+**⚠️ CRITICAL: ALWAYS run E2E tests before completing any task that modifies components**
+
 Every build must pass these checks:
 
 \`\`\`bash
@@ -91,8 +126,8 @@ npm run lint            # Must pass with 0 errors/warnings
 # Formatting
 npm run format:check    # Must pass (or auto-fix with npm run format)
 
-# Tests
-npm test                # All tests must pass
+# Unit + Integration Tests
+npm test                # All tests must pass (unit + integration)
 
 # Build
 npm run build           # Must build successfully
@@ -102,11 +137,24 @@ npm run build-storybook # Must build successfully
                         # Verifies all stories are valid
                         # Catches component prop/type errors
                         # Ensures visual documentation is deployable
+
+# E2E Tests (CRITICAL - NEVER SKIP)
+npm run test:e2e:storybook  # Must pass ALL E2E tests
+                            # Tests real user interactions in browser
+                            # Catches UI bugs that unit tests miss
+                            # REQUIRED before completing component tasks
 \`\`\`
 
 **Alternatively, run all checks at once:**
 \`\`\`bash
 npm run check           # Runs: type-check, lint, format:check, test:unit, build-storybook
+                        # NOTE: Does NOT include E2E tests - run separately!
+\`\`\`
+
+**Complete pre-commit checklist:**
+\`\`\`bash
+npm run build && npm test && npm run test:e2e:storybook
+# ALL THREE must pass before committing component changes
 \`\`\`
 
 ### Testing Requirements

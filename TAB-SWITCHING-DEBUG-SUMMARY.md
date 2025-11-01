@@ -184,7 +184,122 @@ The `isSwitching` flag might still be true when subscription fires.
 
 **Test**: Log `isSwitching` value in editor subscription
 
+## Latest Debugging Session (Session 2)
+
+### Additional Fixes Attempted
+
+#### 6. ✅ Moved Subscriptions from `$effect` to `onMount`
+**Problem**: `$effect` has automatic dependency tracking which might interfere with subscriptions
+**Solution**: Moved all store subscriptions to `onMount` lifecycle hook
+
+**File**: `src/lib/components/Editor/SparqlEditor.svelte`
+```typescript
+onMount(() => {
+  initializeEditor();
+
+  // Subscribe AFTER editor is initialized
+  storeUnsubscribers.push(
+    queryStore.subscribe((value) => {
+      queryState = value;
+      if (editorView && value.text !== editorView.state.doc.toString()) {
+        editorView.dispatch({ changes: {...} });
+      }
+    })
+  );
+  // ...
+});
+
+onDestroy(() => {
+  storeUnsubscribers.forEach(unsub => unsub());
+  editorView?.destroy();
+});
+```
+
+**Result**: ❌ Bug persists
+
+#### 7. ✅ Fixed Stale State Bug
+**Problem**: After calling `updateTabQuery()`, the `state` parameter in subscription is stale
+**Solution**: Use `instanceTabStore.getTab()` to get FRESH data
+
+**File**: `src/SparqlQueryUI.svelte`
+```typescript
+// ❌ OLD: state.tabs is stale after updateTabQuery
+const newActiveTab = state.tabs.find((t) => t.id === state.activeTabId);
+
+// ✅ NEW: Get fresh data from store
+const newActiveTab = instanceTabStore.getTab(state.activeTabId);
+```
+
+**Result**: ❌ Bug still persists
+
+### Current Status After Session 2
+
+- **Unit/Integration Tests**: 687/687 passing ✅
+- **E2E Tests**: 3/7 passing ✅
+- **Build**: Zero errors/warnings ✅
+- **Tab Switching**: Still broken ❌
+
+### The Mystery Deepens
+
+Despite all improvements:
+1. ✅ Carbon Tabs usage correct
+2. ✅ Subscriptions in onMount (not $effect)
+3. ✅ Fresh tab data (not stale)
+4. ✅ Re-entrancy guards
+5. ✅ Direct editor updates
+
+**The bug persists!** This suggests an even deeper issue with how Svelte 5 stores or reactivity works that we haven't identified.
+
+### Hypothesis 8: Store Updates Don't Propagate
+
+Maybe `queryStore.setState()` IS being called, but the store update doesn't propagate to subscribers. Possible causes:
+- Svelte store batching
+- Timing issues with subscription creation
+- Store implementation bug
+- Runes mode incompatibility
+
+**Test**: Add logging directly inside `queryStore.ts` to verify `update()` is called
+
 ### Recommended Next Steps
+
+1. **Add extensive logging to queryStore.ts**
+   ```typescript
+   setState: (newState: Partial<QueryState>): void => {
+     console.log('[queryStore] setState ENTRY:', newState.text?.substring(0, 50));
+     console.log('[queryStore] Current subscribers:', subscribers.length); // if available
+     update((state) => {
+       const result = { ...state, ...newState };
+       console.log('[queryStore] update() callback executing');
+       console.log('[queryStore] Old state:', state.text?.substring(0, 50));
+       console.log('[queryStore] New state:', result.text?.substring(0, 50));
+       return result;
+     });
+     console.log('[queryStore] setState EXIT');
+   },
+   ```
+
+2. **Test with minimal reproduction**
+   - Create a simple test page (not Storybook)
+   - Two buttons: "Set Empty" and "Set Query"
+   - One div showing queryStore.text
+   - Verify store updates work in isolation
+
+3. **Check Svelte internals**
+   - Log the actual Svelte store object
+   - Check if subscribers array exists and has entries
+   - Verify subscription callbacks are registered
+
+4. **Try alternative approach: Direct editor control**
+   - Instead of reactive stores, use direct imperative updates
+   - Store a global editor reference
+   - Update editor directly when tab switches
+   - Bypass Svelte reactivity entirely
+
+5. **Seek Svelte community help**
+   - This may be a Svelte 5 runes mode bug
+   - Post minimal reproduction to Svelte Discord/GitHub
+
+### Recommended Next Steps (Original)
 
 1. **Add console.log to queryStore.setState()**
    ```typescript

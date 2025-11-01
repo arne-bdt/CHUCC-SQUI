@@ -6,33 +6,22 @@ import { optimizeImports, optimizeCss } from 'carbon-preprocess-svelte';
 export default defineConfig({
   plugins: [
     svelte({
-      hot: !process.env.VITEST,
-      preprocess: [
-        vitePreprocess(),
-        optimizeImports(),
-        optimizeCss()
-      ],
+      hot: false,
+      preprocess: [vitePreprocess(), optimizeImports(), optimizeCss()],
       compilerOptions: {
-        // Dynamically set runes based on file path
-        runes: undefined
+        runes: undefined,
       },
-      // Custom configuration per file
       configFile: false,
-      // Handle runes per-file
       dynamicCompileOptions({ filename }) {
-        // Disable runes for Carbon packages (they use legacy Svelte syntax)
-        if (filename?.includes('node_modules/carbon-components-svelte') ||
-            filename?.includes('node_modules/carbon-icons-svelte')) {
-          return {
-            runes: false
-          };
+        if (
+          filename?.includes('node_modules/carbon-components-svelte') ||
+          filename?.includes('node_modules/carbon-icons-svelte')
+        ) {
+          return { runes: false };
         }
-        // Enable runes for our code (Svelte 5 mode)
-        return {
-          runes: true
-        };
-      }
-    })
+        return { runes: true };
+      },
+    }),
   ],
   resolve: {
     conditions: ['browser']
@@ -47,6 +36,14 @@ export default defineConfig({
         singleThread: true
       }
     },
+    exclude: [
+      '**/node_modules/**',
+      '**/dist/**',
+      '**/cypress/**',
+      '**/.{idea,git,cache,output,temp}/**',
+      '**/{karma,rollup,webpack,vite,vitest,jest,ava,babel,nyc,cypress,tsup,build}.config.*',
+      '**/tests/e2e/**'
+    ],
     coverage: {
       provider: 'v8',
       reporter: ['text', 'json', 'html'],

@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import SparqlQueryUI from '../../src/SparqlQueryUI.svelte';
 import SplitPane from '../../src/lib/components/Layout/SplitPane.svelte';
-import Toolbar from '../../src/lib/components/Toolbar/Toolbar.svelte';
+import { Toolbar } from 'carbon-components-svelte';
 import EditorPlaceholder from '../../src/lib/components/Editor/EditorPlaceholder.svelte';
 import ResultsPlaceholder from '../../src/lib/components/Results/ResultsPlaceholder.svelte';
 
@@ -29,7 +29,7 @@ describe('Layout Integration', () => {
       expect(typeof SplitPane).toBe('function');
     });
 
-    it('should export Toolbar component', () => {
+    it('should export Carbon Toolbar component', () => {
       expect(Toolbar).toBeDefined();
       expect(typeof Toolbar).toBe('function');
     });

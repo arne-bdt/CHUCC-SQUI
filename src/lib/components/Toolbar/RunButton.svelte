@@ -4,7 +4,7 @@
    * Executes SPARQL queries with loading state and cancellation support
    */
 
-  import { Button, InlineLoading } from 'carbon-components-svelte';
+  import { Button, ButtonSet, InlineLoading } from 'carbon-components-svelte';
   import { Play, StopOutline } from 'carbon-icons-svelte';
   import { queryStore } from '../../stores/queryStore';
   import { resultsStore } from '../../stores/resultsStore';
@@ -72,51 +72,49 @@
   }
 </script>
 
-<div class="run-button-container">
-  {#if isLoading}
-    <!-- Cancel button with loading indicator -->
-    <Button
-      kind="danger"
-      size="field"
-      icon={StopOutline}
-      on:click={handleCancelQuery}
-      class="run-button {className}"
-    >
+<ButtonSet class="run-button-container {className}">
+  <!-- Run button -->
+  <Button
+    kind="primary"
+    size="field"
+    icon={Play}
+    on:click={handleRunQuery}
+    disabled={!canExecute || isLoading}
+    title={!hasQuery
+      ? $t('toolbar.runTooltipNoQuery')
+      : !hasEndpoint
+        ? $t('toolbar.runTooltipNoEndpoint')
+        : $t('toolbar.runTooltip')}
+  >
+    {$t('toolbar.run')}
+  </Button>
+
+  <!-- Cancel button -->
+  <Button
+    kind="danger"
+    size="field"
+    icon={StopOutline}
+    on:click={handleCancelQuery}
+    disabled={!isLoading}
+  >
+    {#if isLoading}
       <InlineLoading description={$t('toolbar.cancelling')} />
-    </Button>
-  {:else}
-    <!-- Run button -->
-    <Button
-      kind="primary"
-      size="field"
-      icon={Play}
-      on:click={handleRunQuery}
-      disabled={!canExecute}
-      class="run-button {className}"
-      title={!hasQuery
-        ? $t('toolbar.runTooltipNoQuery')
-        : !hasEndpoint
-          ? $t('toolbar.runTooltipNoEndpoint')
-          : $t('toolbar.runTooltip')}
-    >
-      {$t('toolbar.run')}
-    </Button>
-  {/if}
-</div>
+    {:else}
+      {$t('toolbar.cancel')}
+    {/if}
+  </Button>
+</ButtonSet>
 
 <style>
-  .run-button-container {
-    display: inline-block;
-  }
-
-  /* Fixed width to prevent layout shift */
-  .run-button-container :global(.run-button) {
-    min-width: 140px;
-    justify-content: center;
-  }
-
   /* Ensure loading indicator is centered */
-  .run-button-container :global(.bx--inline-loading) {
+  :global(.run-button-container .bx--inline-loading) {
     min-height: unset;
+  }
+
+  /* Compact button sizing to prevent toolbar overflow */
+  :global(.run-button-container .bx--btn) {
+    min-width: 60px;
+    padding-left: var(--cds-spacing-04, 0.75rem);
+    padding-right: var(--cds-spacing-04, 0.75rem);
   }
 </style>

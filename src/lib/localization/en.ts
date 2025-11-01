@@ -6,6 +6,7 @@
 export const en = {
   // Toolbar
   'toolbar.run': 'Run Query',
+  'toolbar.cancel': 'Cancel',
   'toolbar.cancelling': 'Cancelling...',
   'toolbar.runTooltip': 'Execute SPARQL query (Ctrl+Enter)',
   'toolbar.runTooltipNoQuery': 'Enter a query to execute',

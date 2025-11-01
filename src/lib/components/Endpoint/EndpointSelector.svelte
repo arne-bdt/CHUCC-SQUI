@@ -198,7 +198,6 @@
     on:select={handleSelect}
     on:input={handleInput}
     on:blur={handleBlur}
-    helperText="Select a known endpoint or enter a custom URL"
   />
 </div>
 
@@ -210,6 +209,16 @@
   /* Ensure Carbon ComboBox styles are applied correctly */
   :global(.endpoint-selector-container .bx--combo-box) {
     width: 100%;
+  }
+
+  /* Remove bottom margin to align with other toolbar elements */
+  :global(.endpoint-selector-container .bx--list-box__wrapper) {
+    margin-bottom: 0;
+  }
+
+  /* Ensure form item has no extra spacing */
+  :global(.endpoint-selector-container .bx--form-item) {
+    margin-bottom: 0;
   }
 
   :global(.endpoint-selector-container .bx--list-box__menu-item__option) {

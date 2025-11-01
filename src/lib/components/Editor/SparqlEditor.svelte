@@ -29,6 +29,7 @@
   import { themeStore } from '../../stores/theme';
   import { t } from '../../localization';
   import type { CarbonTheme } from '../../types';
+  import { debug } from '../../utils/debug';
 
   /**
    * Component props
@@ -164,10 +165,10 @@
             // Don't update store if we're currently updating FROM the store (prevents circular updates)
             if (!isUpdatingFromStore) {
               const newText = update.state.doc.toString();
-              console.log('[SparqlEditor] updateListener - calling queryStore.setText');
+              debug.log('[SparqlEditor] updateListener - calling queryStore.setText');
               queryStore.setText(newText);
             } else {
-              console.log('[SparqlEditor] updateListener - SKIPPED (isUpdatingFromStore=true)');
+              debug.log('[SparqlEditor] updateListener - SKIPPED (isUpdatingFromStore=true)');
             }
           }
         }),
@@ -229,7 +230,7 @@
   //   const storeText = queryState.text;
   //   const editorText = editorView.state.doc.toString();
 
-  //   console.log('[SparqlEditor] $effect - checking if editor needs update:', {
+  //   debug.log('[SparqlEditor] $effect - checking if editor needs update:', {
   //     storeText: storeText.substring(0, 50),
   //     editorText: editorText.substring(0, 50),
   //     needsUpdate: storeText !== editorText,
@@ -237,7 +238,7 @@
 
   //   // Only update if content actually differs (prevents infinite loops)
   //   if (storeText !== editorText) {
-  //     console.log('[SparqlEditor] Updating editor to:', storeText.substring(0, 50));
+  //     debug.log('[SparqlEditor] Updating editor to:', storeText.substring(0, 50));
   //     setValue(storeText);
   //   }
   // });
@@ -274,12 +275,12 @@
 
     // CRITICAL: Subscribe to stores AFTER editor is initialized
     // This ensures editorView is available when subscriptions fire
-    console.log('[SparqlEditor] onMount - Setting up store subscriptions');
+    debug.log('[SparqlEditor] onMount - Setting up store subscriptions');
 
     // Subscribe to queryStore and DIRECTLY update editor when it changes
     storeUnsubscribers.push(
       queryStore.subscribe((value) => {
-        console.log('[SparqlEditor] queryStore subscription fired:', {
+        debug.log('[SparqlEditor] queryStore subscription fired:', {
           newText: value.text.substring(0, 50),
           currentEditorText: editorView?.state.doc.toString().substring(0, 50) || 'no editor',
           willUpdate: editorView && value.text !== editorView.state.doc.toString(),
@@ -290,7 +291,7 @@
 
         // DIRECTLY update editor if text changed
         if (editorView && value.text !== editorView.state.doc.toString()) {
-          console.log('[SparqlEditor] DIRECTLY updating editor to:', value.text.substring(0, 50));
+          debug.log('[SparqlEditor] DIRECTLY updating editor to:', value.text.substring(0, 50));
 
           // Set guard flag to prevent updateListener from calling queryStore.setText()
           isUpdatingFromStore = true;
@@ -307,7 +308,7 @@
           // Use setTimeout to ensure updateListener has finished
           setTimeout(() => {
             isUpdatingFromStore = false;
-            console.log('[SparqlEditor] Guard flag cleared (isUpdatingFromStore=false)');
+            debug.log('[SparqlEditor] Guard flag cleared (isUpdatingFromStore=false)');
           }, 0);
         }
       })
@@ -327,7 +328,7 @@
       })
     );
 
-    console.log('[SparqlEditor] onMount complete - subscriptions active');
+    debug.log('[SparqlEditor] onMount complete - subscriptions active');
   });
 
   onDestroy(() => {

@@ -68,6 +68,7 @@
     on:change={handleChange}
     disabled={disabled}
     size="sm"
+    inline={true}
   >
     {#each formatOptions() as option}
       <SelectItem value={option.value} text={option.label} />
@@ -80,12 +81,12 @@
     min-width: 120px;
   }
 
-  .format-selector :global(.bx--select) {
+  /* Inline select takes less vertical space */
+  .format-selector :global(.bx--select--inline) {
     margin-bottom: 0;
   }
 
   .format-selector :global(.bx--label) {
     font-size: 0.75rem;
-    margin-bottom: var(--cds-spacing-02, 0.25rem);
   }
 </style>
