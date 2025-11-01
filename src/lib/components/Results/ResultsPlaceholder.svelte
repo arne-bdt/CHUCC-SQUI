@@ -18,6 +18,7 @@
   import { downloadResults } from '../../utils/download';
   import type { QueryError, SparqlJsonResults, ResultFormat } from '../../types';
   import type { ParsedTableData, ParsedAskResult } from '../../utils/resultsParser';
+  import { t } from '../../localization';
 
   interface Props {
     /** CSS class for the placeholder */
@@ -117,11 +118,22 @@
     <ErrorNotification error={errorObject()} onClose={handleCloseError} />
   {/if}
 
+  <!-- Screen reader live region for query status announcements -->
+  <div class="sr-only" role="status" aria-live="polite" aria-atomic="true">
+    {#if $resultsStore.loading}
+      {$t('a11y.queryExecuting')}
+    {:else if $resultsStore.error}
+      {$t('a11y.queryError')}
+    {:else if hasResults()}
+      {$t('a11y.queryComplete')}
+    {/if}
+  </div>
+
   <!-- Show results when no error -->
   {#if !$resultsStore.error}
     <!-- Loading state -->
     {#if $resultsStore.loading}
-      <div class="placeholder-content">
+      <div class="placeholder-content" role="status" aria-live="polite">
         <h3>Executing Query</h3>
         <p>Please wait...</p>
       </div>
@@ -130,13 +142,14 @@
     {:else if isTable() && parsedResults()}
       <div class="results-container">
         <!-- View switcher toolbar -->
-        <div class="results-toolbar">
+        <div class="results-toolbar" role="toolbar" aria-label={$t('a11y.viewSwitcher')}>
           <div class="toolbar-left">
             <RadioButtonGroup
               bind:selected={selectedView}
               orientation="horizontal"
               legendText="View"
               hideLegend={true}
+              aria-label={$t('a11y.viewSwitcher')}
             >
               <RadioButton labelText="Table" value="table" />
               <RadioButton labelText="Raw" value="raw" />
@@ -213,7 +226,7 @@
 
     <!-- No results yet -->
     {:else}
-      <div class="placeholder-content">
+      <div class="placeholder-content" role="status" aria-live="polite">
         <h3>Query Results</h3>
         <p>Results will be displayed here after query execution</p>
         <p class="hint">
@@ -341,6 +354,19 @@
     font-size: 0.75rem;
     color: var(--cds-text-helper, #6f6f6f);
     font-style: italic;
+  }
+
+  /* Screen reader only content */
+  .sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border-width: 0;
   }
 
   /* DataTable fills container */

@@ -32,19 +32,84 @@ export const CARBON_THEMES: Record<CarbonTheme, { name: string; description: str
 };
 
 /**
+ * Detect user's color scheme preference
+ * @returns 'dark' if user prefers dark mode, 'light' otherwise
+ */
+function detectColorScheme(): 'light' | 'dark' {
+  if (typeof window === 'undefined' || !window.matchMedia) {
+    return 'light';
+  }
+  return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+}
+
+/**
+ * Get appropriate theme based on color scheme preference
+ * @param scheme - 'light' or 'dark'
+ * @returns Carbon theme name
+ */
+function getThemeForScheme(scheme: 'light' | 'dark'): CarbonTheme {
+  return scheme === 'dark' ? 'g90' : 'white';
+}
+
+/**
  * Creates a theme store for managing Carbon Design System themes
  */
 function createThemeStore(): {
   subscribe: (_run: (_value: ThemeState) => void) => () => void;
   setTheme: (_theme: CarbonTheme) => void;
+  detectAndApplyPreference: () => void;
   reset: () => void;
 } {
+  // Start with user's preferred color scheme
+  const preferredScheme = detectColorScheme();
+  const initialTheme = getThemeForScheme(preferredScheme);
+
   const initialState: ThemeState = {
-    current: 'white',
+    current: initialTheme,
     previous: null,
   };
 
   const { subscribe, set, update } = writable<ThemeState>(initialState);
+
+  // Apply initial theme to document body
+  if (typeof document !== 'undefined') {
+    document.body.classList.add(initialTheme);
+  }
+
+  // Listen for system color scheme changes
+  if (typeof window !== 'undefined' && window.matchMedia) {
+    const darkModeQuery = window.matchMedia('(prefers-color-scheme: dark)');
+    const handleChange = (e: MediaQueryListEvent | MediaQueryList) => {
+      const newScheme = e.matches ? 'dark' : 'light';
+      const newTheme = getThemeForScheme(newScheme);
+      // Only auto-switch if user hasn't manually set a theme
+      // (This could be enhanced with a flag to track manual vs auto theme)
+      update((state) => {
+        // If current theme matches the old preference, update to new preference
+        const oldScheme = state.current === 'g90' || state.current === 'g100' ? 'dark' : 'light';
+        if (oldScheme !== newScheme) {
+          return {
+            current: newTheme,
+            previous: state.current,
+          };
+        }
+        return state;
+      });
+
+      if (typeof document !== 'undefined') {
+        document.body.classList.remove('white', 'g10', 'g90', 'g100');
+        document.body.classList.add(newTheme);
+      }
+    };
+
+    // Modern browsers
+    if (darkModeQuery.addEventListener) {
+      darkModeQuery.addEventListener('change', handleChange);
+    } else {
+      // Legacy browsers
+      darkModeQuery.addListener(handleChange);
+    }
+  }
 
   return {
     subscribe,
@@ -67,13 +132,35 @@ function createThemeStore(): {
       }
     },
     /**
-     * Reset theme to default (white)
+     * Detect and apply user's color scheme preference
+     * Useful for manual preference detection after initial load
      */
-    reset: (): void => {
-      set(initialState);
+    detectAndApplyPreference: (): void => {
+      const scheme = detectColorScheme();
+      const theme = getThemeForScheme(scheme);
+      update((state) => ({
+        current: theme,
+        previous: state.current,
+      }));
+
       if (typeof document !== 'undefined') {
         document.body.classList.remove('white', 'g10', 'g90', 'g100');
-        document.body.classList.add('white');
+        document.body.classList.add(theme);
+      }
+    },
+    /**
+     * Reset theme to user's preferred color scheme
+     */
+    reset: (): void => {
+      const scheme = detectColorScheme();
+      const theme = getThemeForScheme(scheme);
+      set({
+        current: theme,
+        previous: null,
+      });
+      if (typeof document !== 'undefined') {
+        document.body.classList.remove('white', 'g10', 'g90', 'g100');
+        document.body.classList.add(theme);
       }
     },
   };

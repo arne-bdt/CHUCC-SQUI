@@ -72,7 +72,7 @@
   }
 </script>
 
-<ButtonSet class="run-button-container {className}">
+<ButtonSet class="run-button-container {className}" role="group" aria-label={$t('a11y.toolbar')}>
   <!-- Run button -->
   <Button
     kind="primary"
@@ -85,6 +85,7 @@
       : !hasEndpoint
         ? $t('toolbar.runTooltipNoEndpoint')
         : $t('toolbar.runTooltip')}
+    aria-label={$t('a11y.runQuery')}
   >
     {$t('toolbar.run')}
   </Button>
@@ -96,6 +97,7 @@
     icon={StopOutline}
     on:click={handleCancelQuery}
     disabled={!isLoading}
+    aria-label={$t('a11y.cancelQuery')}
   >
     {#if isLoading}
       <InlineLoading description={$t('toolbar.cancelling')} />

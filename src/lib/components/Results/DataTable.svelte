@@ -17,6 +17,7 @@
     isRdfHtmlLiteral,
   } from '../../utils/resultsParser';
   import CellRenderer from './CellRenderer.svelte';
+  import { t } from '../../localization';
 
   interface Props {
     /** Parsed table data from resultsParser */
@@ -222,16 +223,16 @@
 
 </script>
 
-<div class="data-table-container {className}">
+<div class="data-table-container {className}" role="region" aria-label={$t('a11y.resultsRegion')}>
   {#if data.rowCount === 0}
     <!-- Empty state -->
-    <div class="empty-state">
+    <div class="empty-state" role="status" aria-live="polite">
       <p>No results found</p>
       <p class="hint">Try modifying your query</p>
     </div>
   {:else}
     <!-- SVAR DataGrid with optional HeaderMenu wrapper -->
-    <div class="grid-wrapper">
+    <div class="grid-wrapper" role="table" aria-label={$t('a11y.resultsTable')}>
       {#if enableColumnVisibility}
         <!-- Task 29: HeaderMenu wraps Grid for column visibility -->
         <HeaderMenu columns={columnVisibility} api={gridApi}>

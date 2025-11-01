@@ -34,7 +34,7 @@ describe('QueryTabs Integration', () => {
       render(QueryTabsTestWrapper, { props: { tabStore: testTabStore } });
 
       await waitFor(() => {
-        const addButton = screen.getByLabelText(/add new tab/i);
+        const addButton = screen.getByRole('button', { name: /create new query tab/i });
         expect(addButton).toBeInTheDocument();
       });
     });
@@ -63,7 +63,7 @@ describe('QueryTabs Integration', () => {
       const user = userEvent.setup();
       const { container } = render(QueryTabsTestWrapper, { props: { tabStore: testTabStore } });
 
-      const addButton = await waitFor(() => screen.getByLabelText(/add new tab/i));
+      const addButton = await waitFor(() => screen.getByRole('button', { name: /create new query tab/i }));
       await user.click(addButton);
 
       await waitFor(() => {
@@ -76,7 +76,7 @@ describe('QueryTabs Integration', () => {
       const user = userEvent.setup();
       const { container } = render(QueryTabsTestWrapper, { props: { tabStore: testTabStore } });
 
-      const addButton = await waitFor(() => screen.getByLabelText(/add new tab/i));
+      const addButton = await waitFor(() => screen.getByRole('button', { name: /create new query tab/i }));
       await user.click(addButton);
 
       await waitFor(() => {
@@ -90,7 +90,7 @@ describe('QueryTabs Integration', () => {
       const user = userEvent.setup();
       const { container } = render(QueryTabsTestWrapper, { props: { tabStore: testTabStore } });
 
-      const addButton = await waitFor(() => screen.getByLabelText(/add new tab/i));
+      const addButton = await waitFor(() => screen.getByRole('button', { name: /create new query tab/i }));
       await user.click(addButton);
 
       await waitFor(() => {
@@ -103,7 +103,7 @@ describe('QueryTabs Integration', () => {
       const user = userEvent.setup();
       render(QueryTabsTestWrapper, { props: { tabStore: testTabStore } });
 
-      const addButton = await waitFor(() => screen.getByLabelText(/add new tab/i));
+      const addButton = await waitFor(() => screen.getByRole('button', { name: /create new query tab/i }));
       await user.click(addButton);
 
       await waitFor(() => {
@@ -120,7 +120,7 @@ describe('QueryTabs Integration', () => {
       const { container } = render(QueryTabsTestWrapper, { props: { tabStore: testTabStore } });
 
       // Add a second tab
-      const addButton = await waitFor(() => screen.getByLabelText(/add new tab/i));
+      const addButton = await waitFor(() => screen.getByRole('button', { name: /create new query tab/i }));
       await user.click(addButton);
 
       // Wait for close buttons to appear
@@ -144,7 +144,7 @@ describe('QueryTabs Integration', () => {
       const { container } = render(QueryTabsTestWrapper, { props: { tabStore: testTabStore } });
 
       // Add second tab
-      const addButton = await waitFor(() => screen.getByLabelText(/add new tab/i));
+      const addButton = await waitFor(() => screen.getByRole('button', { name: /create new query tab/i }));
       await user.click(addButton);
 
       // Close both tabs (should only close one)
@@ -170,7 +170,7 @@ describe('QueryTabs Integration', () => {
       const { container } = render(QueryTabsTestWrapper, { props: { tabStore: testTabStore } });
 
       // Add two more tabs
-      const addButton = await waitFor(() => screen.getByLabelText(/add new tab/i));
+      const addButton = await waitFor(() => screen.getByRole('button', { name: /create new query tab/i }));
       await user.click(addButton);
       await user.click(addButton);
 
@@ -207,7 +207,7 @@ describe('QueryTabs Integration', () => {
       const firstTabId = state0.tabs[0].id;
 
       // Add second tab (this will auto-switch to the new tab)
-      const addButton = await waitFor(() => screen.getByLabelText(/add new tab/i));
+      const addButton = await waitFor(() => screen.getByRole('button', { name: /create new query tab/i }));
       await user.click(addButton);
 
       // Wait for second tab to be added and become active
@@ -233,7 +233,7 @@ describe('QueryTabs Integration', () => {
       const { container } = render(QueryTabsTestWrapper, { props: { tabStore: testTabStore } });
 
       // Add second tab
-      const addButton = await waitFor(() => screen.getByLabelText(/add new tab/i));
+      const addButton = await waitFor(() => screen.getByRole('button', { name: /create new query tab/i }));
       await user.click(addButton);
 
       // Click first tab
@@ -259,7 +259,7 @@ describe('QueryTabs Integration', () => {
       const persistentStore = createTabStore({ disablePersistence: false });
       render(QueryTabsTestWrapper, { props: { tabStore: persistentStore } });
 
-      const addButton = await waitFor(() => screen.getByLabelText(/add new tab/i));
+      const addButton = await waitFor(() => screen.getByRole('button', { name: /create new query tab/i }));
       await user.click(addButton);
 
       await waitFor(() => {
@@ -278,7 +278,7 @@ describe('QueryTabs Integration', () => {
       const { container } = render(QueryTabsTestWrapper, { props: { tabStore: persistentStore } });
 
       // Add two tabs
-      const addButton = await waitFor(() => screen.getByLabelText(/add new tab/i));
+      const addButton = await waitFor(() => screen.getByRole('button', { name: /create new query tab/i }));
       await user.click(addButton);
       await user.click(addButton);
 
@@ -309,7 +309,7 @@ describe('QueryTabs Integration', () => {
       testTabStore.updateTabQuery(firstTabId, { endpoint: 'https://dbpedia.org/sparql' });
 
       // Add new tab
-      const addButton = await waitFor(() => screen.getByLabelText(/add new tab/i));
+      const addButton = await waitFor(() => screen.getByRole('button', { name: /create new query tab/i }));
       await user.click(addButton);
 
       await waitFor(() => {

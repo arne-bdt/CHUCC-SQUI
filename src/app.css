@@ -17,4 +17,125 @@ body {
   height: 100vh;
 }
 
+/* ============================================
+ * Task 43: Enhanced Focus Styles for Keyboard Navigation
+ * ============================================ */
+
+/* Ensure all interactive elements have visible focus indicators */
+*:focus {
+  outline: 2px solid var(--cds-focus, #0f62fe);
+  outline-offset: 2px;
+}
+
+/* Remove default browser outline when using custom focus styles */
+*:focus:not(:focus-visible) {
+  outline: none;
+}
+
+/* Enhanced focus-visible for keyboard navigation only */
+*:focus-visible {
+  outline: 2px solid var(--cds-focus, #0f62fe);
+  outline-offset: 2px;
+  box-shadow: 0 0 0 2px var(--cds-background, #ffffff);
+}
+
+/* Focus styles for buttons */
+button:focus-visible,
+.bx--btn:focus-visible {
+  outline: 2px solid var(--cds-focus, #0f62fe);
+  outline-offset: -2px;
+}
+
+/* Focus styles for links */
+a:focus-visible {
+  outline: 2px solid var(--cds-focus, #0f62fe);
+  outline-offset: 2px;
+  text-decoration: underline;
+}
+
+/* Focus styles for inputs and textareas */
+input:focus-visible,
+textarea:focus-visible,
+select:focus-visible {
+  outline: 2px solid var(--cds-focus, #0f62fe);
+  outline-offset: 2px;
+}
+
+/* Focus styles for custom interactive elements */
+[role="button"]:focus-visible,
+[role="tab"]:focus-visible,
+[role="menuitem"]:focus-visible,
+[role="option"]:focus-visible {
+  outline: 2px solid var(--cds-focus, #0f62fe);
+  outline-offset: 2px;
+}
+
+/* Dark theme focus styles */
+.g90 *:focus-visible,
+.g100 *:focus-visible {
+  outline-color: var(--cds-focus, #78a9ff);
+  box-shadow: 0 0 0 2px var(--cds-background, #262626);
+}
+
+/* Skip link for keyboard navigation */
+.skip-link {
+  position: absolute;
+  top: -40px;
+  left: 0;
+  background-color: var(--cds-background, #ffffff);
+  color: var(--cds-text-primary, #161616);
+  padding: var(--cds-spacing-03, 0.5rem) var(--cds-spacing-05, 1rem);
+  text-decoration: none;
+  z-index: 10000;
+  border: 2px solid var(--cds-focus, #0f62fe);
+}
+
+.skip-link:focus {
+  top: 0;
+  outline: 2px solid var(--cds-focus, #0f62fe);
+  outline-offset: 2px;
+}
+
+/* High contrast focus for better visibility */
+@media (prefers-contrast: high) {
+  *:focus-visible {
+    outline-width: 3px;
+    outline-offset: 3px;
+  }
+
+  /* Enhance borders and text contrast */
+  * {
+    border-width: 2px !important;
+  }
+
+  /* Increase text weight for better readability */
+  body {
+    font-weight: 500;
+  }
+
+  /* Increase button contrast */
+  button,
+  .bx--btn {
+    border-width: 2px !important;
+    font-weight: 600 !important;
+  }
+
+  /* Increase link underline */
+  a {
+    text-decoration: underline;
+    text-decoration-thickness: 2px;
+  }
+}
+
+/* Reduce motion for users who prefer it */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
 /* Theme-specific overrides can be added here if needed */

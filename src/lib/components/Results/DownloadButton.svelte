@@ -9,6 +9,7 @@
   import { Button } from 'carbon-components-svelte';
   import { Download } from 'carbon-icons-svelte';
   import type { ResultFormat } from '../../types';
+  import { t } from '../../localization';
 
   interface Props {
     /** Current result format */
@@ -41,10 +42,11 @@
     kind="ghost"
     size="sm"
     icon={Download}
-    iconDescription="Download results"
+    iconDescription={$t('a11y.downloadButton')}
     tooltipPosition="bottom"
     on:click={handleDownload}
     disabled={disabled}
+    aria-label={$t('a11y.downloadButton')}
   >
     Download
   </Button>

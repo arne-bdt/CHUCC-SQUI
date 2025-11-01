@@ -69,13 +69,26 @@ export const en = {
 
   // Accessibility
   'a11y.runQuery': 'Execute SPARQL query (Ctrl+Enter)',
+  'a11y.cancelQuery': 'Cancel running query',
   'a11y.editor': 'SPARQL Query Editor',
   'a11y.results': 'Query Results',
+  'a11y.resultsTable': 'SPARQL query results table',
+  'a11y.resultsRegion': 'Query results region',
   'a11y.sortColumn': 'Sort by {column}',
   'a11y.resizeColumn': 'Resize column',
   'a11y.filterColumn': 'Filter column {column}',
   'a11y.closeTab': 'Close tab',
   'a11y.newTab': 'Create new query tab',
+  'a11y.endpointSelector': 'Select SPARQL endpoint',
+  'a11y.downloadButton': 'Download query results',
+  'a11y.formatSelector': 'Select result format',
+  'a11y.viewSwitcher': 'Switch between table and raw views',
+  'a11y.loading': 'Loading',
+  'a11y.queryExecuting': 'Query is executing',
+  'a11y.queryComplete': 'Query execution complete',
+  'a11y.queryError': 'Query execution failed',
+  'a11y.toolbar': 'Query execution toolbar',
+  'a11y.tabList': 'Query tabs',
 
   // Data Grid
   'grid.columns': 'Columns',
@@ -117,10 +130,23 @@ export const en = {
   'template.describe': 'DESCRIBE Query',
 
   // Keyboard shortcuts
-  'shortcuts.executeQuery': 'Execute Query (Ctrl+Enter)',
-  'shortcuts.executeQueryMac': 'Execute Query (Cmd+Enter)',
+  'shortcuts.executeQuery': 'Execute Query',
+  'shortcuts.executeQueryMac': 'Execute Query',
   'shortcuts.hint': 'Press Ctrl+Enter to execute query',
   'shortcuts.hintMac': 'Press Cmd+Enter to execute query',
+  'shortcuts.title': 'Keyboard Shortcuts',
+  'shortcuts.cancelQuery': 'Cancel running query',
+  'shortcuts.autocomplete': 'Trigger autocomplete',
+  'shortcuts.find': 'Find',
+  'shortcuts.replace': 'Find and replace',
+  'shortcuts.undo': 'Undo',
+  'shortcuts.redo': 'Redo',
+  'shortcuts.indent': 'Indent selection',
+  'shortcuts.dedent': 'Dedent selection',
+  'shortcuts.navigate': 'Navigate elements',
+  'shortcuts.close': 'Close dropdown/modal',
+  'shortcuts.activate': 'Activate button/link',
+  'shortcuts.toggle': 'Toggle checkbox/radio',
 
   // Common actions
   'action.cancel': 'Cancel',

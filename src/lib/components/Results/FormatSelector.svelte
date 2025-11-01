@@ -9,6 +9,7 @@
 
   import { Select, SelectItem } from 'carbon-components-svelte';
   import type { ResultFormat } from '../../types';
+  import { t } from '../../localization';
 
   interface Props {
     /** Currently selected format */
@@ -69,6 +70,7 @@
     disabled={disabled}
     size="sm"
     inline={true}
+    aria-label={$t('a11y.formatSelector')}
   >
     {#each formatOptions() as option}
       <SelectItem value={option.value} text={option.label} />

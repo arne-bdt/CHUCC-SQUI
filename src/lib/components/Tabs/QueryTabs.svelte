@@ -19,6 +19,7 @@
   import { getContext } from 'svelte';
   import type { createTabStore } from '../../stores/tabStore';
   import type { TabsState } from '../../types';
+  import { t } from '../../localization';
 
   // Get instance-specific tab store from context
   const tabStore = getContext<ReturnType<typeof createTabStore>>('tabStore');
@@ -84,7 +85,7 @@
 </script>
 
 <div class="query-tabs-container">
-  <div class="tabs-header">
+  <div class="tabs-header" role="tablist" aria-label={$t('a11y.tabList')}>
     <Tabs type="container" bind:selected={selectedIndex}>
       {#each tabsState.tabs as tab (tab.id)}
         <Tab label={tab.name}>
@@ -94,7 +95,7 @@
               <button
                 class="close-button"
                 type="button"
-                aria-label="Close tab {tab.name}"
+                aria-label={$t('a11y.closeTab') + ' ' + tab.name}
                 onclick={(e) => handleCloseTab(tab.id, e)}
               >
                 <Close size={16} />
@@ -111,9 +112,10 @@
         kind="ghost"
         size="small"
         icon={Add}
-        iconDescription="Add new tab"
+        iconDescription={$t('a11y.newTab')}
         tooltipPosition="bottom"
         onclick={handleAddTab}
+        aria-label={$t('a11y.newTab')}
       />
     </div>
   </div>
