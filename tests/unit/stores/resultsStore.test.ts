@@ -265,4 +265,86 @@ describe('Results Store', () => {
       unsubscribe();
     });
   });
+
+  describe('enableChunkedLoading', () => {
+    it('should initialize chunked loading state', () => {
+      const unsubscribe = resultsStore.subscribe((state) => {
+        currentState = state;
+      });
+
+      resultsStore.enableChunkedLoading(100);
+
+      expect(currentState?.chunkedLoading).toBeDefined();
+      expect(currentState?.chunkedLoading?.chunkSize).toBe(100);
+      expect(currentState?.chunkedLoading?.currentOffset).toBe(0);
+      expect(currentState?.chunkedLoading?.hasMore).toBe(true);
+      expect(currentState?.chunkedLoading?.loadingChunk).toBe(false);
+      expect(currentState?.chunkedLoading?.totalLoaded).toBe(0);
+      unsubscribe();
+    });
+
+    it('should use default chunk size of 1000', () => {
+      const unsubscribe = resultsStore.subscribe((state) => {
+        currentState = state;
+      });
+
+      resultsStore.enableChunkedLoading();
+
+      expect(currentState?.chunkedLoading?.chunkSize).toBe(1000);
+      unsubscribe();
+    });
+  });
+
+
+  describe('appendChunkData', () => {
+    it('should append chunk data to existing results', () => {
+      const unsubscribe = resultsStore.subscribe((state) => {
+        currentState = state;
+      });
+
+      const initialData: SparqlJsonResults = {
+        head: { vars: ['x'] },
+        results: {
+          bindings: [
+            { x: { type: 'literal', value: '1' } },
+          ],
+        },
+      };
+      resultsStore.setData(initialData);
+
+      const chunkData: SparqlJsonResults = {
+        head: { vars: ['x'] },
+        results: {
+          bindings: [
+            { x: { type: 'literal', value: '2' } },
+            { x: { type: 'literal', value: '3' } },
+          ],
+        },
+      };
+      resultsStore.appendChunkData(chunkData);
+
+      expect(currentState?.data).toBeDefined();
+      if (currentState?.data && typeof currentState.data !== 'string') {
+        expect(currentState.data.results?.bindings.length).toBe(3);
+      }
+      unsubscribe();
+    });
+
+    it('should not append if no existing data', () => {
+      const unsubscribe = resultsStore.subscribe((state) => {
+        currentState = state;
+      });
+
+      const chunkData: SparqlJsonResults = {
+        head: { vars: ['x'] },
+        results: {
+          bindings: [{ x: { type: 'literal', value: '1' } }],
+        },
+      };
+      resultsStore.appendChunkData(chunkData);
+
+      expect(currentState?.data).toBeNull();
+      unsubscribe();
+    });
+  });
 });

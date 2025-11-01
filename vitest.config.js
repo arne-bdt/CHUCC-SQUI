@@ -51,7 +51,19 @@ export default defineConfig({
         'node_modules/',
         'tests/',
         '**/*.test.ts',
-        '**/*.spec.ts'
+        '**/*.spec.ts',
+        'storybook-static/**',
+        '**/storybook-static/**',
+        '**/.storybook/**',
+        '**/dist/**',
+        '**/*.config.js',
+        '**/*.config.ts',
+        '**/*.stories.ts',
+        '**/*.stories.svelte'
+      ],
+      include: [
+        'src/**/*.ts',
+        'src/**/*.svelte'
       ],
       thresholds: {
         lines: 80,
