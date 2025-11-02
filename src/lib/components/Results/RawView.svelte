@@ -39,7 +39,7 @@
   const isDarkTheme = $derived(theme === 'g90' || theme === 'g100');
 
   // Determine language mode based on content type
-  const languageExtension = $derived(() => {
+  const languageExtension = $derived.by(() => {
     const type = contentType.toLowerCase();
     if (type.includes('json')) {
       return json();

@@ -2,11 +2,31 @@ import type { Preview, Decorator } from '@storybook/sveltekit';
 import 'carbon-components-svelte/css/all.css';
 import './preview.css';
 import type { CarbonTheme } from '../src/lib/types';
+import { resultsStore } from '../src/lib/stores/resultsStore';
+import { queryStore } from '../src/lib/stores/queryStore';
 
 /**
  * Storybook preview configuration for SQUI
  * Integrates Carbon Design System and provides theme switching
  */
+
+/**
+ * Store initialization decorator - ensures all stores are properly initialized
+ * This prevents "Cannot convert undefined or null to object" errors
+ */
+const withStoreInit: Decorator = (story, context) => {
+  // Reset stores to initial state before each story
+  if (typeof window !== 'undefined') {
+    try {
+      resultsStore.reset();
+      queryStore.reset();
+    } catch (err) {
+      console.warn('Failed to reset stores:', err);
+    }
+  }
+
+  return story();
+};
 
 /**
  * Theme decorator - applies Carbon theme classes to Storybook preview
@@ -97,8 +117,8 @@ const preview: Preview = {
       toc: true,
     },
   },
-  // Apply theme decorator to ensure CSS variables are available
-  decorators: [withTheme],
+  // Apply decorators - store init first, then theme
+  decorators: [withStoreInit, withTheme],
   // Global types for toolbar controls
   globalTypes: {
     theme: {

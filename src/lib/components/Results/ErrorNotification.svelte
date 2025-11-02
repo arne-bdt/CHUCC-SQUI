@@ -20,7 +20,7 @@
   let { error = null, onClose }: Props = $props();
 
   // Derived error properties
-  const errorData = $derived(() => {
+  const errorData = $derived.by(() => {
     if (!error) return null;
 
     if (typeof error === 'string') {
@@ -90,22 +90,22 @@
   }
 </script>
 
-{#if errorData()}
+{#if errorData}
   <div class="error-notification-wrapper">
     <InlineNotification
-      kind={errorData().kind}
-      title={errorData().title}
-      subtitle={errorData().message}
+      kind={errorData.kind}
+      title={errorData.title}
+      subtitle={errorData.message}
       hideCloseButton={false}
       on:close={handleClose}
       lowContrast
     />
 
     <!-- Show detailed error information if available -->
-    {#if errorData().details}
+    {#if errorData.details}
       <details class="error-details">
         <summary>Error Details</summary>
-        <pre class="error-details-content">{errorData().details}</pre>
+        <pre class="error-details-content">{errorData.details}</pre>
       </details>
     {/if}
   </div>

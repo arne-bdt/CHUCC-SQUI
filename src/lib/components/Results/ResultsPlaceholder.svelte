@@ -38,23 +38,26 @@
     onDownloadResults,
   }: Props = $props();
 
-  // In Svelte 5 runes mode, access stores directly for proper reactivity
-  // Don't wrap in $derived - that creates a snapshot, not a reactive binding
-
   // Convert error string to QueryError object
-  const errorObject = $derived<QueryError | null>(() => {
-    if (!$resultsStore.error) return null;
-    if (typeof $resultsStore.error === 'string') {
-      return { message: $resultsStore.error };
+  const errorObject = $derived.by<QueryError | null>(() => {
+    const error = $resultsStore?.error;
+    if (!error) return null;
+    if (typeof error === 'string') {
+      return { message: error };
     }
-    return $resultsStore.error as QueryError;
+    return error as QueryError;
   });
 
   // Parse results when available
-  const parsedResults = $derived(() => {
-    if (!$resultsStore.data) return null;
+  const parsedResults = $derived.by(() => {
+    const data = $resultsStore?.data;
+
+    // Defensive checks: ensure data exists and has proper structure
+    if (!data || typeof data !== 'object') return null;
+    if (!('head' in data)) return null;
+
     try {
-      return parseResults($resultsStore.data as SparqlJsonResults);
+      return parseResults(data as SparqlJsonResults);
     } catch (error) {
       console.error('Error parsing results:', error);
       return null;
@@ -62,22 +65,16 @@
   });
 
   // Check if results are from SELECT query
-  const isTable = $derived(() => {
-    return parsedResults() && 'columns' in parsedResults()!;
-  });
+  const isTable = $derived(parsedResults !== null && parsedResults !== undefined && 'columns' in parsedResults);
 
   // Check if results are from ASK query
-  const isBoolean = $derived(() => {
-    return parsedResults() && 'type' in parsedResults()! && parsedResults()!.type === 'boolean';
-  });
+  const isBoolean = $derived(parsedResults !== null && parsedResults !== undefined && 'type' in parsedResults && parsedResults.type === 'boolean');
 
   // Check if we have results to display (not just the placeholder)
-  const hasResults = $derived(() => {
-    return $resultsStore.data !== null && !$resultsStore.loading;
-  });
+  const hasResults = $derived($resultsStore?.data !== null && !$resultsStore?.loading);
 
   // Task 36: Extract view for proper reactivity
-  const currentView = $derived($resultsStore.view);
+  const currentView = $derived($resultsStore?.view || 'table');
 
   // Task 36: View selection state (bound to RadioButtonGroup)
   // Sync with store using $effect
@@ -85,19 +82,21 @@
 
   // Sync selectedView with store
   $effect(() => {
-    selectedView = $resultsStore.view;
+    if ($resultsStore?.view) {
+      selectedView = $resultsStore.view;
+    }
   });
 
   // When selectedView changes (from user interaction), update store
   $effect(() => {
-    if ($resultsStore.view !== selectedView) {
+    if ($resultsStore && $resultsStore.view !== selectedView) {
       resultsStore.setView(selectedView);
     }
   });
 
   // Task 38: Handle download
   function handleDownload(format: ResultFormat): void {
-    if ($resultsStore.rawData) {
+    if ($resultsStore?.rawData) {
       try {
         downloadResults($resultsStore.rawData, format);
       } catch (error) {
@@ -114,8 +113,8 @@
 
 <div class="results-placeholder {className}">
   <!-- Show error notification if there's an error -->
-  {#if errorObject()}
-    <ErrorNotification error={errorObject()} onClose={handleCloseError} />
+  {#if errorObject}
+    <ErrorNotification error={errorObject} onClose={handleCloseError} />
   {/if}
 
   <!-- Screen reader live region for query status announcements -->
@@ -124,7 +123,7 @@
       {$t('a11y.queryExecuting')}
     {:else if $resultsStore.error}
       {$t('a11y.queryError')}
-    {:else if hasResults()}
+    {:else if hasResults}
       {$t('a11y.queryComplete')}
     {/if}
   </div>
@@ -139,7 +138,7 @@
       </div>
 
     <!-- Task 36: View switcher and results display for SELECT queries ONLY -->
-    {:else if isTable() && parsedResults()}
+    {:else if isTable && parsedResults}
       <div class="results-container">
         <!-- View switcher toolbar -->
         <div class="results-toolbar" role="toolbar" aria-label={$t('a11y.viewSwitcher')}>
@@ -173,9 +172,9 @@
         </div>
 
         <!-- Task 34: Show warning for large result sets (only in table view) -->
-        {#if currentView === 'table' && isTable()}
+        {#if currentView === 'table' && isTable}
           <ResultsWarning
-            resultCount={(parsedResults() as ParsedTableData).rowCount}
+            resultCount={(parsedResults as ParsedTableData).rowCount}
             maxResults={maxResults}
             warningThreshold={warningThreshold}
             onDownload={onDownloadResults}
@@ -187,8 +186,8 @@
         <div class="results-content">
           {#if currentView === 'table'}
             <!-- Table view - show DataTable -->
-            {#if isTable()}
-              <DataTable data={parsedResults() as ParsedTableData} prefixes={$resultsStore.prefixes} />
+            {#if isTable}
+              <DataTable data={parsedResults as ParsedTableData} prefixes={$resultsStore.prefixes} />
             {:else}
               <div class="placeholder-content">
                 <p>No tabular data available for this query result.</p>
@@ -213,11 +212,11 @@
       </div>
 
     <!-- ASK query results - show boolean -->
-    {:else if isBoolean() && parsedResults()}
+    {:else if isBoolean && parsedResults}
       <div class="placeholder-content">
         <h3>ASK Query Result</h3>
-        <p class="ask-result {(parsedResults() as ParsedAskResult).value ? 'true' : 'false'}">
-          {(parsedResults() as ParsedAskResult).value ? 'TRUE' : 'FALSE'}
+        <p class="ask-result {(parsedResults as ParsedAskResult).value ? 'true' : 'false'}">
+          {(parsedResults as ParsedAskResult).value ? 'TRUE' : 'FALSE'}
         </p>
         {#if $resultsStore.executionTime}
           <p class="execution-time">Executed in {$resultsStore.executionTime}ms</p>

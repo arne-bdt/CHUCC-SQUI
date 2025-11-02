@@ -1,0 +1,27 @@
+
+> sparql-query-ui@0.1.0 test:e2e:storybook
+> playwright test --config=playwright-storybook.config.js
+
+
+Running 8 tests using 1 worker
+
+  ok 1 [chromium] › tests\e2e\minimal-tabs.storybook.spec.ts:10:3 › MinimalTabs E2E › should switch tab content when clicking tabs (4.6s)
+[BROWSER CONSOLE] [SparqlQueryUI] Tab store subscription triggered: {activeTabId: tab-1762041793961-dpgnv5k6j, currentActiveTabId: tab-1762041793961-dpgnv5k6j, tabCount: 1}
+[E2E Test] Tab 1 initial content (first 50 chars): PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-synt
+  x  2 [chromium] › tests\e2e\tabs.storybook.spec.ts:35:3 › Tab Switching in Storybook › should switch query editor content when clicking between tabs (32.1s)
+[BROWSER CONSOLE] [SparqlQueryUI] Tab store subscription triggered: {activeTabId: tab-1762041827663-d7dwkwd77, currentActiveTabId: tab-1762041827663-d7dwkwd77, tabCount: 1}
+  x  3 [chromium] › tests\e2e\tabs.storybook.spec.ts:87:3 › Tab Switching in Storybook › should switch results when clicking between tabs (32.1s)
+[BROWSER CONSOLE] [SparqlQueryUI] Tab store subscription triggered: {activeTabId: tab-1762041860852-xl83n23x0, currentActiveTabId: tab-1762041860852-xl83n23x0, tabCount: 1}
+[BROWSER CONSOLE] [SparqlQueryUI] Tab store subscription triggered: {activeTabId: tab-1762041862443-xtqbxqth0, currentActiveTabId: tab-1762041862443-xtqbxqth0, tabCount: 1}
+[BROWSER CONSOLE] [SparqlQueryUI] Tab store subscription triggered: {activeTabId: tab-1762041862482-vr4gleu50, currentActiveTabId: tab-1762041862482-vr4gleu50, tabCount: 1}
+[BROWSER CONSOLE] [SparqlQueryUI] Tab store subscription triggered: {activeTabId: tab-1762041862518-5ajwevr99, currentActiveTabId: tab-1762041862518-5ajwevr99, tabCount: 1}
+[BROWSER CONSOLE] [SparqlQueryUI] Tab store subscription triggered: {activeTabId: tab-1762041862551-gs086zl7i, currentActiveTabId: tab-1762041862551-gs086zl7i, tabCount: 1}
+[BROWSER CONSOLE] [SparqlQueryUI] Tab store subscription triggered: {activeTabId: tab-1762041862585-gx10w5x2q, currentActiveTabId: tab-1762041862585-gx10w5x2q, tabCount: 1}
+[BROWSER CONSOLE] [SparqlQueryUI] Tab store subscription triggered: {activeTabId: tab-1762041862616-n8s071xji, currentActiveTabId: tab-1762041862616-n8s071xji, tabCount: 1}
+[BROWSER CONSOLE] [SparqlQueryUI] Tab store subscription triggered: {activeTabId: tab-1762041862691-p3xrkwtmh, currentActiveTabId: tab-1762041862691-p3xrkwtmh, tabCount: 1}
+[BROWSER CONSOLE] [SparqlQueryUI] Tab store subscription triggered: {activeTabId: tab-1762041862718-bd86efmki, currentActiveTabId: tab-1762041862718-bd86efmki, tabCount: 1}
+  x  4 [chromium] › tests\e2e\tabs.storybook.spec.ts:111:3 › Tab Switching in Storybook › should isolate tabs across multiple story instances on docs page (31.8s)
+[BROWSER CONSOLE] [SparqlQueryUI] Tab store subscription triggered: {activeTabId: tab-1762041894229-vjml6gxjd, currentActiveTabId: tab-1762041894229-vjml6gxjd, tabCount: 1}
+  x  5 [chromium] › tests\e2e\tabs.storybook.spec.ts:142:3 › Tab Switching in Storybook › should clear tabs after CTRL+F5 (hard refresh) (32.7s)
+  x  6 [chromium] › tests\e2e\tabs.storybook.spec.ts:169:3 › Tab UI Interactions › should show close buttons when multiple tabs exist (31.9s)
+  x  7 [chromium] › tests\e2e\tabs.storybook.spec.ts:183:3 › Tab UI Interactions › should close tabs without navigation (32.6s)

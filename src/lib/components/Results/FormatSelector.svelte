@@ -33,7 +33,7 @@
   }: Props = $props();
 
   // Format options based on query type
-  const formatOptions = $derived(() => {
+  const formatOptions = $derived.by(() => {
     if (queryType === 'SELECT' || queryType === 'ASK') {
       return [
         { value: 'json', label: 'JSON' },
@@ -72,7 +72,7 @@
     inline={true}
     aria-label={$t('a11y.formatSelector')}
   >
-    {#each formatOptions() as option}
+    {#each formatOptions as option}
       <SelectItem value={option.value} text={option.label} />
     {/each}
   </Select>
