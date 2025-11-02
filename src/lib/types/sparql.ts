@@ -93,8 +93,8 @@ export interface ResultsState {
   view: 'table' | 'raw' | 'graph';
   /** Loading indicator */
   loading: boolean;
-  /** Error message if query failed */
-  error: string | null;
+  /** Error message or QueryError object if query failed */
+  error: string | QueryError | null;
   /** Query execution time in milliseconds */
   executionTime?: number;
   /** Prefixes from the query for IRI abbreviation */

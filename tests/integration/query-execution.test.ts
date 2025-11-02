@@ -92,7 +92,11 @@ describe('Query Execution Integration', () => {
       expect(finalState.data).toBeNull();
       expect(finalState.loading).toBe(false);
       // Task 18 enhanced error messages: "Bad Request: Invalid SPARQL query" instead of "HTTP 400"
-      expect(finalState.error).toContain('Bad Request');
+      // Error is now a QueryError object with rich details
+      const errorMessage = typeof finalState.error === 'string'
+        ? finalState.error
+        : finalState.error?.message || '';
+      expect(errorMessage).toContain('Bad Request');
     });
 
     it('should handle network errors', async () => {
@@ -107,7 +111,10 @@ describe('Query Execution Integration', () => {
 
       const finalState = get(resultsStore);
       expect(finalState.loading).toBe(false);
-      expect(finalState.error).toContain('Network error');
+      const errorMessage = typeof finalState.error === 'string'
+        ? finalState.error
+        : finalState.error?.message || '';
+      expect(errorMessage).toContain('Network error');
     });
 
     it('should clear previous error when starting new query', async () => {
@@ -209,7 +216,10 @@ describe('Query Execution Integration', () => {
 
       const finalState = get(resultsStore);
       expect(finalState.loading).toBe(false);
-      expect(finalState.error).toContain('cancelled');
+      const errorMessage = typeof finalState.error === 'string'
+        ? finalState.error
+        : finalState.error?.message || '';
+      expect(errorMessage).toContain('cancelled');
     });
   });
 
@@ -323,7 +333,10 @@ describe('Query Execution Integration', () => {
       });
 
       const finalState = get(resultsStore);
-      expect(finalState.error).toContain('timeout');
+      const errorMessage = typeof finalState.error === 'string'
+        ? finalState.error
+        : finalState.error?.message || '';
+      expect(errorMessage).toContain('timeout');
     }, 10000);
   });
 });

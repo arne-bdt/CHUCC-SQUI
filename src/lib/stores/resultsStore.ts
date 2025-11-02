@@ -17,7 +17,7 @@ export function createResultsStore(): {
   subscribe: (_run: (_value: ResultsState) => void) => () => void;
   setData: (_data: SparqlJsonResults, _executionTime?: number, _prefixes?: Record<string, string>) => void;
   setLoading: (_loading: boolean) => void;
-  setError: (_error: string) => void;
+  setError: (_error: string | QueryError) => void;
   clearError: () => void;
   setView: (_view: 'table' | 'raw' | 'graph') => void;
   setFormat: (_format: ResultFormat) => void;
@@ -82,8 +82,9 @@ export function createResultsStore(): {
     /**
      * Set error state
      * Automatically clears loading state
+     * Accepts both string and QueryError objects for rich error details
      */
-    setError: (error: string): void => {
+    setError: (error: string | QueryError): void => {
       update((state) => ({
         ...state,
         error,
@@ -173,29 +174,20 @@ export function createResultsStore(): {
           prefixes: queryPrefixes,
         }));
       } catch (error) {
-        // Handle errors - preserve QueryError structure or create error message
-        let errorValue: string;
+        // Handle errors - preserve QueryError structure for rich error details
+        let errorValue: string | QueryError;
         if (error && typeof error === 'object' && 'message' in error) {
-          // If it's a QueryError, preserve it
-          const queryError = error as QueryError;
-          errorValue = queryError.message;
-
-          // Store the full QueryError for detailed display
-          // For now, we store just the message, but the error notification
-          // will be enhanced to show full QueryError details
-          update((state) => ({
-            ...state,
-            loading: false,
-            error: errorValue,
-          }));
+          // Preserve the full QueryError object with all details
+          errorValue = error as QueryError;
         } else {
           errorValue = 'An unknown error occurred';
-          update((state) => ({
-            ...state,
-            loading: false,
-            error: errorValue,
-          }));
         }
+
+        update((state) => ({
+          ...state,
+          loading: false,
+          error: errorValue,
+        }));
       }
     },
 
