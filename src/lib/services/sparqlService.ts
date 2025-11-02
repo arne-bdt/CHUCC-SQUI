@@ -56,15 +56,17 @@ export class SparqlService {
     const {
       endpoint,
       query,
-      method = this.determineMethod(query, endpoint),
       format = 'json',
       timeout = this.defaultTimeout,
       headers = {},
       signal,
     } = options;
 
-    // Detect query type
+    // Detect query type FIRST (needed for method determination)
     const queryType = this.detectQueryType(query);
+
+    // Determine method based on query type and URL length
+    const method = options.method ?? this.determineMethod(query, endpoint, queryType);
 
     // Set Accept header based on query type and format
     const acceptHeader = this.getAcceptHeader(queryType, format);
@@ -87,7 +89,7 @@ export class SparqlService {
       if (method === 'GET') {
         response = await this.executeGet(endpoint, query, acceptHeader, headers);
       } else {
-        response = await this.executePost(endpoint, query, acceptHeader, headers);
+        response = await this.executePost(endpoint, query, queryType, acceptHeader, headers);
       }
 
       clearTimeout(timeoutId);
@@ -128,13 +130,22 @@ export class SparqlService {
   }
 
   /**
-   * Determine HTTP method based on full URL length
-   * Uses GET for small queries, POST for large ones
+   * Determine HTTP method based on query type and full URL length
+   * UPDATE queries MUST use POST per SPARQL 1.2 Protocol
+   * Other queries use GET for small queries, POST for large ones
    * @param query SPARQL query text
    * @param endpoint SPARQL endpoint URL
+   * @param queryType Type of SPARQL query
    * @returns HTTP method to use
    */
-  private determineMethod(query: string, endpoint: string): 'GET' | 'POST' {
+  private determineMethod(query: string, endpoint: string, queryType: QueryType): 'GET' | 'POST' {
+    // SPARQL 1.2 Protocol: UPDATE operations MUST use POST
+    // See: https://www.w3.org/TR/sparql12-protocol/#update-operation
+    if (queryType === 'UPDATE') {
+      return 'POST';
+    }
+
+    // For non-UPDATE queries, check URL length
     // Construct the actual URL to check total length including encoding
     const url = new URL(endpoint);
     url.searchParams.set('query', query);
@@ -158,11 +169,23 @@ export class SparqlService {
   private detectQueryType(query: string): QueryType {
     const normalized = query.trim().toUpperCase();
 
-    if (normalized.startsWith('SELECT')) return 'SELECT';
-    if (normalized.startsWith('ASK')) return 'ASK';
-    if (normalized.startsWith('CONSTRUCT')) return 'CONSTRUCT';
-    if (normalized.startsWith('DESCRIBE')) return 'DESCRIBE';
-    if (normalized.match(/^(INSERT|DELETE)/)) return 'UPDATE';
+    // Skip PREFIX and BASE declarations to find the actual query operation
+    // PREFIX/BASE can be on same line or different lines, handle both cases
+    // Match PREFIX/BASE followed by IRI declarations until we hit the query keyword
+    const withoutPrefixes = normalized.replace(
+      /^\s*((?:PREFIX|BASE)\s+\S+\s*<[^>]+>\s*)+/g,
+      ''
+    ).trim();
+
+    if (withoutPrefixes.startsWith('SELECT')) return 'SELECT';
+    if (withoutPrefixes.startsWith('ASK')) return 'ASK';
+    if (withoutPrefixes.startsWith('CONSTRUCT')) return 'CONSTRUCT';
+    if (withoutPrefixes.startsWith('DESCRIBE')) return 'DESCRIBE';
+
+    // SPARQL 1.2 UPDATE operations (must use POST with application/sparql-update)
+    // See: https://www.w3.org/TR/sparql12-update/#updateLanguage
+    const updateOperations = /^(INSERT|DELETE|LOAD|CLEAR|CREATE|DROP|COPY|MOVE|ADD)/;
+    if (updateOperations.test(withoutPrefixes)) return 'UPDATE';
 
     // Default to SELECT for unknown queries
     return 'SELECT';
@@ -226,9 +249,12 @@ export class SparqlService {
 
   /**
    * Execute query via HTTP POST
-   * Uses application/sparql-query content type per SPARQL 1.2 Protocol
+   * Uses appropriate Content-Type per SPARQL 1.2 Protocol:
+   * - application/sparql-update for UPDATE operations
+   * - application/sparql-query for SELECT/ASK/CONSTRUCT/DESCRIBE
    * @param endpoint SPARQL endpoint URL
    * @param query SPARQL query text
+   * @param queryType Type of SPARQL query
    * @param accept Accept header value
    * @param customHeaders Additional custom headers
    * @returns Fetch response
@@ -236,14 +262,20 @@ export class SparqlService {
   private async executePost(
     endpoint: string,
     query: string,
+    queryType: QueryType,
     accept: string,
     customHeaders: Record<string, string>
   ): Promise<Response> {
+    // SPARQL 1.2 Protocol: UPDATE uses application/sparql-update
+    // See: https://www.w3.org/TR/sparql12-protocol/#update-operation
+    const contentType =
+      queryType === 'UPDATE' ? 'application/sparql-update' : 'application/sparql-query';
+
     return fetch(endpoint, {
       method: 'POST',
       headers: {
         Accept: accept,
-        'Content-Type': 'application/sparql-query',
+        'Content-Type': contentType,
         ...customHeaders,
       },
       body: query,

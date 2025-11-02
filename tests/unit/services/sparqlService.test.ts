@@ -104,6 +104,274 @@ describe('SparqlService', () => {
     });
   });
 
+  describe('SPARQL UPDATE Operations (SPARQL 1.2 Protocol)', () => {
+    it('should use POST for INSERT UPDATE queries (not GET)', async () => {
+      fetchMock.mockResolvedValue({
+        ok: true,
+        status: 200,
+        headers: new Headers({ 'Content-Type': 'text/plain' }),
+        text: async () => '',
+      });
+
+      await service.executeQuery({
+        endpoint: 'http://example.com/sparql',
+        query: 'INSERT DATA { <http://example.org/s> <http://example.org/p> "value" }',
+      });
+
+      // Should use POST even though query is short
+      expect(fetchMock).toHaveBeenCalledWith(
+        'http://example.com/sparql',
+        expect.objectContaining({
+          method: 'POST',
+          headers: expect.objectContaining({
+            'Content-Type': 'application/sparql-update',
+          }),
+        })
+      );
+    });
+
+    it('should use POST for DELETE UPDATE queries (not GET)', async () => {
+      fetchMock.mockResolvedValue({
+        ok: true,
+        status: 200,
+        headers: new Headers({ 'Content-Type': 'text/plain' }),
+        text: async () => '',
+      });
+
+      await service.executeQuery({
+        endpoint: 'http://example.com/sparql',
+        query: 'DELETE DATA { <http://example.org/s> <http://example.org/p> "value" }',
+      });
+
+      expect(fetchMock).toHaveBeenCalledWith(
+        'http://example.com/sparql',
+        expect.objectContaining({
+          method: 'POST',
+          headers: expect.objectContaining({
+            'Content-Type': 'application/sparql-update',
+          }),
+        })
+      );
+    });
+
+    it('should use POST for LOAD UPDATE queries', async () => {
+      fetchMock.mockResolvedValue({
+        ok: true,
+        status: 200,
+        headers: new Headers({ 'Content-Type': 'text/plain' }),
+        text: async () => '',
+      });
+
+      await service.executeQuery({
+        endpoint: 'http://example.com/sparql',
+        query: 'LOAD <http://example.org/data.ttl>',
+      });
+
+      expect(fetchMock).toHaveBeenCalledWith(
+        'http://example.com/sparql',
+        expect.objectContaining({
+          method: 'POST',
+          headers: expect.objectContaining({
+            'Content-Type': 'application/sparql-update',
+          }),
+        })
+      );
+    });
+
+    it('should use POST for CLEAR UPDATE queries', async () => {
+      fetchMock.mockResolvedValue({
+        ok: true,
+        status: 200,
+        headers: new Headers({ 'Content-Type': 'text/plain' }),
+        text: async () => '',
+      });
+
+      await service.executeQuery({
+        endpoint: 'http://example.com/sparql',
+        query: 'CLEAR GRAPH <http://example.org/graph>',
+      });
+
+      expect(fetchMock).toHaveBeenCalledWith(
+        'http://example.com/sparql',
+        expect.objectContaining({
+          method: 'POST',
+          headers: expect.objectContaining({
+            'Content-Type': 'application/sparql-update',
+          }),
+        })
+      );
+    });
+
+    it('should use POST for CREATE UPDATE queries', async () => {
+      fetchMock.mockResolvedValue({
+        ok: true,
+        status: 200,
+        headers: new Headers({ 'Content-Type': 'text/plain' }),
+        text: async () => '',
+      });
+
+      await service.executeQuery({
+        endpoint: 'http://example.com/sparql',
+        query: 'CREATE GRAPH <http://example.org/graph>',
+      });
+
+      expect(fetchMock).toHaveBeenCalledWith(
+        'http://example.com/sparql',
+        expect.objectContaining({
+          method: 'POST',
+          headers: expect.objectContaining({
+            'Content-Type': 'application/sparql-update',
+          }),
+        })
+      );
+    });
+
+    it('should use POST for DROP UPDATE queries', async () => {
+      fetchMock.mockResolvedValue({
+        ok: true,
+        status: 200,
+        headers: new Headers({ 'Content-Type': 'text/plain' }),
+        text: async () => '',
+      });
+
+      await service.executeQuery({
+        endpoint: 'http://example.com/sparql',
+        query: 'DROP GRAPH <http://example.org/graph>',
+      });
+
+      expect(fetchMock).toHaveBeenCalledWith(
+        'http://example.com/sparql',
+        expect.objectContaining({
+          method: 'POST',
+          headers: expect.objectContaining({
+            'Content-Type': 'application/sparql-update',
+          }),
+        })
+      );
+    });
+
+    it('should use POST for COPY UPDATE queries', async () => {
+      fetchMock.mockResolvedValue({
+        ok: true,
+        status: 200,
+        headers: new Headers({ 'Content-Type': 'text/plain' }),
+        text: async () => '',
+      });
+
+      await service.executeQuery({
+        endpoint: 'http://example.com/sparql',
+        query: 'COPY <http://example.org/graph1> TO <http://example.org/graph2>',
+      });
+
+      expect(fetchMock).toHaveBeenCalledWith(
+        'http://example.com/sparql',
+        expect.objectContaining({
+          method: 'POST',
+          headers: expect.objectContaining({
+            'Content-Type': 'application/sparql-update',
+          }),
+        })
+      );
+    });
+
+    it('should use POST for MOVE UPDATE queries', async () => {
+      fetchMock.mockResolvedValue({
+        ok: true,
+        status: 200,
+        headers: new Headers({ 'Content-Type': 'text/plain' }),
+        text: async () => '',
+      });
+
+      await service.executeQuery({
+        endpoint: 'http://example.com/sparql',
+        query: 'MOVE <http://example.org/graph1> TO <http://example.org/graph2>',
+      });
+
+      expect(fetchMock).toHaveBeenCalledWith(
+        'http://example.com/sparql',
+        expect.objectContaining({
+          method: 'POST',
+          headers: expect.objectContaining({
+            'Content-Type': 'application/sparql-update',
+          }),
+        })
+      );
+    });
+
+    it('should use POST for ADD UPDATE queries', async () => {
+      fetchMock.mockResolvedValue({
+        ok: true,
+        status: 200,
+        headers: new Headers({ 'Content-Type': 'text/plain' }),
+        text: async () => '',
+      });
+
+      await service.executeQuery({
+        endpoint: 'http://example.com/sparql',
+        query: 'ADD <http://example.org/graph1> TO <http://example.org/graph2>',
+      });
+
+      expect(fetchMock).toHaveBeenCalledWith(
+        'http://example.com/sparql',
+        expect.objectContaining({
+          method: 'POST',
+          headers: expect.objectContaining({
+            'Content-Type': 'application/sparql-update',
+          }),
+        })
+      );
+    });
+
+    it('should use application/sparql-update Content-Type for UPDATE operations', async () => {
+      fetchMock.mockResolvedValue({
+        ok: true,
+        status: 200,
+        headers: new Headers({ 'Content-Type': 'text/plain' }),
+        text: async () => '',
+      });
+
+      await service.executeQuery({
+        endpoint: 'http://example.com/sparql',
+        query:
+          'PREFIX ex: <http://example.org/> INSERT DATA { ex:subject ex:predicate "value" }',
+      });
+
+      // Verify Content-Type is application/sparql-update (not application/sparql-query)
+      expect(fetchMock).toHaveBeenCalledWith(
+        'http://example.com/sparql',
+        expect.objectContaining({
+          method: 'POST',
+          headers: expect.objectContaining({
+            'Content-Type': 'application/sparql-update',
+          }),
+        })
+      );
+    });
+
+    it('should never use GET for UPDATE queries regardless of size', async () => {
+      fetchMock.mockResolvedValue({
+        ok: true,
+        status: 200,
+        headers: new Headers({ 'Content-Type': 'text/plain' }),
+        text: async () => '',
+      });
+
+      // Very short UPDATE query (would normally be GET)
+      await service.executeQuery({
+        endpoint: 'http://example.com/sparql',
+        query: 'INSERT DATA { <s> <p> "o" }',
+      });
+
+      // Should still use POST, never GET
+      expect(fetchMock).toHaveBeenCalledWith(
+        'http://example.com/sparql',
+        expect.objectContaining({
+          method: 'POST',
+        })
+      );
+    });
+  });
+
   describe('HTTP Method Selection', () => {
     it('should use GET for small queries', async () => {
       const mockResults: SparqlJsonResults = {
