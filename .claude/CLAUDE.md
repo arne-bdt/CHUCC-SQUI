@@ -248,7 +248,125 @@ npm run test:unit           # Unit tests only
 npm run test:integration    # Integration tests only
 npm run storybook           # Manual visual testing
 npm run test-storybook      # Automated Storybook tests (TODO)
+npm run test:e2e:storybook  # E2E tests for Storybook stories
 ```
+
+### E2E Testing Workflow
+
+**CRITICAL: Use E2E tests to verify fixes, especially for Storybook/rendering issues**
+
+**When to Run E2E Tests:**
+- After modifying component rendering logic
+- After changing Storybook story configuration
+- When investigating "works in tests but fails in browser" issues
+- Before claiming a fix is complete (NEVER skip verification!)
+
+**E2E Test Execution Workflow:**
+
+```bash
+# Step 1: Start Storybook in background
+npm run storybook &
+
+# Step 2: Wait for Storybook to be ready (automated)
+timeout 30 bash -c 'until curl -s http://localhost:6006 > /dev/null; do sleep 1; done && echo "Storybook ready"'
+
+# Step 3: Run E2E tests
+npm run test:e2e:storybook
+
+# Step 4: Review results
+# - Check test output for passes/failures
+# - Examine error context files in test-results/ directory
+# - Review screenshots and videos for visual confirmation
+```
+
+**What E2E Tests Catch (That Other Tests Don't):**
+- ✅ Storybook configuration errors (decorator issues, story setup problems)
+- ✅ Component rendering failures in real browser environment
+- ✅ Store initialization issues in Storybook context
+- ✅ Custom render function incompatibilities
+- ✅ Browser-specific reactivity bugs
+- ✅ Visual regression issues
+
+**E2E Test Debugging:**
+- Error context files contain full page snapshots (`.md` files in `test-results/`)
+- Screenshots show actual rendering state (`test-failed-1.png`)
+- Videos capture interaction flow (`video.webm`)
+- Console logs show runtime errors that don't appear in unit tests
+
+**Key Lesson:**
+❌ **NEVER** claim a fix is complete without E2E verification
+✅ **ALWAYS** run E2E tests when modifying components or stories
+✅ **VERIFY** the fix works in the actual browser, not just in unit tests
+
+### Storybook Story Configuration
+
+**CRITICAL: Use correct story patterns for Svelte components**
+
+**Standard Story Pattern (RECOMMENDED):**
+
+```typescript
+import type { Meta, StoryObj } from '@storybook/svelte';
+import MyComponent from './MyComponent.svelte';
+
+const meta = {
+  title: 'Components/MyComponent',
+  component: MyComponent,
+  tags: ['autodocs'],
+} satisfies Meta<MyComponent>;
+
+export default meta;
+type Story = StoryObj<typeof meta>;
+
+// ✅ CORRECT: Use args for prop-based components
+export const Default: Story = {
+  args: {
+    data: mockData,
+    disabled: false,
+  },
+};
+
+// ✅ CORRECT: Use args with play functions for store-based components
+export const WithStoreData: Story = {
+  args: {},  // Empty args for components that read from stores
+  play: async () => {
+    // Set up store state AFTER component renders
+    resultsStore.setData(mockData);
+  },
+};
+```
+
+**Patterns to AVOID:**
+
+```typescript
+// ❌ WRONG: Custom render function (causes Storybook integration issues)
+export const MyStory: Story = {
+  render: () => ({
+    Component: MyComponent,
+  }),
+  // This pattern fails in Storybook's Svelte decorator chain!
+};
+
+// ❌ WRONG: Setting up stores in render function
+export const MyStory: Story = {
+  render: () => {
+    resultsStore.setData(mockData);  // TOO EARLY - component not rendered yet!
+    return { Component: MyComponent };
+  },
+};
+```
+
+**Key Rules:**
+1. Always use `args: {}` or `args: { prop: value }` - let Storybook handle rendering
+2. Never use custom `render: () => ({ Component: ... })` functions
+3. Use `play` functions for post-render setup (store initialization, interactions)
+4. Use decorators (in `preview.ts`) for global setup that applies to all stories
+5. For store-based components, use `args: {}` + `play` function pattern
+
+**Why This Matters:**
+- Custom render functions bypass Storybook's Svelte integration layer
+- Causes errors like "Cannot convert undefined or null to object"
+- Breaks decorator chain (DecoratorHandler, PreviewRender)
+- Makes debugging extremely difficult (error appears in Storybook infrastructure, not your code)
 
 ### License Compatibility
 
