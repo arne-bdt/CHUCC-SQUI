@@ -74,12 +74,7 @@ const askResultFalse: SparqlJsonResults = {
  * Default state - no results yet
  */
 export const NoResults: Story = {
-  render: () => ({
-    Component: ResultsPlaceholder,
-  }),
-  play: async () => {
-    resultsStore.reset();
-  },
+  args: {},
 };
 
 /**
@@ -87,9 +82,7 @@ export const NoResults: Story = {
  * Demonstrates table view, raw view toggle, format selection, and download
  */
 export const SelectQueryResults: Story = {
-  render: () => ({
-    Component: ResultsPlaceholder,
-  }),
+  args: {},
   play: async () => {
     // Set query type for proper format options
     queryStore.setText(
@@ -108,9 +101,7 @@ export const SelectQueryResults: Story = {
  * Shows the default table visualization
  */
 export const TableView: Story = {
-  render: () => ({
-    Component: ResultsPlaceholder,
-  }),
+  args: {},
   play: async () => {
     queryStore.setType('SELECT');
     resultsStore.setData(selectResults, 89);
@@ -123,9 +114,7 @@ export const TableView: Story = {
  * Shows the raw JSON response with syntax highlighting
  */
 export const RawView: Story = {
-  render: () => ({
-    Component: ResultsPlaceholder,
-  }),
+  args: {},
   play: async () => {
     queryStore.setType('SELECT');
     resultsStore.setData(selectResults, 89);
@@ -141,9 +130,7 @@ export const RawView: Story = {
  * Displays boolean result without view switcher
  */
 export const AskQueryTrue: Story = {
-  render: () => ({
-    Component: ResultsPlaceholder,
-  }),
+  args: {},
   play: async () => {
     queryStore.setType('ASK');
     resultsStore.setData(askResultTrue, 45);
@@ -155,9 +142,7 @@ export const AskQueryTrue: Story = {
  * Displays boolean result without view switcher
  */
 export const AskQueryFalse: Story = {
-  render: () => ({
-    Component: ResultsPlaceholder,
-  }),
+  args: {},
   play: async () => {
     queryStore.setType('ASK');
     resultsStore.setData(askResultFalse, 52);
@@ -169,9 +154,7 @@ export const AskQueryFalse: Story = {
  * Shows spinner during query execution
  */
 export const Loading: Story = {
-  render: () => ({
-    Component: ResultsPlaceholder,
-  }),
+  args: {},
   play: async () => {
     resultsStore.setLoading(true);
   },
@@ -182,9 +165,7 @@ export const Loading: Story = {
  * Shows error notification with dismiss button
  */
 export const Error: Story = {
-  render: () => ({
-    Component: ResultsPlaceholder,
-  }),
+  args: {},
   play: async () => {
     resultsStore.setError('Query execution failed: Endpoint not responding (timeout after 30s)');
   },
@@ -195,9 +176,7 @@ export const Error: Story = {
  * Tests performance with more data
  */
 export const LargeDataset: Story = {
-  render: () => ({
-    Component: ResultsPlaceholder,
-  }),
+  args: {},
   play: async () => {
     const bindings = [];
     for (let i = 0; i < 100; i++) {
