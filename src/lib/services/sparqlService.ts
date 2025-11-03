@@ -405,7 +405,15 @@ export class SparqlService {
           : 'Network error: Unable to reach endpoint',
         type: isCors ? 'cors' : 'network',
         details: isCors
-          ? 'The SPARQL endpoint does not allow cross-origin requests from this domain. Contact the endpoint administrator to enable CORS.'
+          ? `The SPARQL endpoint does not allow cross-origin requests from this domain.
+
+Possible solutions:
+• Use a CORS proxy service (e.g., https://corsproxy.io or https://cors-anywhere.herokuapp.com)
+• For development: Use browser extensions to disable CORS (not recommended for production)
+• Contact the endpoint administrator to enable CORS headers (Access-Control-Allow-Origin)
+• Set up your own proxy server to forward requests
+
+Note: CORS (Cross-Origin Resource Sharing) is a browser security feature that restricts web pages from making requests to different domains. Many public SPARQL endpoints lack proper CORS configuration.`
           : 'Check that the endpoint URL is correct and the server is reachable.',
         originalError: error,
       };

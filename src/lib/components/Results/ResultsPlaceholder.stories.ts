@@ -161,13 +161,68 @@ export const Loading: Story = {
 };
 
 /**
- * Error state
- * Shows error notification with dismiss button
+ * Error state - Generic
+ * Shows generic error notification with dismiss button
  */
-export const Error: Story = {
+export const ErrorGeneric: Story = {
   args: {},
   play: async () => {
     resultsStore.setError('Query execution failed: Endpoint not responding (timeout after 30s)');
+  },
+};
+
+/**
+ * Error state - CORS
+ * Shows CORS error with actionable solutions
+ * Task review-10: Demonstrates enhanced CORS error messaging
+ */
+export const ErrorCORS: Story = {
+  args: {},
+  play: async () => {
+    resultsStore.setError({
+      message: 'CORS Error: Cross-origin request blocked',
+      type: 'cors',
+      details: `The SPARQL endpoint does not allow cross-origin requests from this domain.
+
+Possible solutions:
+• Use a CORS proxy service (e.g., https://corsproxy.io or https://cors-anywhere.herokuapp.com)
+• For development: Use browser extensions to disable CORS (not recommended for production)
+• Contact the endpoint administrator to enable CORS headers (Access-Control-Allow-Origin)
+• Set up your own proxy server to forward requests
+
+Note: CORS (Cross-Origin Resource Sharing) is a browser security feature that restricts web pages from making requests to different domains. Many public SPARQL endpoints lack proper CORS configuration.`,
+    });
+  },
+};
+
+/**
+ * Error state - Network
+ * Shows network error when endpoint is unreachable
+ */
+export const ErrorNetwork: Story = {
+  args: {},
+  play: async () => {
+    resultsStore.setError({
+      message: 'Network error: Unable to reach endpoint',
+      type: 'network',
+      details: 'Check that the endpoint URL is correct and the server is reachable.',
+    });
+  },
+};
+
+/**
+ * Error state - HTTP 500
+ * Shows server error
+ */
+export const ErrorServerError: Story = {
+  args: {},
+  play: async () => {
+    resultsStore.setError({
+      message: 'Internal Server Error: The SPARQL endpoint encountered an error',
+      type: 'http',
+      status: 500,
+      details: 'The server encountered an unexpected condition. This is typically a server-side issue.',
+    });
   },
 };
 
