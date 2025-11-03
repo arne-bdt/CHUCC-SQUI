@@ -9,8 +9,10 @@
   import { InlineNotification } from 'carbon-components-svelte';
 
   interface Props {
-    /** Current result count */
+    /** Current result count (displayed rows) */
     resultCount: number;
+    /** Total result count before truncation (optional) */
+    totalRows?: number;
     /** Maximum allowed results (default: 100,000) */
     maxResults?: number;
     /** Warning threshold as percentage of max (default: 80%) */
@@ -23,6 +25,7 @@
 
   let {
     resultCount,
+    totalRows,
     maxResults = 100000,
     warningThreshold = 0.8,
     onDownload,
@@ -55,9 +58,15 @@
    * Warning subtitle with actionable advice
    */
   const warningSubtitle = $derived.by(() => {
-    if (atLimit) {
-      return `Displaying ${maxResults.toLocaleString()} of potentially more results. Consider adding a LIMIT clause to your query or downloading the full result set.`;
+    // Check if results were truncated (totalRows indicates truncation occurred)
+    const isTruncated = totalRows !== undefined && totalRows > resultCount;
+
+    if (atLimit || isTruncated) {
+      // Results were truncated - show actual count
+      const totalText = totalRows ? totalRows.toLocaleString() : 'potentially more';
+      return `Displaying ${resultCount.toLocaleString()} of ${totalText} results. Results were truncated at the configured limit. Consider adding a LIMIT clause to your query or downloading the full result set.`;
     } else {
+      // Approaching limit but not truncated yet
       return `Displaying ${resultCount.toLocaleString()} results (${Math.round((resultCount / maxResults) * 100)}% of ${maxResults.toLocaleString()} limit). For better performance, consider adding a LIMIT clause to your query.`;
     }
   });

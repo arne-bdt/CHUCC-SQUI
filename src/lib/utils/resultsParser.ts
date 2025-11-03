@@ -70,10 +70,14 @@ export interface ParsedTableData {
   columns: string[];
   /** Table rows with parsed cells */
   rows: ParsedRow[];
-  /** Total number of rows */
+  /** Total number of rows displayed (after truncation if applicable) */
   rowCount: number;
   /** Variable names from query head */
   vars: string[];
+  /** Total number of rows before truncation (if results were truncated) */
+  totalRows?: number;
+  /** Whether results were truncated due to maxRows limit */
+  isTruncated?: boolean;
 }
 
 /**
@@ -96,9 +100,14 @@ export type ParsedResults = ParsedTableData | ParsedAskResult;
  * Handles both SELECT and ASK queries
  *
  * @param results Raw SPARQL JSON results
+ * @param options Optional parsing options
+ * @param options.maxRows Maximum number of rows to return (for memory safety)
  * @returns Parsed results ready for display
  */
-export function parseResults(results: SparqlJsonResults): ParsedResults {
+export function parseResults(
+  results: SparqlJsonResults,
+  options?: { maxRows?: number }
+): ParsedResults {
   // ASK query - return boolean result
   if (results.boolean !== undefined) {
     return {
@@ -109,7 +118,7 @@ export function parseResults(results: SparqlJsonResults): ParsedResults {
 
   // SELECT query - parse table data
   if (results.results && results.results.bindings) {
-    return parseTableResults(results);
+    return parseTableResults(results, options?.maxRows);
   }
 
   // Empty results
@@ -123,15 +132,25 @@ export function parseResults(results: SparqlJsonResults): ParsedResults {
 
 /**
  * Parse SELECT query results into table format
+ * Enforces maxRows limit for memory safety
  *
  * @param results SPARQL JSON results with bindings
- * @returns Parsed table data
+ * @param maxRows Optional maximum number of rows to parse (default: no limit)
+ * @returns Parsed table data with truncation metadata
  */
-export function parseTableResults(results: SparqlJsonResults): ParsedTableData {
+export function parseTableResults(
+  results: SparqlJsonResults,
+  maxRows?: number
+): ParsedTableData {
   const vars = results.head.vars || [];
   const bindings = results.results?.bindings || [];
+  const totalRows = bindings.length;
 
-  const rows: ParsedRow[] = bindings.map((binding) => {
+  // Enforce maxRows limit for memory safety
+  const isTruncated = maxRows !== undefined && totalRows > maxRows;
+  const bindingsToProcess = isTruncated ? bindings.slice(0, maxRows) : bindings;
+
+  const rows: ParsedRow[] = bindingsToProcess.map((binding) => {
     const row: ParsedRow = {};
 
     // Create a cell for each variable
@@ -143,12 +162,20 @@ export function parseTableResults(results: SparqlJsonResults): ParsedTableData {
     return row;
   });
 
-  return {
+  const parsed: ParsedTableData = {
     columns: vars,
     rows,
     rowCount: rows.length,
     vars,
   };
+
+  // Add truncation metadata if results were limited
+  if (isTruncated) {
+    parsed.isTruncated = true;
+    parsed.totalRows = totalRows;
+  }
+
+  return parsed;
 }
 
 /**

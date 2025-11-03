@@ -732,4 +732,102 @@ describe('resultsParser', () => {
       expect(getCellDisplayValue(cell, { abbreviateUri: true })).toBe('_:b0');
     });
   });
+
+  describe('maxRows enforcement', () => {
+    it('should enforce maxRows limit when parsing results', () => {
+      const results: SparqlJsonResults = {
+        head: { vars: ['x'] },
+        results: {
+          bindings: Array.from({ length: 1000 }, (_, i) => ({
+            x: { type: 'literal', value: `value${i}` },
+          })),
+        },
+      };
+
+      const parsed = parseResults(results, { maxRows: 100 });
+      expect((parsed as ParsedTableData).rowCount).toBe(100);
+      expect((parsed as ParsedTableData).rows.length).toBe(100);
+    });
+
+    it('should set isTruncated flag when results exceed maxRows', () => {
+      const results: SparqlJsonResults = {
+        head: { vars: ['x'] },
+        results: {
+          bindings: Array.from({ length: 150 }, (_, i) => ({
+            x: { type: 'literal', value: `value${i}` },
+          })),
+        },
+      };
+
+      const parsed = parseResults(results, { maxRows: 100 }) as ParsedTableData;
+      expect(parsed.isTruncated).toBe(true);
+      expect(parsed.totalRows).toBe(150);
+      expect(parsed.rowCount).toBe(100);
+    });
+
+    it('should not set isTruncated when results are within limit', () => {
+      const results: SparqlJsonResults = {
+        head: { vars: ['x'] },
+        results: {
+          bindings: Array.from({ length: 50 }, (_, i) => ({
+            x: { type: 'literal', value: `value${i}` },
+          })),
+        },
+      };
+
+      const parsed = parseResults(results, { maxRows: 100 }) as ParsedTableData;
+      expect(parsed.isTruncated).toBeUndefined();
+      expect(parsed.totalRows).toBeUndefined();
+      expect(parsed.rowCount).toBe(50);
+    });
+
+    it('should parse all results when maxRows is not specified', () => {
+      const results: SparqlJsonResults = {
+        head: { vars: ['x'] },
+        results: {
+          bindings: Array.from({ length: 150 }, (_, i) => ({
+            x: { type: 'literal', value: `value${i}` },
+          })),
+        },
+      };
+
+      const parsed = parseResults(results) as ParsedTableData;
+      expect(parsed.rowCount).toBe(150);
+      expect(parsed.isTruncated).toBeUndefined();
+      expect(parsed.totalRows).toBeUndefined();
+    });
+
+    it('should handle large datasets (10,000 rows) with maxRows limit', () => {
+      const results: SparqlJsonResults = {
+        head: { vars: ['id', 'name', 'value'] },
+        results: {
+          bindings: Array.from({ length: 10000 }, (_, i) => ({
+            id: { type: 'literal', value: `${i}` },
+            name: { type: 'literal', value: `Item ${i}` },
+            value: { type: 'literal', value: `${i * 100}` },
+          })),
+        },
+      };
+
+      const parsed = parseResults(results, { maxRows: 1000 }) as ParsedTableData;
+      expect(parsed.rowCount).toBe(1000);
+      expect(parsed.isTruncated).toBe(true);
+      expect(parsed.totalRows).toBe(10000);
+      expect(parsed.rows[0].id.value).toBe('0');
+      expect(parsed.rows[999].id.value).toBe('999');
+    });
+
+    it('should not affect ASK query results', () => {
+      const results: SparqlJsonResults = {
+        head: { vars: [] },
+        boolean: true,
+      };
+
+      const parsed = parseResults(results, { maxRows: 10 });
+      expect(parsed).toEqual({
+        value: true,
+        type: 'boolean',
+      });
+    });
+  });
 });

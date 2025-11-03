@@ -57,7 +57,8 @@
     if (!('head' in data)) return null;
 
     try {
-      return parseResults(data as SparqlJsonResults);
+      // Pass maxRows to enforce limit during parsing
+      return parseResults(data as SparqlJsonResults, { maxRows: maxResults });
     } catch (error) {
       console.error('Error parsing results:', error);
       return null;
@@ -175,6 +176,7 @@
         {#if currentView === 'table' && isTable}
           <ResultsWarning
             resultCount={(parsedResults as ParsedTableData).rowCount}
+            totalRows={(parsedResults as ParsedTableData).totalRows}
             maxResults={maxResults}
             warningThreshold={warningThreshold}
             onDownload={onDownloadResults}

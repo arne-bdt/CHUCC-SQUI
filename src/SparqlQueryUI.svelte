@@ -271,7 +271,7 @@
         <SparqlEditor />
       {/snippet}
       {#snippet bottom()}
-        <ResultsPlaceholder />
+        <ResultsPlaceholder maxResults={limits.maxRows} />
       {/snippet}
     </SplitPane>
   </div>
