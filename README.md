@@ -14,14 +14,14 @@ A modern, full-featured SPARQL query interface built with Svelte 5 and IBM Carbo
 - **Smart Editor** - CodeMirror 6 with syntax highlighting and autocomplete
 - **Results Display** - High-performance table view with virtual scrolling (10,000+ rows)
 - **Multiple Tabs** - Manage multiple queries simultaneously
-- **Format Support** - JSON, XML, CSV, TSV, Turtle, JSON-LD, N-Triples, RDF/XML
+- **Multiple Formats** - JSON and XML in-app display with syntax highlighting; all formats (CSV, TSV, Turtle, JSON-LD, N-Triples, RDF/XML) viewable as text and available for download
 
 ### 🎨 User Experience
 - **Carbon Design System** - Professional UI with 4 theme options (White, G10, G90, G100)
 - **Prefix Management** - Automatic IRI abbreviation and prefix.cc integration
 - **Keyboard Shortcuts** - Ctrl+Enter to execute, comprehensive keyboard navigation
 - **Responsive Design** - Works on desktop and tablet
-- **Accessibility** - WCAG 2.1 AA compliant
+- **Accessibility** - WCAG 2.1 AA target with comprehensive ARIA support
 
 ### ⚡ Performance
 - **Virtual Scrolling** - Handle massive result sets efficiently
@@ -35,6 +35,8 @@ A modern, full-featured SPARQL query interface built with Svelte 5 and IBM Carbo
 - **Extensible** - Export stores and services for custom integrations
 
 ## Installation
+
+> **Note**: This package is currently in pre-release (v0.1.0). The API may change before the 1.0 release.
 
 ```bash
 npm install sparql-query-ui
@@ -368,6 +370,14 @@ import type {
   }}
 />
 ```
+
+## Current Limitations
+
+While SQUI provides comprehensive SPARQL query functionality, please note the following current limitations:
+
+- **Result Formats**: Table view is available for JSON results only. Other formats (XML, CSV, TSV, Turtle, JSON-LD, N-Triples, RDF/XML) are viewable as raw text and can be downloaded.
+- **Package Status**: This package is in pre-release (v0.1.0). The API may change before the 1.0 release.
+- **SPARQL UPDATE**: UPDATE queries are not yet supported (coming soon).
 
 ## Browser Support
 
