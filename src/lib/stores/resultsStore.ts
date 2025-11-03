@@ -5,6 +5,7 @@ import type {
   SparqlJsonResults,
   QueryOptions,
   QueryError,
+  ProgressState,
 } from '../types';
 import { sparqlService, type ExtendedQueryOptions } from '../services/sparqlService';
 import { prefixService } from '../services/prefixService';
@@ -30,6 +31,9 @@ export function createResultsStore(): {
   enableChunkedLoading: (_chunkSize: number) => void;
   loadNextChunk: (_query: string, _endpoint: string) => Promise<void>;
   appendChunkData: (_data: SparqlJsonResults) => void;
+  // STREAMING-02: Progress tracking methods
+  setProgress: (_progress: ProgressState) => void;
+  clearProgress: () => void;
 } {
   const initialState: ResultsState = {
     data: null,
@@ -368,6 +372,21 @@ export function createResultsStore(): {
           },
         };
       });
+    },
+
+    /**
+     * STREAMING-02: Set progress state for query execution
+     * @param progress - Current progress state
+     */
+    setProgress: (progress: ProgressState): void => {
+      update((state) => ({ ...state, progress }));
+    },
+
+    /**
+     * STREAMING-02: Clear progress state
+     */
+    clearProgress: (): void => {
+      update((state) => ({ ...state, progress: undefined }));
     },
   };
 }

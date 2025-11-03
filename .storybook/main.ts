@@ -30,6 +30,12 @@ const config: StorybookConfig = {
     config.optimizeDeps.exclude = config.optimizeDeps.exclude || [];
     config.optimizeDeps.exclude.push('carbon-components-svelte', 'carbon-icons-svelte');
 
+    // Configure path aliases for Vite
+    config.resolve = config.resolve || {};
+    config.resolve.alias = config.resolve.alias || {};
+    // Add $lib alias to match SvelteKit configuration
+    config.resolve.alias['$lib'] = new URL('../src/lib', import.meta.url).pathname;
+
     return config;
   },
   svelteOptions: {

@@ -13,6 +13,7 @@
   import RawView from './RawView.svelte';
   import ResultsWarning from './ResultsWarning.svelte';
   import DownloadButton from './DownloadButton.svelte';
+  import ProgressIndicator from './ProgressIndicator.svelte';
   import { RadioButtonGroup, RadioButton } from 'carbon-components-svelte';
   import { parseResults, isAskResult, isSelectResult } from '../../utils/resultsParser';
   import { downloadResults } from '../../utils/download';
@@ -131,12 +132,18 @@
 
   <!-- Show results when no error -->
   {#if !$resultsStore.error}
-    <!-- Loading state -->
+    <!-- Loading state with progress indicator -->
     {#if $resultsStore.loading}
-      <div class="placeholder-content" role="status" aria-live="polite">
-        <h3>Executing Query</h3>
-        <p>Please wait...</p>
-      </div>
+      {#if $resultsStore.progress}
+        <!-- STREAMING-02: Show detailed progress indicator when available -->
+        <ProgressIndicator progress={$resultsStore.progress} />
+      {:else}
+        <!-- Fallback to simple loading message -->
+        <div class="placeholder-content" role="status" aria-live="polite">
+          <h3>Executing Query</h3>
+          <p>Please wait...</p>
+        </div>
+      {/if}
 
     <!-- Task 36: View switcher and results display for SELECT queries ONLY -->
     {:else if isTable && parsedResults}

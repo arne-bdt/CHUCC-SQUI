@@ -81,6 +81,29 @@ export interface QueryState {
 }
 
 /**
+ * Progress state for query execution
+ * Tracks the current phase and metrics of query execution
+ */
+export interface ProgressState {
+  /** Current execution phase */
+  phase: 'executing' | 'downloading' | 'parsing' | 'rendering';
+  /** Start time of this phase */
+  startTime: number;
+  /** Downloaded bytes (for downloading phase) */
+  bytesReceived?: number;
+  /** Total bytes to download if known (from Content-Length header) */
+  totalBytes?: number;
+  /** Download speed in bytes per second */
+  downloadSpeed?: number;
+  /** Rows parsed so far (for parsing phase) */
+  rowsParsed?: number;
+  /** Total rows to parse if known */
+  totalRows?: number;
+  /** Memory usage in MB (if available) */
+  memoryUsageMB?: number;
+}
+
+/**
  * Results state management
  * Tracks query results and display state
  */
@@ -116,6 +139,8 @@ export interface ResultsState {
     /** Total number of results loaded so far */
     totalLoaded: number;
   };
+  /** STREAMING-02: Progress state for detailed query execution feedback */
+  progress?: ProgressState;
 }
 
 /**

@@ -31,6 +31,14 @@ export type {
   QueryResult,
   QueryError,
   QueryErrorType,
+  ProgressState,
   Tab,
   TabsState,
 } from './sparql';
+
+// Query analysis types
+export type { QueryAnalysis, QueryThresholds } from '../utils/queryAnalyzer';
+export { analyzeQuery, DEFAULT_THRESHOLDS } from '../utils/queryAnalyzer';
+
+// Results parser types
+export type { ParsedTableData, ParsedRow, ParsedCell, ParsedResults, ParsedAskResult } from '../utils/resultsParser';

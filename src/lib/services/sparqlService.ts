@@ -10,14 +10,18 @@ import type {
   SparqlJsonResults,
   QueryOptions,
   QueryError,
+  ProgressState,
 } from '../types';
+import { performanceService } from './performanceService';
 
 /**
- * Extended query options with format specification
+ * Extended query options with format specification and progress callback
  */
 export interface ExtendedQueryOptions extends QueryOptions {
   /** Desired result format */
   format?: ResultFormat;
+  /** STREAMING-02: Progress callback for UI feedback */
+  onProgress?: (progress: ProgressState) => void;
 }
 
 /**
@@ -60,7 +64,11 @@ export class SparqlService {
       timeout = this.defaultTimeout,
       headers = {},
       signal,
+      onProgress,
     } = options;
+
+    // Start performance profiling
+    const profiler = performanceService.startProfiling();
 
     // Detect query type FIRST (needed for method determination)
     const queryType = this.detectQueryType(query);
@@ -84,6 +92,12 @@ export class SparqlService {
     const startTime = Date.now();
 
     try {
+      // STREAMING-02: Phase 1 - Executing query
+      onProgress?.({
+        phase: 'executing',
+        startTime: Date.now(),
+      });
+
       let response: Response;
 
       if (method === 'GET') {
@@ -92,20 +106,52 @@ export class SparqlService {
         response = await this.executePost(endpoint, query, queryType, acceptHeader, headers);
       }
 
+      // Mark first byte received
+      profiler.markFirstByte();
+
       clearTimeout(timeoutId);
 
       if (!response.ok) {
         throw await this.createErrorFromResponse(response);
       }
 
-      const executionTime = Date.now() - startTime;
       const contentType = response.headers.get('Content-Type') || 'text/plain';
-      const parseResult = await this.parseResponse(response, contentType);
+
+      // STREAMING-02: Phase 2 - Downloading response with progress tracking
+      const parseResult = await this.downloadAndParseResponse(
+        response,
+        contentType,
+        profiler,
+        onProgress
+      );
+
+      const executionTime = Date.now() - startTime;
 
       // Extract headers
       const responseHeaders: Record<string, string> = {};
       response.headers.forEach((value, key) => {
         responseHeaders[key] = value;
+      });
+
+      // Record performance metrics
+      const rowCount = this.getRowCount(parseResult.data);
+      const columnCount = this.getColumnCount(parseResult.data);
+
+      performanceService.recordMetrics(
+        profiler.complete({
+          responseBytes: new Blob([parseResult.raw]).size,
+          rowCount,
+          columnCount,
+          endpoint,
+          format,
+          queryType,
+        })
+      );
+
+      // STREAMING-02: Phase 4 - Rendering (final phase before returning)
+      onProgress?.({
+        phase: 'rendering',
+        startTime: Date.now(),
       });
 
       return {
@@ -284,18 +330,133 @@ export class SparqlService {
   }
 
   /**
+   * STREAMING-02: Download and parse response with progress tracking
+   * Streams the response to track download progress and provide user feedback
+   * @param response Fetch response
+   * @param contentType Content-Type header value
+   * @param profiler Performance profiler instance
+   * @param onProgress Progress callback for UI updates
+   * @returns Object with raw text and parsed data
+   */
+  private async downloadAndParseResponse(
+    response: Response,
+    contentType: string,
+    profiler: ReturnType<typeof performanceService.startProfiling>,
+    onProgress?: (progress: ProgressState) => void
+  ): Promise<{ raw: string; data: SparqlJsonResults | string }> {
+    const reader = response.body?.getReader();
+
+    if (!reader) {
+      // Fallback to non-streaming if no reader available
+      return this.parseResponse(response, contentType, profiler);
+    }
+
+    const contentLength = response.headers.get('Content-Length');
+    const totalBytes = contentLength ? parseInt(contentLength, 10) : undefined;
+
+    let bytesReceived = 0;
+    const chunks: BlobPart[] = [];
+    const downloadStartTime = Date.now();
+    let lastProgressUpdate = 0;
+    const progressUpdateInterval = 100; // Update at most every 100ms (10 Hz)
+
+    try {
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+
+        chunks.push(value);
+        bytesReceived += value.length;
+
+        // Throttle progress updates to avoid excessive DOM updates
+        const now = Date.now();
+        if (now - lastProgressUpdate >= progressUpdateInterval) {
+          const elapsed = (now - downloadStartTime) / 1000;
+          const downloadSpeed = elapsed > 0 ? bytesReceived / elapsed : 0;
+
+          onProgress?.({
+            phase: 'downloading',
+            startTime: downloadStartTime,
+            bytesReceived,
+            totalBytes,
+            downloadSpeed,
+          });
+
+          lastProgressUpdate = now;
+        }
+      }
+
+      // Final progress update with complete download
+      const finalElapsed = (Date.now() - downloadStartTime) / 1000;
+      const finalSpeed = finalElapsed > 0 ? bytesReceived / finalElapsed : 0;
+      onProgress?.({
+        phase: 'downloading',
+        startTime: downloadStartTime,
+        bytesReceived,
+        totalBytes,
+        downloadSpeed: finalSpeed,
+      });
+
+      // Reconstruct response text from chunks
+      const blob = new Blob(chunks);
+      const rawText = await blob.text();
+
+      // Mark download complete
+      profiler.markDownloadComplete();
+
+      // STREAMING-02: Phase 3 - Parsing
+      onProgress?.({
+        phase: 'parsing',
+        startTime: Date.now(),
+      });
+
+      // Then parse if it's JSON
+      if (
+        contentType.includes('application/json') ||
+        contentType.includes('application/sparql-results+json')
+      ) {
+        const parsedData = JSON.parse(rawText) as SparqlJsonResults;
+
+        // Mark parse complete
+        profiler.markParseComplete();
+
+        return { raw: rawText, data: parsedData };
+      } else {
+        // For XML, CSV, TSV, RDF formats - raw text is the data
+        // No parsing needed, so mark parse complete immediately
+        profiler.markParseComplete();
+
+        return { raw: rawText, data: rawText };
+      }
+    } catch (error) {
+      // Clean up reader on error
+      try {
+        reader.cancel();
+      } catch {
+        // Ignore cancel errors
+      }
+      throw error;
+    }
+  }
+
+  /**
    * Parse response based on content type
    * Returns both raw text and parsed data to preserve original server formatting
    * @param response Fetch response
    * @param contentType Content-Type header value
+   * @param profiler Performance profiler instance
    * @returns Object with raw text and parsed data
    */
   private async parseResponse(
     response: Response,
-    contentType: string
+    contentType: string,
+    profiler: ReturnType<typeof performanceService.startProfiling>
   ): Promise<{ raw: string; data: SparqlJsonResults | string }> {
     // Always get the raw text first (before parsing consumes the stream)
     const rawText = await response.text();
+
+    // Mark download complete
+    profiler.markDownloadComplete();
 
     // Then parse if it's JSON
     if (
@@ -303,9 +464,16 @@ export class SparqlService {
       contentType.includes('application/sparql-results+json')
     ) {
       const parsedData = JSON.parse(rawText) as SparqlJsonResults;
+
+      // Mark parse complete
+      profiler.markParseComplete();
+
       return { raw: rawText, data: parsedData };
     } else {
       // For XML, CSV, TSV, RDF formats - raw text is the data
+      // No parsing needed, so mark parse complete immediately
+      profiler.markParseComplete();
+
       return { raw: rawText, data: rawText };
     }
   }
@@ -452,6 +620,58 @@ Note: CORS (Cross-Origin Resource Sharing) is a browser security feature that re
       'message' in error &&
       typeof (error as QueryError).message === 'string'
     );
+  }
+
+  /**
+   * Get row count from parsed data
+   * @param data Parsed query result
+   * @returns Number of rows
+   */
+  private getRowCount(data: SparqlJsonResults | string): number {
+    if (typeof data === 'string') {
+      // For CSV/TSV, count lines (rough estimate)
+      return Math.max(0, data.split('\n').length - 1); // Subtract header row
+    }
+
+    // For JSON results
+    if ('results' in data && data.results && 'bindings' in data.results) {
+      return data.results.bindings.length;
+    }
+
+    // For boolean (ASK query)
+    if ('boolean' in data) {
+      return 1;
+    }
+
+    return 0;
+  }
+
+  /**
+   * Get column count from parsed data
+   * @param data Parsed query result
+   * @returns Number of columns
+   */
+  private getColumnCount(data: SparqlJsonResults | string): number {
+    if (typeof data === 'string') {
+      // For CSV/TSV, count columns from first line
+      const firstLine = data.split('\n')[0];
+      if (!firstLine) return 0;
+      // Detect delimiter (comma or tab)
+      const delimiter = firstLine.includes('\t') ? '\t' : ',';
+      return firstLine.split(delimiter).length;
+    }
+
+    // For JSON results
+    if ('head' in data && data.head && 'vars' in data.head) {
+      return data.head.vars.length;
+    }
+
+    // For boolean (ASK query)
+    if ('boolean' in data) {
+      return 1;
+    }
+
+    return 0;
   }
 }
 
