@@ -165,8 +165,8 @@ Each feature implementation task must include:
 
 1. **Unit Tests** (for services, utilities, pure functions)
 2. **Integration Tests** (for component interactions and rendering)
-3. **Storybook Play Functions** (for visual component testing)
-4. **E2E Tests** (for critical user workflows - when applicable)
+3. **Storybook Stories** (for ALL UI components - REQUIRED)
+4. **E2E Tests** (for ALL UI components and critical workflows - REQUIRED, not optional)
 
 **Test-Driven Development Approach:**
 - Write tests DURING feature implementation
@@ -190,14 +190,26 @@ Each feature implementation task must include:
    - Mock browser APIs (ResizeObserver, IntersectionObserver) in `tests/setup.ts`
    - Example: `ResultsPlaceholder.test.ts` (23 tests)
 
-3. **Storybook Play Functions**:
-   - Add `play` functions to critical stories
+3. **Storybook Stories** (`src/lib/components/*/*.stories.ts`):
+   - Create stories for ALL UI components (REQUIRED)
+   - Add `play` functions to critical stories for interaction testing
    - Test component behavior in visual context
    - Catch rendering bugs and infinite loops
+   - Cover all component states: default, loading, error, empty, edge cases
    - Example: `DataTable.stories.ts` LargeDataset10000 story
    - Run with: `npm run storybook` (manual) or `npm run test-storybook` (CI)
 
-4. **Critical Integration Test Patterns:**
+4. **E2E Tests** (`tests/e2e/*.storybook.spec.ts`):
+   - Create E2E tests for ALL UI components (REQUIRED, not optional)
+   - Test in actual browser environment using Playwright
+   - Navigate to Storybook stories and verify rendering
+   - Test user interactions, keyboard navigation, accessibility
+   - Catch issues that unit/integration tests miss
+   - Example: `endpoint-capabilities.storybook.spec.ts`, `graph-name-completion.storybook.spec.ts`
+   - Run with: `npm run test:e2e:storybook` (requires Storybook to be running)
+   - **CRITICAL**: Must pass before completing any UI component task
+
+5. **Critical Integration Test Patterns:**
 
    ```typescript
    // ✅ DO: Wait for store updates to propagate to DOM
@@ -224,7 +236,7 @@ Each feature implementation task must include:
    await waitFor(() => expect(container.querySelector('.results')).toBeInTheDocument());
    ```
 
-5. **What Tests Must Catch:**
+6. **What Tests Must Catch:**
 
    - ❌ Store subscription bugs (`$derived($store)` not `$derived(store)`)
    - ❌ Infinite reactivity loops (`$derived.by()` not `$derived(() => {})`)
@@ -248,8 +260,15 @@ npm run test:unit           # Unit tests only
 npm run test:integration    # Integration tests only
 npm run storybook           # Manual visual testing
 npm run test-storybook      # Automated Storybook tests (TODO)
-npm run test:e2e:storybook  # E2E tests for Storybook stories
+npm run test:e2e:storybook  # E2E tests for Storybook stories (REQUIRED for UI components)
 ```
+
+**CRITICAL: E2E Testing is MANDATORY for UI Components**
+
+- E2E tests are NOT optional for UI components
+- Every Svelte component must have corresponding E2E tests
+- E2E tests must pass before completing the task
+- Include E2E test results in "Build & Tests Status" section
 
 ### E2E Testing Workflow
 
