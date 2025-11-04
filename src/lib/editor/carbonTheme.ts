@@ -181,6 +181,83 @@ export function createCarbonTheme(themeName: CarbonTheme = 'white'): Extension {
       '.cm-tooltip .cm-tooltip-arrow:after': {
         borderTopColor: `var(--cds-layer-01, ${fallback.background})`,
       },
+      // Autocomplete popup styling
+      '.cm-tooltip-autocomplete': {
+        backgroundColor: `var(--cds-layer-01, ${fallback.background})`,
+        border: `1px solid var(--cds-border-subtle-01, ${isDark ? '#525252' : '#e0e0e0'})`,
+        boxShadow: 'var(--cds-shadow, 0 2px 6px rgba(0, 0, 0, 0.2))',
+        fontFamily:
+          'var(--cds-productive-heading-01-font-family, "IBM Plex Sans"), -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+        fontSize: 'var(--cds-productive-heading-01-font-size, 0.875rem)',
+        lineHeight: 'var(--cds-productive-heading-01-line-height, 1.28572)',
+        maxHeight: '20rem',
+        overflowY: 'auto',
+      },
+      '.cm-tooltip-autocomplete > ul': {
+        margin: 0,
+        padding: 0,
+        listStyle: 'none',
+        minWidth: '300px',
+        maxWidth: '600px',
+      },
+      '.cm-tooltip-autocomplete > ul > li': {
+        padding: 'var(--cds-spacing-03, 0.5rem) var(--cds-spacing-04, 0.75rem)',
+        cursor: 'pointer',
+        borderBottom: `1px solid var(--cds-border-subtle-00, ${isDark ? '#393939' : '#f4f4f4'})`,
+        display: 'flex',
+        flexDirection: 'column',
+        gap: 'var(--cds-spacing-02, 0.25rem)',
+      },
+      '.cm-tooltip-autocomplete > ul > li:last-child': {
+        borderBottom: 'none',
+      },
+      '.cm-tooltip-autocomplete > ul > li[aria-selected]': {
+        backgroundColor: `var(--cds-layer-selected-01, ${fallback.activeLine})`,
+      },
+      '.cm-tooltip-autocomplete > ul > li:hover': {
+        backgroundColor: `var(--cds-layer-hover-01, ${isDark ? '#353535' : '#e8e8e8'})`,
+      },
+      '.cm-completionLabel': {
+        color: `var(--cds-text-primary, ${fallback.foreground})`,
+        fontFamily:
+          'var(--cds-code-01-font-family, "IBM Plex Mono"), Menlo, Monaco, Consolas, monospace',
+        fontSize: 'var(--cds-code-01-font-size, 0.875rem)',
+        fontWeight: 500,
+      },
+      '.cm-completionDetail': {
+        color: `var(--cds-text-secondary, ${fallback.comment})`,
+        fontSize: 'var(--cds-label-01-font-size, 0.75rem)',
+        fontStyle: 'normal',
+        marginLeft: 'var(--cds-spacing-03, 0.5rem)',
+      },
+      '.cm-completionInfo': {
+        backgroundColor: `var(--cds-layer-02, ${isDark ? '#353535' : '#f4f4f4'})`,
+        border: `1px solid var(--cds-border-subtle-01, ${isDark ? '#525252' : '#e0e0e0'})`,
+        borderRadius: 'var(--cds-spacing-02, 0.25rem)',
+        padding: 'var(--cds-spacing-03, 0.5rem) var(--cds-spacing-04, 0.75rem)',
+        maxWidth: '400px',
+        color: `var(--cds-text-primary, ${fallback.foreground})`,
+        fontSize: 'var(--cds-body-short-01-font-size, 0.875rem)',
+        lineHeight: 'var(--cds-body-short-01-line-height, 1.42857)',
+      },
+      '.cm-completionIcon': {
+        display: 'inline-flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        width: '1rem',
+        height: '1rem',
+        marginRight: 'var(--cds-spacing-03, 0.5rem)',
+        opacity: 0.7,
+      },
+      '.cm-completionIcon-constant': {
+        color: `var(--cds-support-info, ${isDark ? '#78a9ff' : '#0f62fe'})`,
+      },
+      '.cm-completionIcon-property': {
+        color: `var(--cds-support-success, ${fallback.string})`,
+      },
+      '.cm-completionIcon-namespace': {
+        color: `var(--cds-support-warning, ${fallback.atom})`,
+      },
       '.cm-scroller': {
         fontFamily:
           'var(--cds-code-01-font-family, "IBM Plex Mono"), Menlo, Monaco, Consolas, monospace',
