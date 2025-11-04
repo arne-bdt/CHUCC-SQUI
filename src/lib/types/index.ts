@@ -42,3 +42,17 @@ export { analyzeQuery, DEFAULT_THRESHOLDS } from '../utils/queryAnalyzer';
 
 // Results parser types
 export type { ParsedTableData, ParsedRow, ParsedCell, ParsedResults, ParsedAskResult } from '../utils/resultsParser';
+
+// Service description types
+export type {
+  ServiceDescription,
+  Dataset,
+  GraphDescription,
+  NamedGraph,
+  ExtensionFunction,
+  ExtensionAggregate,
+  ServiceDescriptionCacheConfig,
+  CachedServiceDescription,
+} from './serviceDescription';
+export { SPARQLLanguage, ServiceFeature } from './serviceDescription';
+export type { ResultFormat as ServiceDescriptionResultFormat, InputFormat } from './serviceDescription';

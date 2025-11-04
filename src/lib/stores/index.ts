@@ -22,5 +22,9 @@ export { endpointCatalogue, defaultEndpoint } from './endpointStore';
 // Tab store
 export { tabStore } from './tabStore';
 
+// Service description store
+export { serviceDescriptionStore } from './serviceDescriptionStore';
+export type { ServiceDescriptionState } from './serviceDescriptionStore';
+
 // Re-export types from config
 export type { CarbonTheme } from '../types/config';

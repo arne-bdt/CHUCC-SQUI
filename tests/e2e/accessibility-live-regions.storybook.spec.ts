@@ -56,7 +56,7 @@ test.describe('ARIA Live Regions for Query Feedback', () => {
   });
 
   test('should announce "Query execution failed" on error', async ({ page }) => {
-    await page.goto('http://localhost:6006/?path=/story/results-resultsplaceholder--error');
+    await page.goto('http://localhost:6006/?path=/story/results-resultsplaceholder--error-generic');
 
     const storyFrame = page.frameLocator('#storybook-preview-iframe');
     await storyFrame.locator('.results-placeholder').waitFor({ timeout: 10000 });
@@ -126,8 +126,8 @@ test.describe('ARIA Live Regions for Query Feedback', () => {
   });
 
   test('should check ErrorNotification accessibility via Error story', async ({ page }) => {
-    // Test the error notification using the Error story which includes ErrorNotification
-    await page.goto('http://localhost:6006/?path=/story/results-resultsplaceholder--error');
+    // Test the error notification using the ErrorGeneric story which includes ErrorNotification
+    await page.goto('http://localhost:6006/?path=/story/results-resultsplaceholder--error-generic');
 
     const storyFrame = page.frameLocator('#storybook-preview-iframe');
 
