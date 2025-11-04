@@ -5,6 +5,7 @@
    */
 
   import { onMount, onDestroy } from 'svelte';
+  import { get } from 'svelte/store';
   import {
     EditorView,
     keymap,
@@ -21,14 +22,16 @@
   import { createCarbonTheme } from '../../editor/carbonTheme';
   import { sparqlCompletion } from '../../editor/sparqlCompletions';
   import { prefixCompletion } from '../../editor/prefixCompletions';
+  import { graphNameCompletion } from '../../editor/extensions/graphNameCompletion';
   import { templateService } from '../../services/templateService';
   import { queryStore } from '../../stores';
   import { resultsStore } from '../../stores/resultsStore';
   import { defaultEndpoint } from '../../stores/endpointStore';
+  import { serviceDescriptionStore } from '../../stores/serviceDescriptionStore';
   import { queryExecutionService } from '../../services/queryExecutionService';
   import { themeStore } from '../../stores/theme';
   import { t } from '../../localization';
-  import type { CarbonTheme } from '../../types';
+  import type { CarbonTheme, ServiceDescription } from '../../types';
   import { debug } from '../../utils/debug';
 
   /**
@@ -62,6 +65,7 @@
   let queryState = $state($queryStore);
   let resultsState = $state($resultsStore);
   let endpoint = $state($defaultEndpoint);
+  let serviceDescState = $state($serviceDescriptionStore);
 
   // Store unsubscribe functions for cleanup
   let storeUnsubscribers: Array<() => void> = [];
@@ -78,6 +82,30 @@
   // Theme compartment for dynamic theme switching
   const themeCompartment = new Compartment();
   const readOnlyCompartment = new Compartment();
+
+  /**
+   * Get service description for current endpoint
+   * Used by graph name completion to access available graphs
+   *
+   * IMPORTANT: This function reads directly from the stores using get()
+   * to ensure we always have the latest service description data,
+   * even when called during editor initialization before subscriptions fire.
+   */
+  function getServiceDescription(): ServiceDescription | null {
+    // Get current endpoint from store
+    const currentEndpoint = get(defaultEndpoint);
+    if (!currentEndpoint) {
+      return null;
+    }
+
+    // Get service description state from store
+    const serviceDescState = get(serviceDescriptionStore);
+    if (!serviceDescState.descriptions) {
+      return null;
+    }
+
+    return serviceDescState.descriptions.get(currentEndpoint) || null;
+  }
 
   /**
    * Execute the current query (triggered by Ctrl+Enter / Cmd+Enter)
@@ -130,7 +158,11 @@
 
         // Autocompletion
         autocompletion({
-          override: [prefixCompletion, sparqlCompletion],
+          override: [
+            prefixCompletion,
+            sparqlCompletion,
+            graphNameCompletion(() => getServiceDescription()),
+          ],
           activateOnTyping: true,
           maxRenderedOptions: 20,
         }),
@@ -325,6 +357,20 @@
     storeUnsubscribers.push(
       defaultEndpoint.subscribe((value) => {
         endpoint = value;
+
+        // Fetch service description for new endpoint
+        if (value) {
+          serviceDescriptionStore.fetchForEndpoint(value).catch((err) => {
+            debug.log('[SparqlEditor] Failed to fetch service description:', err);
+          });
+        }
+      })
+    );
+
+    // Subscribe to serviceDescriptionStore
+    storeUnsubscribers.push(
+      serviceDescriptionStore.subscribe((value) => {
+        serviceDescState = value;
       })
     );
 

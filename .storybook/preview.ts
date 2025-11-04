@@ -1,14 +1,166 @@
 import type { Preview, Decorator } from '@storybook/sveltekit';
 import 'carbon-components-svelte/css/all.css';
 import './preview.css';
-import type { CarbonTheme } from '../src/lib/types';
+import type { CarbonTheme, ServiceDescription } from '../src/lib/types';
 import { resultsStore } from '../src/lib/stores/resultsStore';
 import { queryStore } from '../src/lib/stores/queryStore';
+import { serviceDescriptionStore } from '../src/lib/stores/serviceDescriptionStore';
+import { serviceDescriptionCache } from '../src/lib/services/serviceDescriptionCache';
+import { defaultEndpoint } from '../src/lib/stores/endpointStore';
 
 /**
  * Storybook preview configuration for SQUI
  * Integrates Carbon Design System and provides theme switching
  */
+
+/**
+ * Graph completion mock decorator - sets up service description for graph completion stories
+ * This ensures the mock data is available BEFORE the CodeMirror editor initializes
+ */
+const withGraphCompletionMocks: Decorator = (story, context) => {
+  // Check if this is a graph completion story
+  const storyId = (context.id || '').toLowerCase();
+  const storyName = (context.name || '').toLowerCase();
+  const title = (context.title || '').toLowerCase();
+  const isGraphCompletionStory = storyId.includes('graph') && storyId.includes('completion') ||
+                                  storyName.includes('graph') && storyName.includes('completion') ||
+                                  title.includes('sparqleditor') && storyName.includes('graph');
+
+  if (isGraphCompletionStory && typeof window !== 'undefined') {
+    const mockEndpoint = 'http://example.org/sparql';
+
+    // Determine which mock data to use based on story name
+    let mockServiceDesc: ServiceDescription;
+
+    if (storyId.includes('from-named')) {
+      // Mock for FROM NAMED story - only named graphs
+      mockServiceDesc = {
+        endpoint: mockEndpoint,
+        supportedLanguages: [],
+        features: [],
+        resultFormats: ['application/sparql-results+json'],
+        inputFormats: [],
+        extensionFunctions: [],
+        extensionAggregates: [],
+        datasets: [
+          {
+            defaultGraphs: [
+              {
+                uri: 'http://example.org/default-graph',
+                metadata: { triples: 5000 },
+              },
+            ],
+            namedGraphs: [
+              {
+                name: 'http://example.org/graph/people',
+                entailmentRegime: 'http://www.w3.org/ns/entailment/RDFS',
+                metadata: { triples: 8420 },
+              },
+              {
+                name: 'http://example.org/graph/places',
+                metadata: { triples: 3156 },
+              },
+              {
+                name: 'http://example.org/graph/events',
+                entailmentRegime: 'http://www.w3.org/ns/entailment/OWL-DL',
+                metadata: { triples: 12089 },
+              },
+            ],
+          },
+        ],
+        lastFetched: new Date(),
+        available: true,
+      };
+    } else if (storyId.includes('filtered')) {
+      // Mock for filtered completion story
+      mockServiceDesc = {
+        endpoint: mockEndpoint,
+        supportedLanguages: [],
+        features: [],
+        resultFormats: ['application/sparql-results+json'],
+        inputFormats: [],
+        extensionFunctions: [],
+        extensionAggregates: [],
+        datasets: [
+          {
+            defaultGraphs: [],
+            namedGraphs: [
+              {
+                name: 'http://example.org/graph/people',
+                metadata: { triples: 8420 },
+              },
+              {
+                name: 'http://example.org/graph/places',
+                metadata: { triples: 3156 },
+              },
+              {
+                name: 'http://example.org/graph/products',
+                metadata: { triples: 15230 },
+              },
+              {
+                name: 'http://example.org/graph/events',
+                metadata: { triples: 12089 },
+              },
+            ],
+          },
+        ],
+        lastFetched: new Date(),
+        available: true,
+      };
+    } else {
+      // Default mock for FROM story - includes both default and named graphs
+      mockServiceDesc = {
+        endpoint: mockEndpoint,
+        supportedLanguages: [],
+        features: [],
+        resultFormats: ['application/sparql-results+json'],
+        inputFormats: [],
+        extensionFunctions: [],
+        extensionAggregates: [],
+        datasets: [
+          {
+            defaultGraphs: [
+              {
+                uri: 'http://example.org/default-graph',
+                metadata: { triples: 5000 },
+              },
+            ],
+            namedGraphs: [
+              {
+                name: 'http://example.org/products',
+                entailmentRegime: 'http://www.w3.org/ns/entailment/RDFS',
+                metadata: { triples: 10245 },
+              },
+              {
+                name: 'http://example.org/customers',
+                metadata: { triples: 523 },
+              },
+              {
+                name: 'http://example.org/orders',
+                entailmentRegime: 'http://www.w3.org/ns/entailment/OWL-DL',
+                metadata: { triples: 1024332 },
+              },
+            ],
+          },
+        ],
+        lastFetched: new Date(),
+        available: true,
+      };
+    }
+
+    // Set up the cache and store BEFORE rendering
+    // 1. Set cache so fetchForEndpoint can find it
+    serviceDescriptionCache.set(mockEndpoint, mockServiceDesc);
+
+    // 2. Load from cache into store (this is synchronous when cached)
+    serviceDescriptionStore.fetchForEndpoint(mockEndpoint);
+
+    // 3. Set the default endpoint
+    defaultEndpoint.set(mockEndpoint);
+  }
+
+  return story();
+};
 
 /**
  * Store initialization decorator - ensures all stores are properly initialized
@@ -117,8 +269,8 @@ const preview: Preview = {
       toc: true,
     },
   },
-  // Apply decorators - store init first, then theme
-  decorators: [withStoreInit, withTheme],
+  // Apply decorators - graph completion mocks first (before component renders), then store init, then theme
+  decorators: [withGraphCompletionMocks, withStoreInit, withTheme],
   // Global types for toolbar controls
   globalTypes: {
     theme: {

@@ -473,3 +473,87 @@ LIMIT 100`,
     },
   },
 };
+
+/**
+ * Graph Name Auto-completion for FROM Clause
+ * Demonstrates intelligent graph IRI suggestions when typing in FROM clauses.
+ * Type "FROM " to see available graphs from the service description.
+ *
+ * Features:
+ * - Shows both default and named graphs for FROM
+ * - Displays metadata (triple count, entailment regime)
+ * - Filters as you type
+ * - Keyboard navigation (arrow keys, Enter)
+ */
+export const GraphNameCompletionFROM: Story = {
+  args: {
+    initialValue: `PREFIX ex: <http://example.org/>
+
+SELECT *
+FROM `,
+  },
+  parameters: {
+    docs: {
+      description: {
+        story:
+          'Type after "FROM " to see graph auto-completion with metadata. The completion shows all available graphs (both default and named) from the service description, including triple counts and entailment regimes.',
+      },
+    },
+    // Ensure this story is recognized by the decorator
+    graphCompletion: 'from',
+  },
+};
+
+/**
+ * Graph Name Auto-completion for FROM NAMED Clause
+ * Demonstrates graph IRI suggestions specifically for FROM NAMED clauses.
+ * Type "FROM NAMED " to see only named graphs.
+ *
+ * Features:
+ * - Shows only named graphs (no default graphs)
+ * - Rich metadata display
+ * - Context-aware filtering
+ */
+export const GraphNameCompletionFromNamed: Story = {
+  args: {
+    initialValue: `PREFIX ex: <http://example.org/>
+
+SELECT *
+FROM NAMED `,
+  },
+  parameters: {
+    docs: {
+      description: {
+        story:
+          'Type after "FROM NAMED " to see only named graph completions. Notice that the default graph is excluded for FROM NAMED clauses, showing only the explicitly named graphs available in the endpoint.',
+      },
+    },
+  },
+};
+
+/**
+ * Graph Name Completion with Partial Input
+ * Demonstrates filtering of graph completions as you type.
+ * Start typing a partial graph IRI to see filtered suggestions.
+ *
+ * Features:
+ * - Real-time filtering based on partial input
+ * - Works with both full IRIs and partial IRIs
+ * - Case-insensitive matching
+ */
+export const GraphNameCompletionFiltered: Story = {
+  args: {
+    initialValue: `PREFIX ex: <http://example.org/>
+
+SELECT *
+FROM NAMED <http://example.org/graph/p`,
+  },
+  parameters: {
+    docs: {
+      description: {
+        story:
+          'The partial IRI "http://example.org/graph/p" filters the suggestions to show only graphs starting with "p" (people, places, products). This demonstrates the real-time filtering capability of the graph name completion.',
+      },
+    },
+  },
+};
