@@ -221,14 +221,17 @@ test.describe('Graph Name Auto-completion', () => {
     // Wait for completion popup
     await page.waitForSelector('.cm-tooltip-autocomplete', { timeout: 3000 });
 
+    // Wait for popup to be fully rendered and ready
+    await page.waitForTimeout(300);
+
     // Get initial selected item
     const selectedItem = page.locator('.cm-tooltip-autocomplete li[aria-selected="true"]');
     const initialText = await selectedItem.textContent();
     console.log(`[E2E Test] Initially selected: ${initialText}`);
 
-    // Press Down arrow key to navigate
+    // Press Down arrow key to navigate (editor already has focus from Ctrl+Space)
     await page.keyboard.press('ArrowDown');
-    await page.waitForTimeout(100);
+    await page.waitForTimeout(200);
 
     // Check that selection changed
     const newSelectedItem = page.locator('.cm-tooltip-autocomplete li[aria-selected="true"]');
@@ -277,8 +280,9 @@ test.describe('Graph Name Auto-completion', () => {
     // Wait for completion popup
     await page.waitForSelector('.cm-tooltip-autocomplete', { timeout: 3000 });
 
-    // Press Enter to select first item
-    await page.keyboard.press('Enter');
+    // Click the first completion item to select it
+    const completionItems = page.locator('.cm-tooltip-autocomplete li');
+    await completionItems.first().click();
 
     // Wait for completion to be inserted
     await page.waitForTimeout(300);

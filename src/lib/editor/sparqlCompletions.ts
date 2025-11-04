@@ -4,6 +4,7 @@
  */
 
 import type { CompletionContext, CompletionResult, Completion } from '@codemirror/autocomplete';
+import { isInFromClause } from './utils/queryAnalysis';
 
 /**
  * SPARQL query form keywords with documentation
@@ -218,6 +219,13 @@ export function sparqlCompletion(context: CompletionContext): CompletionResult |
   // - No word is being typed
   // - Word hasn't started and completion wasn't explicitly requested (Ctrl+Space)
   if (!word || (word.from === word.to && !context.explicit)) {
+    return null;
+  }
+
+  // Don't show SPARQL keyword completions in FROM clause contexts
+  // where graph IRIs are expected (handled by graphNameCompletion)
+  const textBefore = context.state.sliceDoc(0, context.pos);
+  if (isInFromClause(textBefore)) {
     return null;
   }
 
