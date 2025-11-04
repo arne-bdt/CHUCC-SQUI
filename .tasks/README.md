@@ -34,7 +34,7 @@ These tasks implement [W3C SPARQL 1.1 Service Description](https://www.w3.org/TR
 
 #### UI Components
 
-- **[Task 53: Feature Detection & Capabilities Display](./53-feature-detection-capabilities.md)**
+- **[Task 53: Feature Detection & Capabilities Display](./53-feature-detection-capabilities.md)** ✅ **COMPLETED**
   - Display endpoint capabilities in sidebar
   - Show supported languages, features, formats
   - Visual indicators for capability status
