@@ -12,7 +12,7 @@ These tasks implement [W3C SPARQL 1.1 Service Description](https://www.w3.org/TR
 
 #### Core Infrastructure
 
-- **[Task 51: Service Description Core](./51-sparql-service-description-core.md)**
+- **[Task 51: Service Description Core](./51-sparql-service-description-core.md)** ✅ **COMPLETED**
   - Fetch, parse, and cache service descriptions
   - RDF parsing (Turtle, RDF/XML, JSON-LD)
   - Type definitions and Svelte store integration
@@ -20,13 +20,13 @@ These tasks implement [W3C SPARQL 1.1 Service Description](https://www.w3.org/TR
 
 #### Query Intelligence
 
-- **[Task 52: Graph Name Auto-completion](./52-graph-name-autocompletion.md)**
+- **[Task 52: Graph Name Auto-completion](./52-graph-name-autocompletion.md)** ✅ **COMPLETED**
   - Auto-complete `FROM` and `FROM NAMED` clauses
   - Show graph metadata (triple count, entailment regime)
   - CodeMirror integration with Carbon styling
   - **Depends on**: Task 51
 
-- **[Task 54: Query Validation](./54-query-validation-capabilities.md)**
+- **[Task 54: Query Validation](./54-query-validation-capabilities.md)** ✅ **COMPLETED**
   - Validate queries against endpoint capabilities
   - Warn about unsupported features (SPARQL 1.1, SERVICE, etc.)
   - CodeMirror linter with inline diagnostics

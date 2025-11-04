@@ -26,5 +26,9 @@ export { tabStore } from './tabStore';
 export { serviceDescriptionStore } from './serviceDescriptionStore';
 export type { ServiceDescriptionState } from './serviceDescriptionStore';
 
+// Settings store
+export { settingsStore } from './settingsStore';
+export type { Settings, ValidationSettings } from './settingsStore';
+
 // Re-export types from config
 export type { CarbonTheme } from '../types/config';

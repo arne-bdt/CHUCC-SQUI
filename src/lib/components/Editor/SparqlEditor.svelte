@@ -18,16 +18,19 @@
   import { searchKeymap, highlightSelectionMatches } from '@codemirror/search';
   import { foldGutter, indentOnInput, bracketMatching, foldKeymap } from '@codemirror/language';
   import { closeBrackets, closeBracketsKeymap, autocompletion } from '@codemirror/autocomplete';
+  import { lintGutter } from '@codemirror/lint';
   import { sparql } from '../../editor/sparqlLanguage';
   import { createCarbonTheme } from '../../editor/carbonTheme';
   import { sparqlCompletion } from '../../editor/sparqlCompletions';
   import { prefixCompletion } from '../../editor/prefixCompletions';
   import { graphNameCompletion } from '../../editor/extensions/graphNameCompletion';
+  import { capabilityLinter } from '../../editor/extensions/capabilityLinter';
   import { templateService } from '../../services/templateService';
   import { queryStore } from '../../stores';
   import { resultsStore } from '../../stores/resultsStore';
   import { defaultEndpoint } from '../../stores/endpointStore';
   import { serviceDescriptionStore } from '../../stores/serviceDescriptionStore';
+  import { settingsStore } from '../../stores/settingsStore';
   import { queryExecutionService } from '../../services/queryExecutionService';
   import { themeStore } from '../../stores/theme';
   import { t } from '../../localization';
@@ -145,6 +148,7 @@
         lineNumbers(),
         highlightActiveLine(),
         foldGutter(),
+        lintGutter(),
 
         // Editing enhancements
         history(),
@@ -166,6 +170,20 @@
           activateOnTyping: true,
           maxRenderedOptions: 20,
         }),
+
+        // Query validation linter
+        capabilityLinter(
+          () => getServiceDescription(),
+          () => {
+            const settings = get(settingsStore);
+            return {
+              enabled: settings.validation.enableCapabilityValidation,
+              warnOnUnsupportedFeatures: settings.validation.warnOnUnsupportedFeatures,
+              warnOnUnknownFunctions: settings.validation.warnOnUnknownFunctions,
+              warnOnUnknownGraphs: settings.validation.warnOnUnknownGraphs,
+            };
+          }
+        ),
 
         // Theme (dynamic)
         themeCompartment.of(createCarbonTheme(currentTheme)),
