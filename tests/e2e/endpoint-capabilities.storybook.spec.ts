@@ -44,7 +44,7 @@ test.describe('Endpoint Capabilities Components', () => {
 
       // Should show main panel title and refresh button
       await expect(page.getByText('Endpoint Capabilities')).toBeVisible({ timeout: 5000 });
-      await expect(page.locator('button[aria-label*="Refresh"]')).toBeVisible();
+      await expect(page.getByRole('button', { name: /Refresh/i })).toBeVisible();
 
       // Should show SPARQL Support section
       await expect(page.getByText('SPARQL Support')).toBeVisible();
@@ -61,7 +61,7 @@ test.describe('Endpoint Capabilities Components', () => {
       // Should show Result Formats section
       await expect(page.getByText('Result Formats')).toBeVisible();
       await expect(page.getByText('JSON')).toBeVisible();
-      await expect(page.getByText('XML')).toBeVisible();
+      await expect(page.getByText('XML').first()).toBeVisible();
       await expect(page.getByText('CSV')).toBeVisible();
       await expect(page.getByText('TSV')).toBeVisible();
 
@@ -76,7 +76,7 @@ test.describe('Endpoint Capabilities Components', () => {
       await expect(page.getByText(/Extension Aggregates \(1\)/)).toBeVisible();
 
       // Should show Datasets section
-      await expect(page.getByText(/^Datasets$/)).toBeVisible();
+      await expect(page.getByText(/^Datasets$/).first()).toBeVisible();
 
       // Should show last updated metadata
       await expect(page.getByText('Last updated:')).toBeVisible();

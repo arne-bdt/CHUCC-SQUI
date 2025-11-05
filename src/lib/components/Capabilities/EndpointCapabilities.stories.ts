@@ -57,12 +57,14 @@ export const Loading: Story = {
     endpointUrl: 'https://example.org/sparql',
   },
   play: async () => {
-    // Set loading state
+    // Set loading state directly without triggering a fetch
     serviceDescriptionStore.reset();
-    // Trigger loading by starting a fetch (but don't await)
-    serviceDescriptionStore.fetchForEndpoint('https://example.org/sparql').catch(() => {
-      // Ignore errors - we just want the loading state
-    });
+    serviceDescriptionStore.update((state) => ({
+      ...state,
+      currentEndpoint: 'https://example.org/sparql',
+      loading: true,
+      error: null,
+    }));
   },
 };
 
@@ -141,7 +143,6 @@ export const WithFullCapabilities: Story = {
     serviceDescriptionStore.reset();
 
     // Manually update the store with mock data
-    // @ts-expect-error - accessing private store methods for testing
     serviceDescriptionStore.update((state) => {
       const descriptions = new Map(state.descriptions);
       descriptions.set('https://example.org/sparql', mockServiceDesc);
@@ -167,7 +168,6 @@ export const ErrorState: Story = {
     // Reset store and set error state
     serviceDescriptionStore.reset();
 
-    // @ts-expect-error - accessing private store methods for testing
     serviceDescriptionStore.update((state) => ({
       ...state,
       currentEndpoint: 'https://example.org/sparql',
@@ -210,7 +210,6 @@ export const NotAvailable: Story = {
 
     serviceDescriptionStore.reset();
 
-    // @ts-expect-error - accessing private store methods for testing
     serviceDescriptionStore.update((state) => {
       const descriptions = new Map(state.descriptions);
       descriptions.set('https://example.org/sparql', unavailableDesc);
