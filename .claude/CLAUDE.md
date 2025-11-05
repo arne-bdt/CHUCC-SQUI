@@ -317,6 +317,120 @@ npm run test:e2e:storybook
 ✅ **ALWAYS** run E2E tests when modifying components or stories
 ✅ **VERIFY** the fix works in the actual browser, not just in unit tests
 
+### Playwright E2E Testing Best Practices
+
+**CRITICAL: Use semantic selectors for robust, maintainable tests**
+
+**Recommended Selector Patterns:**
+
+```typescript
+// ✅ BEST: Use semantic locators (getByRole, getByText, getByPlaceholder)
+await expect(page.getByRole('heading', { name: 'Extension Functions' })).toBeVisible();
+await expect(page.getByText('Search functions...')).toBeVisible();
+await expect(page.getByPlaceholder('Enter query...')).toBeVisible();
+await expect(page.getByRole('button', { name: 'Submit' })).toBeVisible();
+await expect(page.getByRole('tab', { name: /Functions/ })).toBeVisible();
+
+// ✅ GOOD: Use getByLabel for form fields
+await expect(page.getByLabel('Endpoint URL')).toBeVisible();
+
+// ⚠️ AVOID: CSS class selectors (brittle, implementation-dependent)
+await expect(page.locator('.function-library')).toBeVisible();
+await expect(page.locator('.search-input')).toBeVisible();
+
+// ❌ WRONG: Complex CSS selectors (very brittle)
+await expect(page.locator('div.container > div.panel > input.search')).toBeVisible();
+```
+
+**Storybook iframe Access:**
+
+```typescript
+// ✅ CORRECT: Direct page access to Storybook iframe content
+test('should render component', async ({ page }) => {
+  await page.goto(`${STORYBOOK_URL}/iframe.html?id=components-mycomponent--default&viewMode=story`);
+
+  // Wait for Storybook play functions to complete
+  await page.waitForTimeout(1500);
+
+  // Access elements directly without frame locator
+  await expect(page.getByText('My Component')).toBeVisible({ timeout: 5000 });
+});
+
+// ❌ WRONG: Explicit frame locator (unnecessary for Storybook)
+const frame = page.frameLocator('#storybook-preview-iframe');
+await frame.locator('.my-component').waitFor();
+```
+
+**Handling Multiple Elements (Strict Mode):**
+
+```typescript
+// ❌ FAILS: Playwright strict mode violation when multiple elements match
+await expect(page.getByText('Description')).toBeVisible();
+// Error: "strict mode violation: resolved to 2 elements"
+
+// ✅ FIX 1: Use more specific selector (getByRole)
+await expect(page.getByRole('heading', { name: 'Description', exact: true })).toBeVisible();
+
+// ✅ FIX 2: Use .first() or .nth() to select specific element
+await expect(page.getByText('optional').first()).toBeVisible();
+await expect(page.getByRole('button', { name: 'Details' }).nth(2)).toBeVisible();
+
+// ✅ FIX 3: Use count() to assert on multiple elements
+const count = await page.getByText('Description').count();
+expect(count).toBeGreaterThan(0);
+```
+
+**Incremental Test Development:**
+
+```typescript
+// ✅ RECOMMENDED: Fix tests incrementally, one at a time
+// Run single test to verify fix:
+npx playwright test --config=playwright-storybook.config.js tests/e2e/my-component.spec.ts -g "should render component"
+
+// Then run all tests in file:
+npx playwright test --config=playwright-storybook.config.js tests/e2e/my-component.spec.ts
+
+// ❌ AVOID: Fixing all tests at once without verification
+// This makes it harder to identify which fix resolved which issue
+```
+
+**Common Patterns:**
+
+```typescript
+// ✅ Wait for component to render and play function to complete
+await page.waitForTimeout(1500);
+
+// ✅ Use appropriate timeouts for slow operations
+await expect(page.getByText('Loading complete')).toBeVisible({ timeout: 10000 });
+
+// ✅ Test user interactions with semantic selectors
+await page.getByPlaceholder('Search...').fill('query');
+await page.getByRole('button', { name: 'Search' }).click();
+
+// ✅ Verify state changes after interactions
+await expect(page.getByText('5 results')).toBeVisible();
+
+// ✅ Test keyboard navigation
+await page.getByRole('tab', { name: 'Settings' }).press('Enter');
+await expect(page.getByRole('tab', { name: 'Settings' })).toHaveAttribute('aria-selected', 'true');
+```
+
+**Why Semantic Selectors Matter:**
+
+1. **Accessibility**: Tests that use semantic selectors (role, label, text) verify accessibility
+2. **Maintainability**: Semantic selectors don't break when CSS classes change
+3. **Readability**: `getByRole('button', { name: 'Submit' })` is clearer than `.locator('.btn-submit')`
+4. **Resilience**: Text-based selectors work across theme changes and styling updates
+5. **Documentation**: Tests serve as documentation of user-facing behavior
+
+**Key Learnings from Task 55:**
+
+- Playwright can access Storybook iframe content directly without explicit `frameLocator()`
+- Use semantic locators (`getByRole`, `getByText`) instead of CSS class selectors
+- Fix tests incrementally (one at a time) to identify root causes faster
+- Handle strict mode violations with specific selectors or `.first()`/`.nth()`
+- Wait for Storybook play functions to complete before making assertions
+
 ### Storybook Story Configuration
 
 **CRITICAL: Use correct story patterns for Svelte components**
