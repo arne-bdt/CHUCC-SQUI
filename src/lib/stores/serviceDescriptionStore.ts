@@ -239,6 +239,13 @@ export function createServiceDescriptionStore() {
 
       await Promise.allSettled(promises);
     },
+
+    /**
+     * Direct state update for testing purposes
+     * @internal Use only in tests/stories
+     * @param updater Function to update state
+     */
+    update,
   };
 }
 
