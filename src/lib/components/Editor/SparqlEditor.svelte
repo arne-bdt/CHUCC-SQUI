@@ -25,6 +25,8 @@
   import { prefixCompletion } from '../../editor/prefixCompletions';
   import { graphNameCompletion } from '../../editor/extensions/graphNameCompletion';
   import { capabilityLinter } from '../../editor/extensions/capabilityLinter';
+  import { extensionFunctionCompletion } from '../../editor/extensions/functionCompletion';
+  import { functionSignatureTooltip } from '../../editor/extensions/functionSignatureTooltip';
   import { templateService } from '../../services/templateService';
   import { queryStore } from '../../stores';
   import { resultsStore } from '../../stores/resultsStore';
@@ -111,6 +113,18 @@
   }
 
   /**
+   * Get extension functions for current endpoint
+   * Used by function completion and hover tooltips
+   */
+  function getExtensionFunctions() {
+    const serviceDesc = getServiceDescription();
+    if (!serviceDesc) {
+      return [];
+    }
+    return [...(serviceDesc.extensionFunctions ?? []), ...(serviceDesc.extensionAggregates ?? [])];
+  }
+
+  /**
    * Execute the current query (triggered by Ctrl+Enter / Cmd+Enter)
    */
   async function executeQuery(): Promise<boolean> {
@@ -166,10 +180,14 @@
             prefixCompletion,
             sparqlCompletion,
             graphNameCompletion(() => getServiceDescription()),
+            extensionFunctionCompletion(() => getExtensionFunctions()),
           ],
           activateOnTyping: true,
           maxRenderedOptions: 20,
         }),
+
+        // Function signature hover tooltips
+        functionSignatureTooltip(() => getExtensionFunctions()),
 
         // Query validation linter
         capabilityLinter(
@@ -267,6 +285,27 @@
    */
   export function focus(): void {
     editorView?.focus();
+  }
+
+  /**
+   * Insert text at the current cursor position
+   * Used by FunctionLibrary to insert function calls
+   */
+  export function insertText(text: string): void {
+    if (!editorView) return;
+
+    const selection = editorView.state.selection.main;
+    editorView.dispatch({
+      changes: {
+        from: selection.from,
+        to: selection.to,
+        insert: text,
+      },
+      selection: {
+        anchor: selection.from + text.length,
+      },
+    });
+    editorView.focus();
   }
 
   /**

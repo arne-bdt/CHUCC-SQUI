@@ -12,13 +12,16 @@
   import FormatList from './FormatList.svelte';
   import ExtensionList from './ExtensionList.svelte';
   import DatasetInfo from './DatasetInfo.svelte';
+  import FunctionLibrary from '../Functions/FunctionLibrary.svelte';
 
   interface Props {
     /** SPARQL endpoint URL to show capabilities for */
     endpointUrl?: string;
+    /** Callback to insert function text into editor */
+    onInsertFunction?: (functionCall: string) => void;
   }
 
-  let { endpointUrl }: Props = $props();
+  let { endpointUrl, onInsertFunction }: Props = $props();
 
   const state = $derived($serviceDescriptionStore);
   const loading = $derived(state.loading);
@@ -90,39 +93,10 @@
       </section>
     {/if}
 
-    <!-- Extension Functions -->
-    {#if serviceDesc.extensionFunctions.length > 0}
-      <section class="capability-section">
-        <ExpandableTile>
-          {#snippet above()}
-            <div class="expandable-header">
-              Extension Functions ({serviceDesc.extensionFunctions.length})
-            </div>
-          {/snippet}
-          {#snippet below()}
-            <div class="expandable-content">
-              <ExtensionList items={serviceDesc.extensionFunctions} type="function" />
-            </div>
-          {/snippet}
-        </ExpandableTile>
-      </section>
-    {/if}
-
-    <!-- Extension Aggregates -->
-    {#if serviceDesc.extensionAggregates.length > 0}
-      <section class="capability-section">
-        <ExpandableTile>
-          {#snippet above()}
-            <div class="expandable-header">
-              Extension Aggregates ({serviceDesc.extensionAggregates.length})
-            </div>
-          {/snippet}
-          {#snippet below()}
-            <div class="expandable-content">
-              <ExtensionList items={serviceDesc.extensionAggregates} type="aggregate" />
-            </div>
-          {/snippet}
-        </ExpandableTile>
+    <!-- Extension Functions & Aggregates Library -->
+    {#if serviceDesc.extensionFunctions.length > 0 || serviceDesc.extensionAggregates.length > 0}
+      <section class="capability-section function-library-section">
+        <FunctionLibrary currentEndpoint={currentEndpoint} {onInsertFunction} />
       </section>
     {/if}
 
@@ -246,5 +220,11 @@
 
   .error-state .error-message {
     color: var(--cds-text-error);
+  }
+
+  /* Function library section - remove default padding since FunctionLibrary has its own */
+  .function-library-section {
+    padding: 0;
+    border-bottom: none;
   }
 </style>

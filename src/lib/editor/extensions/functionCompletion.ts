@@ -4,9 +4,7 @@
  * based on SPARQL Service Description metadata
  */
 
-import { autocompletion } from '@codemirror/autocomplete';
-import type { Extension } from '@codemirror/state';
-import type { CompletionContext, CompletionResult, Completion } from '@codemirror/autocomplete';
+import type { CompletionContext, CompletionResult, Completion, CompletionSource } from '@codemirror/autocomplete';
 import type { ExtensionFunction, ExtensionAggregate } from '../../types';
 import {
   buildFunctionCall,
@@ -16,61 +14,65 @@ import {
 } from '../utils/functionFormatting';
 
 /**
- * Create extension function auto-completion extension
+ * Create extension function auto-completion source
+ * Returns a completion source that can be added to the autocompletion override array
  *
  * @param getFunctions - Function to retrieve current extension functions and aggregates
- * @returns CodeMirror extension for function completion
+ * @returns Completion source function
  *
  * @example
  * ```typescript
+ * import { autocompletion } from '@codemirror/autocomplete';
  * import { extensionFunctionCompletion } from './functionCompletion';
  *
  * const extensions = [
- *   extensionFunctionCompletion(() => {
- *     const desc = serviceDescriptionStore.getForEndpoint(currentEndpoint);
- *     return [...(desc?.extensionFunctions ?? []), ...(desc?.extensionAggregates ?? [])];
+ *   autocompletion({
+ *     override: [
+ *       prefixCompletion,
+ *       sparqlCompletion,
+ *       extensionFunctionCompletion(() => {
+ *         const desc = serviceDescriptionStore.getForEndpoint(currentEndpoint);
+ *         return [...(desc?.extensionFunctions ?? []), ...(desc?.extensionAggregates ?? [])];
+ *       })
+ *     ]
  *   })
  * ];
  * ```
  */
 export function extensionFunctionCompletion(
   getFunctions: () => (ExtensionFunction | ExtensionAggregate)[]
-): Extension {
-  return autocompletion({
-    override: [
-      async (context: CompletionContext): Promise<CompletionResult | null> => {
-        const { state, pos } = context;
+): CompletionSource {
+  return async (context: CompletionContext): Promise<CompletionResult | null> => {
+    const { state, pos } = context;
 
-        // Get text before cursor to determine context
-        const textBefore = state.sliceDoc(Math.max(0, pos - 100), pos);
+    // Get text before cursor to determine context
+    const textBefore = state.sliceDoc(Math.max(0, pos - 100), pos);
 
-        // Only provide completions in function contexts
-        if (!isInFunctionContext(textBefore)) {
-          return null;
-        }
+    // Only provide completions in function contexts
+    if (!isInFunctionContext(textBefore)) {
+      return null;
+    }
 
-        // Get available functions
-        const functions = getFunctions();
-        if (functions.length === 0) {
-          return null;
-        }
+    // Get available functions
+    const functions = getFunctions();
+    if (functions.length === 0) {
+      return null;
+    }
 
-        // Build completion items
-        const completions = buildFunctionCompletions(functions, context);
+    // Build completion items
+    const completions = buildFunctionCompletions(functions, context);
 
-        if (completions.length === 0) {
-          return null;
-        }
+    if (completions.length === 0) {
+      return null;
+    }
 
-        // Return completion result
-        return {
-          from: getCompletionStart(context),
-          options: completions,
-          filter: true, // Let CodeMirror filter based on partial input
-        };
-      },
-    ],
-  });
+    // Return completion result
+    return {
+      from: getCompletionStart(context),
+      options: completions,
+      filter: true, // Let CodeMirror filter based on partial input
+    };
+  };
 }
 
 /**
