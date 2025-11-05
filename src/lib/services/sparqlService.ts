@@ -18,8 +18,10 @@ import { performanceService } from './performanceService';
  * Extended query options with format specification and progress callback
  */
 export interface ExtendedQueryOptions extends QueryOptions {
-  /** Desired result format */
+  /** Desired result format (short name like 'json', 'turtle') */
   format?: ResultFormat;
+  /** Accept MIME type for content negotiation (overrides format) */
+  acceptFormat?: string;
   /** STREAMING-02: Progress callback for UI feedback */
   onProgress?: (progress: ProgressState) => void;
 }
@@ -61,6 +63,7 @@ export class SparqlService {
       endpoint,
       query,
       format = 'json',
+      acceptFormat,
       timeout = this.defaultTimeout,
       headers = {},
       signal,
@@ -77,7 +80,8 @@ export class SparqlService {
     const method = options.method ?? this.determineMethod(query, endpoint, queryType);
 
     // Set Accept header based on query type and format
-    const acceptHeader = this.getAcceptHeader(queryType, format);
+    // Use acceptFormat (MIME type) if provided, otherwise convert format short name
+    const acceptHeader = acceptFormat || this.getAcceptHeader(queryType, format);
 
     // Create AbortController for timeout and cancellation
     this.abortController = new AbortController();
@@ -112,7 +116,7 @@ export class SparqlService {
       clearTimeout(timeoutId);
 
       if (!response.ok) {
-        throw await this.createErrorFromResponse(response);
+        throw await this.createErrorFromResponse(response, acceptHeader);
       }
 
       const contentType = response.headers.get('Content-Type') || 'text/plain';
@@ -481,9 +485,10 @@ export class SparqlService {
   /**
    * Create error from HTTP response
    * @param response Failed HTTP response
+   * @param requestedFormat Requested Accept header format
    * @returns QueryError object
    */
-  private async createErrorFromResponse(response: Response): Promise<QueryError> {
+  private async createErrorFromResponse(response: Response, requestedFormat?: string): Promise<QueryError> {
     const statusText = response.statusText;
     const status = response.status;
     let message = `HTTP ${status}: ${statusText}`;
@@ -523,6 +528,13 @@ export class SparqlService {
       message = 'Forbidden: Access denied to this endpoint';
     } else if (status === 404) {
       message = 'Not Found: Endpoint does not exist';
+    } else if (status === 406) {
+      // Not Acceptable: Content negotiation failed
+      message = 'Not Acceptable: Requested format not supported by endpoint';
+      if (requestedFormat) {
+        details = `The endpoint does not support the requested format: ${requestedFormat}.\n\nTry a different format or check the endpoint's supported formats in Service Description.`;
+      }
+      type = 'http';
     } else if (status === 408) {
       message = 'Request Timeout: Query took too long to execute';
       type = 'http';
