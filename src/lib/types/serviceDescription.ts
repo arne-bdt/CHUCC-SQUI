@@ -112,6 +112,23 @@ export interface NamedGraph extends GraphDescription {
 }
 
 /**
+ * Parameter of an extension function or aggregate
+ */
+export interface FunctionParameter {
+  /** Parameter name */
+  name: string;
+
+  /** XSD datatype (e.g., "xsd:string", "xsd:integer") */
+  type?: string;
+
+  /** Whether the parameter is optional */
+  optional?: boolean;
+
+  /** Parameter description */
+  description?: string;
+}
+
+/**
  * Extension function supported by the endpoint
  */
 export interface ExtensionFunction {
@@ -123,10 +140,23 @@ export interface ExtensionFunction {
 
   /** Function description (optional) */
   comment?: string;
+
+  /** Function parameters */
+  parameters?: FunctionParameter[];
+
+  /** Return type (XSD datatype) */
+  returnType?: string;
+
+  /** SPARQL query examples using this function */
+  examples?: string[];
+
+  /** URL to external documentation */
+  documentationUrl?: string;
 }
 
 /**
  * Extension aggregate function supported by the endpoint
+ * Same structure as ExtensionFunction but used in GROUP BY/aggregate context
  */
 export interface ExtensionAggregate extends ExtensionFunction {}
 
