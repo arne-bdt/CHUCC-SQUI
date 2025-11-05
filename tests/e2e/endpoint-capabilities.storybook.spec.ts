@@ -21,17 +21,83 @@ test.describe('Endpoint Capabilities Components', () => {
   });
 
   test.describe('EndpointCapabilities', () => {
-    test('should render default state', async ({ page }) => {
+    test('should render loading state', async ({ page }) => {
       await page.goto(
-        `${STORYBOOK_URL}/iframe.html?id=components-capabilities-endpointcapabilities--default&viewMode=story`
+        `${STORYBOOK_URL}/iframe.html?id=components-capabilities-endpointcapabilities--loading&viewMode=story`
       );
 
       // Wait for component to render
       await page.waitForTimeout(1000);
 
-      // Component should be present (even if showing empty/no-data state)
-      const component = page.locator('.capabilities-panel, .no-service-description, .error-state');
-      await expect(component.first()).toBeVisible({ timeout: 5000 });
+      // Should show loading skeleton
+      const loadingState = page.locator('.loading-state');
+      await expect(loadingState).toBeVisible({ timeout: 5000 });
+    });
+
+    test('should render full capabilities with all data', async ({ page }) => {
+      await page.goto(
+        `${STORYBOOK_URL}/iframe.html?id=components-capabilities-endpointcapabilities--with-full-capabilities&viewMode=story`
+      );
+
+      // Wait for component to render
+      await page.waitForTimeout(1500);
+
+      // Should show main panel title and refresh button
+      await expect(page.getByText('Endpoint Capabilities')).toBeVisible({ timeout: 5000 });
+      await expect(page.locator('button[aria-label*="Refresh"]')).toBeVisible();
+
+      // Should show SPARQL Support section
+      await expect(page.getByText('SPARQL Support')).toBeVisible();
+      await expect(page.getByText('SPARQL 1.0 Query')).toBeVisible();
+      await expect(page.getByText('SPARQL 1.1 Query')).toBeVisible();
+      await expect(page.getByText('SPARQL 1.1 Update')).toBeVisible();
+
+      // Should show Features section
+      await expect(page.getByText(/^Features$/)).toBeVisible();
+      await expect(page.getByText('URI Dereferencing')).toBeVisible();
+      await expect(page.getByText('Union Default Graph')).toBeVisible();
+      await expect(page.getByText('Federated Query (SERVICE)')).toBeVisible();
+
+      // Should show Result Formats section
+      await expect(page.getByText('Result Formats')).toBeVisible();
+      await expect(page.getByText('JSON')).toBeVisible();
+      await expect(page.getByText('XML')).toBeVisible();
+      await expect(page.getByText('CSV')).toBeVisible();
+      await expect(page.getByText('TSV')).toBeVisible();
+
+      // Should show Input Formats section
+      await expect(page.getByText('Input Formats')).toBeVisible();
+      await expect(page.getByText('Turtle')).toBeVisible();
+
+      // Should show Extension Functions section (expandable)
+      await expect(page.getByText(/Extension Functions \(2\)/)).toBeVisible();
+
+      // Should show Extension Aggregates section (expandable)
+      await expect(page.getByText(/Extension Aggregates \(1\)/)).toBeVisible();
+
+      // Should show Datasets section
+      await expect(page.getByText(/^Datasets$/)).toBeVisible();
+
+      // Should show last updated metadata
+      await expect(page.getByText('Last updated:')).toBeVisible();
+    });
+
+    test('should render error state with retry button', async ({ page }) => {
+      await page.goto(
+        `${STORYBOOK_URL}/iframe.html?id=components-capabilities-endpointcapabilities--error-state&viewMode=story`
+      );
+
+      // Wait for component to render
+      await page.waitForTimeout(1000);
+
+      // Should show error message
+      await expect(
+        page.getByText(/Failed to fetch service description: Network error/)
+      ).toBeVisible({ timeout: 5000 });
+
+      // Should show Try Again button
+      const retryButton = page.getByRole('button', { name: /Try Again/i });
+      await expect(retryButton).toBeVisible();
     });
 
     test('should render no endpoint state', async ({ page }) => {
@@ -43,6 +109,65 @@ test.describe('Endpoint Capabilities Components', () => {
 
       // Should show empty state message
       await expect(page.getByText(/Service description not available/i)).toBeVisible();
+    });
+
+    test('should render not available state', async ({ page }) => {
+      await page.goto(
+        `${STORYBOOK_URL}/iframe.html?id=components-capabilities-endpointcapabilities--not-available&viewMode=story`
+      );
+
+      // Wait for component to render
+      await page.waitForTimeout(1000);
+
+      // Should show "not available" message
+      await expect(
+        page.getByText(/Service description not available for this endpoint/i)
+      ).toBeVisible({ timeout: 5000 });
+
+      // Should show Try to Fetch button
+      const fetchButton = page.getByRole('button', { name: /Try to Fetch/i });
+      await expect(fetchButton).toBeVisible();
+    });
+
+    test('should expand extension functions section', async ({ page }) => {
+      await page.goto(
+        `${STORYBOOK_URL}/iframe.html?id=components-capabilities-endpointcapabilities--with-full-capabilities&viewMode=story`
+      );
+
+      // Wait for component to render
+      await page.waitForTimeout(1500);
+
+      // Click to expand Extension Functions
+      const extensionFunctionsSection = page.getByText(/Extension Functions \(2\)/);
+      await expect(extensionFunctionsSection).toBeVisible({ timeout: 5000 });
+      await extensionFunctionsSection.click();
+
+      // Wait for expansion animation
+      await page.waitForTimeout(500);
+
+      // Should show function details
+      await expect(page.getByText('customFunction').first()).toBeVisible();
+      await expect(page.getByText('geoDistance').first()).toBeVisible();
+    });
+
+    test('should expand extension aggregates section', async ({ page }) => {
+      await page.goto(
+        `${STORYBOOK_URL}/iframe.html?id=components-capabilities-endpointcapabilities--with-full-capabilities&viewMode=story`
+      );
+
+      // Wait for component to render
+      await page.waitForTimeout(1500);
+
+      // Click to expand Extension Aggregates
+      const extensionAggregatesSection = page.getByText(/Extension Aggregates \(1\)/);
+      await expect(extensionAggregatesSection).toBeVisible({ timeout: 5000 });
+      await extensionAggregatesSection.click();
+
+      // Wait for expansion animation
+      await page.waitForTimeout(500);
+
+      // Should show aggregate details
+      await expect(page.getByText('MEDIAN').first()).toBeVisible();
     });
   });
 
