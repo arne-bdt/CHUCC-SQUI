@@ -2,11 +2,36 @@
 
 ## Overview
 
-This directory contains documentation for the SPARQL Query UI Web Component (SQUI) implementation tasks. **All tasks have been completed successfully!** 🎉
+This directory contains documentation for the SPARQL Query UI Web Component (SQUI) implementation tasks.
 
-The task files have been archived as they are no longer needed for active development.
+**Status:**
+- ✅ **Tasks 51-56**: SPARQL Service Description Support - COMPLETED
+- ✅ **Task 60**: Remove CDN Dependencies - COMPLETED
+- 📝 **Tasks 61-62**: Self-Contained/Offline Support - PENDING
 
 ## Task Index
+
+### Self-Contained & Offline Support (Tasks 60-62) 🆕
+
+These tasks ensure CHUCC-SQUI can operate in isolated environments without internet access, meeting security and deployment requirements for air-gapped systems.
+
+- **[Task 60: Remove CDN Dependencies](./60-remove-cdn-dependencies.md)** ✅ **COMPLETED**
+  - Bundle Carbon CSS locally (no unpkg.com CDN)
+  - Update standalone build script
+  - Font override for offline operation
+  - E2E tests to verify no external requests
+
+- **[Task 61: Add Configuration to Disable External Prefix Lookup](./61-add-offline-mode-config.md)** 📝 **MEDIUM PRIORITY**
+  - Add `enablePrefixLookup` config option to PrefixConfig
+  - Disable prefix.cc API calls for air-gapped environments
+  - Clear, specific naming (not "offline mode")
+  - **Depends on**: Task 60
+
+- **[Task 62: Audit External Dependencies](./62-audit-external-dependencies.md)** 📝 **LOW PRIORITY**
+  - Security documentation
+  - Build checks for CDN usage
+  - Deployment guidelines
+  - **Depends on**: Task 60, 61
 
 ### SPARQL Service Description Support (Tasks 51-56)
 
@@ -56,7 +81,7 @@ These tasks implement [W3C SPARQL 1.1 Service Description](https://www.w3.org/TR
 
 ## Completed Implementation
 
-**All tasks have been completed in the following order:**
+**SPARQL Service Description Support (Tasks 51-56):**
 
 ```
 ✅ Task 51 (Core) → Task 52 (Graphs) → Task 53 (UI) → Task 54 (Validation) → Task 55 (Functions) → Task 56 (Formats)
@@ -71,6 +96,17 @@ These tasks implement [W3C SPARQL 1.1 Service Description](https://www.w3.org/TR
 - ✅ **Task 56**: Result Format Negotiation - Smart format selection with automatic fallback
 
 All features passed quality checks including build, unit tests, integration tests, Storybook stories, and E2E tests.
+
+**Self-Contained/Offline Support (Task 60):**
+
+- ✅ **Task 60**: Remove CDN Dependencies - COMPLETED
+  - Removed Carbon CSS CDN dependency (unpkg.com)
+  - Bundled all 5 Carbon theme files locally
+  - Created font-override.css to eliminate IBM Plex font CDN requests
+  - Updated standalone build script with recursive directory copying
+  - Added comprehensive E2E test suite (6 tests) to verify offline capability
+  - All tests passing: Unit (1,098), E2E Standalone (6)
+  - **Result**: Standalone build now works 100% offline with zero external network requests
 
 ## Implemented Features
 
@@ -159,6 +195,21 @@ When adding dependencies:
 
 This project uses **Apache License 2.0**.
 
+## Current Focus: Self-Contained Deployment (Tasks 60-62)
+
+CHUCC-SQUI must be capable of running in isolated environments without web access. This is a critical requirement for:
+
+- Government/military deployments
+- Healthcare systems (HIPAA compliance)
+- Financial institutions
+- Air-gapped research environments
+- Offline development/testing
+
+**Implementation Order:**
+1. **Task 60** (CRITICAL): Remove CDN dependencies
+2. **Task 61** (MEDIUM): Add offline mode configuration
+3. **Task 62** (LOW): Audit and document
+
 ## Development Guidelines
 
 For future development and enhancements:
@@ -168,6 +219,7 @@ For future development and enhancements:
 3. Run quality checks: `npm run build && npm test && npm run test:e2e:storybook`
 4. Commit only when all checks pass
 5. Create PRs with clear descriptions
+6. **NEW**: Never add CDN dependencies - bundle everything locally
 
 ## Resources
 

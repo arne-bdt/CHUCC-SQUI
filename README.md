@@ -121,6 +121,83 @@ function App() {
 </html>
 ```
 
+## Standalone/Offline Deployment
+
+SQUI includes a standalone distribution that works completely offline without any CDN dependencies. This is ideal for:
+
+- **Air-gapped environments** (government, healthcare, finance)
+- **Secure networks** without internet access
+- **Local/offline development**
+- **Embedded applications**
+
+### Building Standalone Distribution
+
+```bash
+# Build the standalone distribution
+npm run build:standalone
+```
+
+This creates a `dist-standalone` directory containing:
+- All JavaScript and CSS files
+- Carbon Design System styles (bundled locally)
+- Standalone HTML launcher
+- Complete README with usage instructions
+
+### Deployment
+
+1. **Copy the entire `dist-standalone` directory** to your target environment
+2. **Serve with any HTTP server**:
+
+```bash
+# Using Python
+cd dist-standalone
+python -m http.server 8000
+
+# Using Node.js
+cd dist-standalone
+npx http-server
+
+# Using PHP
+cd dist-standalone
+php -S localhost:8000
+```
+
+3. **Access the application** at `http://localhost:8000`
+
+### Features
+
+- ✅ **No CDN dependencies** - All styles and scripts bundled locally
+- ✅ **No external network requests** - Works completely offline
+- ✅ **Self-contained** - Single directory with all assets
+- ✅ **URL parameters** - Configure via query string (endpoint, theme, etc.)
+- ✅ **All themes included** - White, G10, G90, G100
+
+### URL Parameters
+
+Customize the standalone build via URL parameters:
+
+```
+# Set endpoint
+index.html?endpoint=https://dbpedia.org/sparql
+
+# Set theme
+index.html?theme=g100
+
+# Set default query
+index.html?query=SELECT%20*%20WHERE%20%7B%20%3Fs%20%3Fp%20%3Fo%20%7D%20LIMIT%2010
+
+# Hide endpoint selector
+index.html?hideSelector=true
+
+# Disable localStorage
+index.html?disablePersistence=true
+
+# Combine parameters
+index.html?endpoint=https://dbpedia.org/sparql&theme=g90&hideSelector=true
+```
+
+See `dist-standalone/README.md` for complete deployment documentation.
+
 ## Configuration
 
 ### Complete Configuration Example
