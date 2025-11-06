@@ -1,0 +1,61 @@
+/**
+ * Font Override for Offline/Air-Gapped Deployment
+ *
+ * Prevents browsers from attempting to load IBM Plex fonts from CDN.
+ * Substitutes with system fonts for offline capability.
+ *
+ * IMPORTANT: This file is critical for fully offline/air-gapped deployments.
+ *
+ * Background: Carbon Design System references 'IBM Plex Sans' and 'IBM Plex Mono'
+ * font-families. Some browsers may attempt to locate these fonts online even without
+ * @font-face declarations. This CSS prevents those requests by declaring the fonts
+ * with local() sources only, forcing the browser to use system fonts instead.
+ *
+ * License: This file is part of CHUCC-SQUI (Apache License 2.0).
+ * IBM Plex fonts are © IBM Corp, licensed under SIL Open Font License 1.1.
+ * We are NOT redistributing IBM Plex fonts - only preventing their CDN lookup.
+ */
+
+/* Override IBM Plex Sans with system font fallbacks */
+@font-face {
+  font-family: 'IBM Plex Sans';
+  font-style: normal;
+  font-weight: 300;
+  font-display: swap;
+  src: local('');
+  /* Empty src prevents external font loading */
+}
+
+@font-face {
+  font-family: 'IBM Plex Sans';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: local('');
+}
+
+@font-face {
+  font-family: 'IBM Plex Sans';
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: local('');
+}
+
+/* Override IBM Plex Mono with system monospace fonts */
+@font-face {
+  font-family: 'IBM Plex Mono';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: local('');
+}
+
+/* Force Carbon Design System to use system fonts */
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif !important;
+}
+
+code, pre, .bx--code {
+  font-family: 'Menlo', 'Monaco', 'Consolas', 'Liberation Mono', 'Courier New', monospace !important;
+}

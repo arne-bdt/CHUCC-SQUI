@@ -192,9 +192,50 @@ index.html?hideSelector=true
 # Disable localStorage
 index.html?disablePersistence=true
 
+# Disable external prefix.cc API (air-gapped mode)
+index.html?disableExternalPrefixLookup=true
+
 # Combine parameters
-index.html?endpoint=https://dbpedia.org/sparql&theme=g90&hideSelector=true
+index.html?endpoint=https://dbpedia.org/sparql&theme=g90&hideSelector=true&disableExternalPrefixLookup=true
 ```
+
+### Air-Gapped / Isolated Environments
+
+SQUI can operate in completely isolated environments without access to external APIs. By default, SQUI makes one type of external request (besides your configured SPARQL endpoints): prefix suggestions from prefix.cc API.
+
+#### Disabling External Prefix Lookup
+
+**Web Component Usage:**
+
+```typescript
+<SparqlQueryUI
+  prefixes={{
+    default: {
+      rdf: 'http://www.w3.org/1999/02/22-rdf-syntax-ns#',
+      rdfs: 'http://www.w3.org/2000/01/rdf-schema#',
+      // ... your prefixes
+    },
+    enablePrefixLookup: false  // Disable prefix.cc API
+  }}
+  {/* other props */}
+/>
+```
+
+**Standalone URL Parameter:**
+
+```
+index.html?disableExternalPrefixLookup=true
+```
+
+**What This Controls:**
+
+- ❌ **Disabled**: Prefix suggestions from prefix.cc API (the ONLY external non-endpoint request)
+- ✅ **Always Works**: All core SPARQL querying functionality
+- ✅ **Always Works**: Local/configured prefix management
+- ✅ **Always Works**: All UI components and data visualization
+- ✅ **Always Works**: SPARQL endpoint queries (to your configured endpoints)
+
+**Important:** This setting ONLY affects the prefix.cc API lookup feature. Your SPARQL endpoint queries always work normally - those are user-configured, not external dependencies.
 
 See `dist-standalone/README.md` for complete deployment documentation.
 

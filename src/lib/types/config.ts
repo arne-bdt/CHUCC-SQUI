@@ -74,6 +74,12 @@ export interface PrefixConfig {
   default?: Record<string, string>;
   /** Hook to discover prefixes from an endpoint */
   discoveryHook?: (_endpoint: string) => Promise<Record<string, string>>;
+  /**
+   * Enable external prefix lookup via prefix.cc API
+   * When disabled, only local/configured prefixes are available
+   * @default true
+   */
+  enablePrefixLookup?: boolean;
 }
 
 /**

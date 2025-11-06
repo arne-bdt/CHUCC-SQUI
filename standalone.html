@@ -9,6 +9,8 @@
 
   <!-- Carbon Design System Styles (loaded locally for offline support) -->
   <link rel="stylesheet" href="./css/all.css">
+  <!-- Font override to prevent IBM CDN font requests (offline/air-gapped support) -->
+  <link rel="stylesheet" href="./css/font-override.css">
 
   <style>
     * {
@@ -133,6 +135,13 @@
       const disablePersistence = params.get('disablePersistence');
       if (disablePersistence === 'true') {
         config.disablePersistence = true;
+      }
+
+      // Parse disableExternalPrefixLookup parameter (for air-gapped environments)
+      const disableExternalPrefixLookup = params.get('disableExternalPrefixLookup');
+      if (disableExternalPrefixLookup === 'true') {
+        config.prefixes = config.prefixes || {};
+        config.prefixes.enablePrefixLookup = false;
       }
 
       return config;
@@ -266,6 +275,7 @@
     console.log('  ?theme=<white|g10|g90|g100> - Set theme');
     console.log('  ?hideSelector=true      - Hide endpoint selector');
     console.log('  ?disablePersistence=true - Disable localStorage');
+    console.log('  ?disableExternalPrefixLookup=true - Disable prefix.cc API (air-gapped mode)');
     console.log('%cKeyboard Shortcuts:', 'font-size: 14px; font-weight: bold');
     console.log('  Ctrl+Enter - Execute query');
     console.log('  Ctrl+Space - Autocomplete');

@@ -41,6 +41,7 @@ export interface PrefixSuggestion {
 export class PrefixService {
   private customPrefixes: Record<string, string> = {};
   private discoveryHook?: (endpoint: string) => Promise<Record<string, string>>;
+  private enablePrefixLookup: boolean = true;
 
   /**
    * Create a new PrefixService instance
@@ -51,6 +52,7 @@ export class PrefixService {
       this.customPrefixes = { ...config.default };
     }
     this.discoveryHook = config?.discoveryHook;
+    this.enablePrefixLookup = config?.enablePrefixLookup ?? true;
   }
 
   /**
@@ -130,6 +132,12 @@ export class PrefixService {
    * @returns Array of prefix suggestions
    */
   async searchPrefixes(query: string): Promise<PrefixSuggestion[]> {
+    // Skip API call if external prefix lookup is disabled
+    if (!this.enablePrefixLookup) {
+      console.debug('External prefix lookup disabled (prefix.cc API call skipped)');
+      return [];
+    }
+
     try {
       // Search prefix.cc API
       const response = await fetch(`https://prefix.cc/${encodeURIComponent(query)}.file.json`, {

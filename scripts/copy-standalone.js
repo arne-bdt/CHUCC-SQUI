@@ -84,6 +84,13 @@ for (const file of carbonCssFiles) {
   }
 }
 
+// Copy font-override.css from public/css if it exists
+const publicFontOverridePath = path.join(rootDir, 'public/css/font-override.css');
+if (fs.existsSync(publicFontOverridePath)) {
+  fs.copyFileSync(publicFontOverridePath, path.join(cssDir, 'font-override.css'));
+  console.log('  ✓ css/font-override.css (from public/css)');
+}
+
 // Create fonts-override.css for offline font support
 const fontsOverrideCss = `/**
  * Font Override for Offline/Air-Gapped Deployments
@@ -150,11 +157,13 @@ if (fs.existsSync(standaloneHtmlSrc)) {
     '<link rel="stylesheet" href="./css/all.css">'
   );
 
-  // Add fonts-override.css after Carbon CSS
-  html = html.replace(
-    /(<link rel="stylesheet" href="\.\/css\/all\.css">)/,
-    '$1\n  <link rel="stylesheet" href="./css/fonts-override.css">'
-  );
+  // Add font-override.css after Carbon CSS if not already present
+  if (!html.includes('font-override.css') && !html.includes('fonts-override.css')) {
+    html = html.replace(
+      /(<link rel="stylesheet" href="\.\/css\/all\.css">)/,
+      '$1\n  <link rel="stylesheet" href="./css/font-override.css">'
+    );
+  }
 
   // Also update the comment if present
   html = html.replace(

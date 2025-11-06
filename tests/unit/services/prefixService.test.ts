@@ -485,4 +485,108 @@ describe('PrefixService', () => {
       expect(parsedPrefixes).toEqual(originalPrefixes);
     });
   });
+
+  describe('enablePrefixLookup configuration', () => {
+    beforeEach(() => {
+      global.fetch = vi.fn();
+    });
+
+    afterEach(() => {
+      vi.restoreAllMocks();
+    });
+
+    it('should skip API calls when enablePrefixLookup is false', async () => {
+      const service = new PrefixService({ enablePrefixLookup: false });
+
+      // Mock fetch to ensure it's not called
+      const fetchSpy = vi.spyOn(global, 'fetch');
+      const consoleDebugSpy = vi.spyOn(console, 'debug').mockImplementation(() => {});
+
+      const results = await service.searchPrefixes('foaf');
+
+      expect(fetchSpy).not.toHaveBeenCalled();
+      expect(results).toEqual([]);
+      expect(consoleDebugSpy).toHaveBeenCalledWith(
+        'External prefix lookup disabled (prefix.cc API call skipped)'
+      );
+
+      consoleDebugSpy.mockRestore();
+    });
+
+    it('should make API calls when enablePrefixLookup is true', async () => {
+      const service = new PrefixService({ enablePrefixLookup: true });
+
+      global.fetch = vi.fn().mockResolvedValue({
+        ok: true,
+        json: async () => ({ foaf: 'http://xmlns.com/foaf/0.1/' }),
+      });
+
+      const results = await service.searchPrefixes('foaf');
+
+      expect(global.fetch).toHaveBeenCalledWith(
+        'https://prefix.cc/foaf.file.json',
+        expect.any(Object)
+      );
+      expect(results).toHaveLength(1);
+      expect(results[0]).toEqual({ prefix: 'foaf', uri: 'http://xmlns.com/foaf/0.1/' });
+    });
+
+    it('should default to enabled (true) when not specified', async () => {
+      const service = new PrefixService();
+
+      global.fetch = vi.fn().mockResolvedValue({
+        ok: true,
+        json: async () => ({}),
+      });
+
+      await service.searchPrefixes('test');
+
+      expect(global.fetch).toHaveBeenCalledWith(
+        'https://prefix.cc/test.file.json',
+        expect.any(Object)
+      );
+    });
+
+    it('should work with other prefix config options', async () => {
+      const service = new PrefixService({
+        default: { custom: 'http://example.org/' },
+        enablePrefixLookup: false,
+      });
+
+      const prefixes = service.getAllPrefixes();
+      expect(prefixes.custom).toBe('http://example.org/');
+
+      const fetchSpy = vi.spyOn(global, 'fetch');
+      const consoleDebugSpy = vi.spyOn(console, 'debug').mockImplementation(() => {});
+
+      await service.searchPrefixes('test');
+
+      expect(fetchSpy).not.toHaveBeenCalled();
+
+      consoleDebugSpy.mockRestore();
+    });
+
+    it('should handle discoveryHook along with enablePrefixLookup', async () => {
+      const mockHook = vi.fn().mockResolvedValue({ discovered: 'http://discovered.org/' });
+      const service = new PrefixService({
+        discoveryHook: mockHook,
+        enablePrefixLookup: false,
+      });
+
+      // Discovery hook should still work
+      const discovered = await service.discoverPrefixes('http://endpoint.example/');
+      expect(mockHook).toHaveBeenCalledWith('http://endpoint.example/');
+      expect(discovered).toEqual({ discovered: 'http://discovered.org/' });
+
+      // But prefix.cc lookup should be disabled
+      const fetchSpy = vi.spyOn(global, 'fetch');
+      const consoleDebugSpy = vi.spyOn(console, 'debug').mockImplementation(() => {});
+
+      await service.searchPrefixes('test');
+
+      expect(fetchSpy).not.toHaveBeenCalled();
+
+      consoleDebugSpy.mockRestore();
+    });
+  });
 });
