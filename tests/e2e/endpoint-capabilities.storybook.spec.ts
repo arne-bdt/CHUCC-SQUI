@@ -340,8 +340,8 @@ test.describe('Endpoint Capabilities Components', () => {
 
       await page.waitForTimeout(500);
 
-      // Check that dataset statistics are visible
-      await expect(page.getByText(/Named Graphs/)).toBeVisible();
+      // Check that dataset statistics are visible (use .first() to handle multiple matches)
+      await expect(page.getByText(/Named Graphs/).first()).toBeVisible();
       // Check for the number without strict mode issues
       await expect(page.locator('.stat-value').first()).toBeVisible();
     });
@@ -377,6 +377,50 @@ test.describe('Endpoint Capabilities Components', () => {
       await page.waitForTimeout(500);
 
       await expect(page.getByText('No dataset information available')).toBeVisible();
+    });
+
+    test('should display graph names and triple counts', async ({ page }) => {
+      await page.goto(
+        `${STORYBOOK_URL}/iframe.html?id=components-capabilities-datasetinfo--single-dataset&viewMode=story`
+      );
+
+      await page.waitForTimeout(500);
+
+      // Check that Named Graphs section is visible
+      await expect(page.getByText('Named Graphs', { exact: true }).first()).toBeVisible();
+
+      // Check that specific graph names are listed
+      await expect(page.getByText('http://dbpedia.org/graph/ontology')).toBeVisible();
+      await expect(page.getByText('http://dbpedia.org/graph/en')).toBeVisible();
+      await expect(page.getByText('http://dbpedia.org/graph/de')).toBeVisible();
+
+      // Check that triple counts are displayed with proper formatting
+      await expect(page.getByText(/45,678 triples/)).toBeVisible();
+      await expect(page.getByText(/1,234,567 triples/)).toBeVisible();
+      await expect(page.getByText(/987,654 triples/)).toBeVisible();
+
+      // Check for Default Graphs section
+      await expect(page.getByText('Default Graphs', { exact: true }).first()).toBeVisible();
+      await expect(page.getByText(/3,458,921 triples/)).toBeVisible();
+    });
+
+    test('should display triple counts for multiple datasets', async ({ page }) => {
+      await page.goto(
+        `${STORYBOOK_URL}/iframe.html?id=components-capabilities-datasetinfo--multiple-datasets&viewMode=story`
+      );
+
+      await page.waitForTimeout(500);
+
+      // Check that graph names are listed
+      await expect(page.getByText('http://example.org/graph1')).toBeVisible();
+      await expect(page.getByText('http://example.org/graph2')).toBeVisible();
+      await expect(page.getByText('http://example.org/graph3')).toBeVisible();
+
+      // Check that triple counts are displayed
+      await expect(page.getByText(/50,000 triples/)).toBeVisible();
+      await expect(page.getByText(/25,000 triples/)).toBeVisible();
+      await expect(page.getByText(/75,000 triples/)).toBeVisible();
+      await expect(page.getByText(/100,000 triples/)).toBeVisible();
     });
   });
 });

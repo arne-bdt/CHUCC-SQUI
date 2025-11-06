@@ -99,7 +99,12 @@ export interface GraphDescription {
   /** Entailment regime used for the graph (e.g., RDF, RDFS, OWL) */
   entailmentRegime?: string;
 
-  /** Additional metadata from voiD or other vocabularies */
+  /**
+   * Additional metadata from voiD or other vocabularies
+   * Common properties include:
+   * - 'http://rdfs.org/ns/void#triples' or 'void:triples': number of triples (xsd:integer)
+   * - Other voiD properties for dataset statistics
+   */
   metadata?: Record<string, unknown>;
 }
 

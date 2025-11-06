@@ -24,18 +24,30 @@ const mockDatasets: Dataset[] = [
       {
         uri: 'http://dbpedia.org/resource',
         entailmentRegime: 'http://www.w3.org/ns/entailment/RDFS',
+        metadata: {
+          'http://rdfs.org/ns/void#triples': 3458921,
+        },
       },
     ],
     namedGraphs: [
       {
         name: 'http://dbpedia.org/graph/ontology',
         entailmentRegime: 'http://www.w3.org/ns/entailment/RDFS',
+        metadata: {
+          'http://rdfs.org/ns/void#triples': 45678,
+        },
       },
       {
         name: 'http://dbpedia.org/graph/en',
+        metadata: {
+          'http://rdfs.org/ns/void#triples': 1234567,
+        },
       },
       {
         name: 'http://dbpedia.org/graph/de',
+        metadata: {
+          'http://rdfs.org/ns/void#triples': 987654,
+        },
       },
     ],
   },
@@ -49,9 +61,15 @@ const mockMultipleDatasets: Dataset[] = [
       {
         name: 'http://example.org/graph1',
         entailmentRegime: 'http://www.w3.org/ns/entailment/RDF',
+        metadata: {
+          'http://rdfs.org/ns/void#triples': 50000,
+        },
       },
       {
         name: 'http://example.org/graph2',
+        metadata: {
+          'http://rdfs.org/ns/void#triples': 25000,
+        },
       },
     ],
   },
@@ -60,12 +78,18 @@ const mockMultipleDatasets: Dataset[] = [
     defaultGraphs: [
       {
         uri: 'http://example.org/default',
+        metadata: {
+          'http://rdfs.org/ns/void#triples': 100000,
+        },
       },
     ],
     namedGraphs: [
       {
         name: 'http://example.org/graph3',
         entailmentRegime: 'http://www.w3.org/ns/entailment/OWL-RDF-Based',
+        metadata: {
+          'http://rdfs.org/ns/void#triples': 75000,
+        },
       },
     ],
   },
