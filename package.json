@@ -30,6 +30,7 @@
     "package": "svelte-package -o package",
     "preview": "vite preview",
     "preview:standalone": "vite preview --outDir dist-standalone",
+    "demo": "node server-demo.js",
     "type-check": "tsc --noEmit",
     "test": "vitest",
     "test:unit": "vitest run --dir tests/unit",

@@ -228,10 +228,18 @@
         };
 
         // Mount the application
+        // Pass each config property individually (Svelte 5 component prop pattern)
         const app = new App({
           target: document.getElementById('app'),
           props: {
-            config
+            endpoint: config.endpoint,
+            prefixes: config.prefixes,
+            theme: config.theme,
+            localization: config.localization,
+            instanceId: config.instanceId,
+            disablePersistence: config.disablePersistence,
+            features: config.features,
+            limits: config.limits
           }
         });
 

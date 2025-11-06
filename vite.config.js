@@ -46,7 +46,7 @@ export default defineConfig(({ mode }) => ({
   },
   build: {
     lib: {
-      entry: 'src/SparqlQueryUI.svelte',
+      entry: 'src/standalone-wrapper.js',
       name: 'SparqlQueryUI',
       fileName: 'sparql-query-ui'
     },
