@@ -43,6 +43,11 @@ export default [js.configs.recommended, {
     'no-unused-vars': ['error', {
       argsIgnorePattern: '^_',
       varsIgnorePattern: '^_'
+    }],
+    // Prevent CDN usage - all assets must be bundled locally for offline support
+    'no-restricted-syntax': ['error', {
+      selector: 'Literal[value=/https?:\\/\\/(unpkg|cdn|jsdelivr|cdnjs|fonts\\.googleapis|fonts\\.gstatic)/]',
+      message: 'CDN URLs are not allowed. All assets must be bundled locally for offline/air-gapped deployment support.'
     }]
   }
 }, {

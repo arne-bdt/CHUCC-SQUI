@@ -237,6 +237,24 @@ index.html?disableExternalPrefixLookup=true
 
 **Important:** This setting ONLY affects the prefix.cc API lookup feature. Your SPARQL endpoint queries always work normally - those are user-configured, not external dependencies.
 
+#### Verifying No External Dependencies
+
+Before deploying to isolated environments, verify the build contains no external dependencies:
+
+```bash
+# Build standalone distribution
+npm run build:standalone
+
+# Run automated security check
+npm run check:external
+
+# Expected output: "✅ No external dependencies found"
+```
+
+The `check:external` script scans the built files for any CDN URLs or external resources, ensuring the application is truly self-contained.
+
+**For complete security and deployment guidelines, see [docs/SECURITY.md](docs/SECURITY.md).**
+
 See `dist-standalone/README.md` for complete deployment documentation.
 
 ## Configuration
