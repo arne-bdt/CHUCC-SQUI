@@ -41,20 +41,17 @@ test.describe('Standalone HTML Demo', () => {
     }
     expect(consoleErrors).toHaveLength(0);
 
-    // Verify main container exists
-    await expect(page.locator('.squi-container')).toBeVisible();
-
-    // Verify toolbar is present
-    await expect(page.locator('.bx--toolbar')).toBeVisible();
+    // Verify toolbar is present (using semantic selector)
+    await expect(page.getByRole('region', { name: /toolbar/i })).toBeVisible();
 
     // Verify Run button exists
     await expect(page.getByRole('button', { name: /run/i })).toBeVisible();
 
-    // Verify endpoint selector exists
-    await expect(page.locator('.bx--combo-box')).toBeVisible();
+    // Verify endpoint selector exists (using semantic selector)
+    await expect(page.getByRole('combobox').first()).toBeVisible();
 
     // Verify SPARQL editor exists
-    await expect(page.locator('.cm-editor')).toBeVisible();
+    await expect(page.getByRole('textbox', { name: /sparql/i })).toBeVisible();
 
     // Verify results placeholder exists
     await expect(page.locator('.results-placeholder')).toBeVisible();

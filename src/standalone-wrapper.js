@@ -6,7 +6,7 @@
  * `new Component({ target, props })` pattern.
  */
 
-import SparqlQueryUI from './SparqlQueryUI.svelte';
+import StandaloneWrapper from './StandaloneWrapper.svelte';
 import { mount, unmount } from 'svelte';
 
 /**
@@ -24,8 +24,8 @@ class SparqlQueryUIWrapper {
     this.#target = options.target;
     const props = options.props || {};
 
-    // Use Svelte 5's mount() function
-    this.#instance = mount(SparqlQueryUI, {
+    // Use Svelte 5's mount() function with the wrapper component
+    this.#instance = mount(StandaloneWrapper, {
       target: this.#target,
       props
     });
