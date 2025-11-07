@@ -142,7 +142,7 @@
   }
 
   .split-pane-divider {
-    height: 6px;
+    height: var(--cds-spacing-03);
     background-color: var(--cds-border-subtle, #e0e0e0);
     cursor: row-resize;
     flex-shrink: 0;
@@ -167,10 +167,10 @@
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    width: 40px;
-    height: 2px;
+    width: var(--cds-spacing-09);
+    height: var(--cds-spacing-01);
     background-color: var(--cds-icon-secondary, #525252);
-    border-radius: 1px;
+    border-radius: 2px;
   }
 
   .split-pane-divider:hover::after,

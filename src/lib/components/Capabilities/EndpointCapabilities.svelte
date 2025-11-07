@@ -172,7 +172,7 @@
     font-weight: 600;
     line-height: 1.43;
     color: var(--cds-text-primary);
-    margin: 0 0 0.75rem 0;
+    margin: 0 0 var(--cds-spacing-04) 0;
     text-transform: uppercase;
     letter-spacing: 0.5px;
   }
