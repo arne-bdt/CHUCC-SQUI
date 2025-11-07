@@ -229,7 +229,8 @@
 
   /* Style for endpoint descriptions in dropdown */
   :global(.endpoint-selector-container .bx--list-box__menu-item__option .description) {
-    font-size: 0.75rem;
+    font-size: var(--cds-label-01);
+    line-height: 1.34;
     color: var(--cds-text-secondary, #525252);
     margin-top: 0.125rem;
   }

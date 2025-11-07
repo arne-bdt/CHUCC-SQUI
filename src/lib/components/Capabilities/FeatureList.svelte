@@ -46,7 +46,8 @@
   .empty-state {
     color: var(--cds-text-secondary);
     font-style: italic;
-    font-size: 0.875rem;
+    font-size: var(--cds-body-compact-01);
+    line-height: 1.43;
     margin: 0;
   }
 </style>

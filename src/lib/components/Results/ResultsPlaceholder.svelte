@@ -298,7 +298,8 @@
   }
 
   .execution-time-badge {
-    font-size: 0.75rem;
+    font-size: var(--cds-label-01);
+    line-height: 1.34;
     color: var(--cds-text-helper, #6f6f6f);
     font-style: italic;
   }
@@ -325,13 +326,15 @@
   .placeholder-content h3 {
     margin: 0 0 var(--cds-spacing-03, 0.5rem) 0;
     color: var(--cds-text-primary, #161616);
-    font-size: 1.25rem;
+    font-size: var(--cds-productive-heading-03);
     font-weight: 400;
+    line-height: 1.4;
   }
 
   .placeholder-content p {
     margin: var(--cds-spacing-02, 0.25rem) 0;
-    font-size: 0.875rem;
+    font-size: var(--cds-body-01);
+    line-height: 1.43;
   }
 
   .placeholder-content .hint {
@@ -341,8 +344,9 @@
 
   /* ASK result display */
   .ask-result {
-    font-size: 3rem;
+    font-size: var(--cds-productive-heading-05);
     font-weight: 600;
+    line-height: 1.25;
     margin: var(--cds-spacing-06, 1.5rem) 0;
     padding: var(--cds-spacing-05, 1rem);
     border-radius: 4px;
@@ -359,7 +363,8 @@
   }
 
   .execution-time {
-    font-size: 0.75rem;
+    font-size: var(--cds-label-01);
+    line-height: 1.34;
     color: var(--cds-text-helper, #6f6f6f);
     font-style: italic;
   }

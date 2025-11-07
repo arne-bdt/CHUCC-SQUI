@@ -80,7 +80,8 @@
 <style>
   .function-details {
     font-family: var(--cds-body-font-family, 'IBM Plex Sans', sans-serif);
-    font-size: 0.875rem;
+    font-size: var(--cds-body-01);
+    line-height: 1.43;
   }
 
   .function-details section {
@@ -95,7 +96,8 @@
     margin-bottom: var(--cds-spacing-03);
     margin-top: 0;
     font-weight: 600;
-    font-size: 0.875rem;
+    font-size: var(--cds-productive-heading-01);
+    line-height: 1.43;
     color: var(--cds-text-primary, #161616);
   }
 
@@ -126,13 +128,15 @@
     font-weight: 600;
     margin-right: var(--cds-spacing-03);
     font-family: var(--cds-code-font-family, 'IBM Plex Mono', monospace);
-    font-size: 0.875rem;
+    font-size: var(--cds-code-02);
+    line-height: 1.43;
   }
 
   .param-description {
     margin-top: var(--cds-spacing-03) !important;
     color: var(--cds-text-secondary, #525252);
-    font-size: 0.8125rem;
+    font-size: var(--cds-label-01);
+    line-height: 1.34;
   }
 
   .example {
@@ -164,6 +168,7 @@
   }
 
   .function-details :global(.bx--snippet code) {
-    font-size: 0.8125rem;
+    font-size: var(--cds-code-01);
+    line-height: 1.34;
   }
 </style>

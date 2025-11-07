@@ -134,7 +134,8 @@
 <style>
   .capabilities-panel {
     padding: var(--cds-spacing-05);
-    font-size: 0.875rem;
+    font-size: var(--cds-body-compact-01);
+    line-height: 1.43;
   }
 
   .loading-state {
@@ -149,8 +150,9 @@
   }
 
   .panel-title {
-    font-size: 1.125rem;
+    font-size: var(--cds-productive-heading-02);
     font-weight: 600;
+    line-height: 1.5;
     color: var(--cds-text-primary);
     margin: 0;
   }
@@ -166,8 +168,9 @@
   }
 
   .section-title {
-    font-size: 0.875rem;
+    font-size: var(--cds-body-compact-01);
     font-weight: 600;
+    line-height: 1.43;
     color: var(--cds-text-primary);
     margin: 0 0 0.75rem 0;
     text-transform: uppercase;
@@ -187,7 +190,8 @@
     margin-top: var(--cds-spacing-06);
     padding-top: var(--cds-spacing-05);
     border-top: 1px solid var(--cds-border-subtle-01);
-    font-size: 0.75rem;
+    font-size: var(--cds-label-01);
+    line-height: 1.34;
     color: var(--cds-text-secondary);
   }
 
@@ -214,7 +218,8 @@
 
   .empty-hint {
     color: var(--cds-text-secondary);
-    font-size: 0.8125rem;
+    font-size: var(--cds-label-02);
+    line-height: 1.38;
     margin: 0 0 var(--cds-spacing-05) 0;
   }
 

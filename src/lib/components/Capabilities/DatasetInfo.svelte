@@ -207,13 +207,15 @@
 
 <style>
   .dataset-info {
-    font-size: 0.875rem;
+    font-size: var(--cds-body-compact-01);
+    line-height: 1.43;
   }
 
   .empty-state {
     color: var(--cds-text-secondary);
     font-style: italic;
-    font-size: 0.875rem;
+    font-size: var(--cds-body-compact-01);
+    line-height: 1.43;
     margin: 0;
   }
 
@@ -246,22 +248,24 @@
   }
 
   .stat-value {
-    font-size: 1.5rem;
+    font-size: var(--cds-productive-heading-04);
     font-weight: 600;
     color: var(--cds-text-primary);
-    line-height: 1.2;
+    line-height: 1.29;
   }
 
   .stat-label {
-    font-size: 0.75rem;
+    font-size: var(--cds-label-01);
+    line-height: 1.34;
     color: var(--cds-text-secondary);
     text-transform: uppercase;
     letter-spacing: 0.5px;
   }
 
   .section-title {
-    font-size: 0.875rem;
+    font-size: var(--cds-body-compact-01);
     font-weight: 600;
+    line-height: 1.43;
     color: var(--cds-text-primary);
     margin: var(--cds-spacing-05) 0 var(--cds-spacing-03) 0;
   }
@@ -304,7 +308,8 @@
   .graph-counts {
     display: flex;
     gap: var(--cds-spacing-05);
-    font-size: 0.8125rem;
+    font-size: var(--cds-label-02);
+    line-height: 1.38;
     color: var(--cds-text-secondary);
   }
 
@@ -320,8 +325,9 @@
   }
 
   .graph-list-title {
-    font-size: 0.8125rem;
+    font-size: var(--cds-label-02);
     font-weight: 600;
+    line-height: 1.38;
     color: var(--cds-text-secondary);
     margin: 0 0 var(--cds-spacing-03) 0;
     text-transform: uppercase;
@@ -342,7 +348,8 @@
   }
 
   .graph-name {
-    font-size: 0.8125rem;
+    font-size: var(--cds-code-01);
+    line-height: 1.34;
     color: var(--cds-text-primary);
     word-break: break-all;
     font-family: 'IBM Plex Mono', monospace;
@@ -350,7 +357,8 @@
   }
 
   .graph-triple-count {
-    font-size: 0.75rem;
+    font-size: var(--cds-label-01);
+    line-height: 1.34;
     color: var(--cds-text-secondary);
     font-weight: 500;
   }

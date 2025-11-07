@@ -166,8 +166,9 @@
 
   .header h3 {
     margin: 0 0 var(--cds-spacing-04) 0;
-    font-size: 1rem;
+    font-size: var(--cds-productive-heading-02);
     font-weight: 600;
+    line-height: 1.5;
     color: var(--cds-text-primary, #161616);
   }
 
@@ -199,8 +200,9 @@
 
   .function-uri {
     font-family: var(--cds-code-font-family, 'IBM Plex Mono', monospace);
-    font-size: 0.875rem;
+    font-size: var(--cds-code-02);
     font-weight: 600;
+    line-height: 1.43;
     color: var(--cds-text-primary, #161616);
     background: var(--cds-layer-01, #f4f4f4);
     padding: var(--cds-spacing-01) var(--cds-spacing-03);
@@ -208,14 +210,15 @@
   }
 
   .function-label {
-    font-size: 0.875rem;
+    font-size: var(--cds-body-01);
+    line-height: 1.43;
     color: var(--cds-text-secondary, #525252);
     font-style: italic;
   }
 
   .function-description {
-    font-size: 0.875rem;
-    line-height: 1.5;
+    font-size: var(--cds-body-01);
+    line-height: 1.43;
     color: var(--cds-text-primary, #161616);
     margin: 0 0 var(--cds-spacing-04) 0;
   }
@@ -237,7 +240,8 @@
 
   .empty-state p {
     margin: 0;
-    font-size: 0.875rem;
+    font-size: var(--cds-body-01);
+    line-height: 1.43;
     color: var(--cds-text-secondary, #525252);
   }
 
@@ -259,7 +263,8 @@
   .function-actions :global(.bx--link) {
     display: inline-flex;
     align-items: center;
-    font-size: 0.875rem;
+    font-size: var(--cds-body-01);
+    line-height: 1.43;
   }
 
   /* Responsive adjustments */

@@ -89,6 +89,7 @@
   }
 
   .format-selector :global(.bx--label) {
-    font-size: 0.75rem;
+    font-size: var(--cds-label-01);
+    line-height: 1.34;
   }
 </style>

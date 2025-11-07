@@ -91,7 +91,7 @@
 
   .intro {
     margin: 0 0 var(--cds-spacing-03) 0;
-    font-size: 1rem;
+    font-size: var(--cds-body-01);
     line-height: 1.5;
   }
 
@@ -102,7 +102,8 @@
   h4 {
     margin: 0 0 var(--cds-spacing-03) 0;
     font-weight: 600;
-    font-size: 0.875rem;
+    font-size: var(--cds-body-compact-01);
+    line-height: 1.43;
   }
 
   ul {
@@ -118,7 +119,7 @@
   }
 
   li {
-    font-size: 0.875rem;
+    font-size: var(--cds-body-compact-01);
     line-height: 1.5;
   }
 
@@ -127,7 +128,8 @@
     padding: var(--cds-spacing-01) var(--cds-spacing-03);
     border-radius: 2px;
     font-family: 'IBM Plex Mono', monospace;
-    font-size: 0.875rem;
+    font-size: var(--cds-code-02);
+    line-height: 1.43;
   }
 
   strong {

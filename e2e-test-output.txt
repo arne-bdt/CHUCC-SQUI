@@ -3,148 +3,386 @@
 > playwright test --config=playwright-storybook.config.js
 
 
-Running 7 tests using 1 worker
-
-[E2E Test] Tab 1 editor content: SELECT * WHERE { ?s ?p ?o } LIMIT 10
-  x  1 [chromium] › tests\e2e\tabs.storybook.spec.ts:21:3 › Tab Switching in Storybook › should switch query editor content when clicking between tabs (3.1s)
-  x  2 [chromium] › tests\e2e\tabs.storybook.spec.ts:69:3 › Tab Switching in Storybook › should switch results when clicking between tabs (8.0s)
-  ok 3 [chromium] › tests\e2e\tabs.storybook.spec.ts:102:3 › Tab Switching in Storybook › should isolate tabs across multiple story instances on docs page (4.2s)
-  ok 4 [chromium] › tests\e2e\tabs.storybook.spec.ts:133:3 › Tab Switching in Storybook › should clear tabs after CTRL+F5 (hard refresh) (4.0s)
-  ok 5 [chromium] › tests\e2e\tabs.storybook.spec.ts:160:3 › Tab UI Interactions › should show close buttons when multiple tabs exist (2.5s)
-  x  6 [chromium] › tests\e2e\tabs.storybook.spec.ts:174:3 › Tab UI Interactions › should close tabs without navigation (7.9s)
-  x  7 [chromium] › tests\e2e\tabs.storybook.spec.ts:192:3 › Tab UI Interactions › should highlight active tab (8.1s)
+Running 86 tests using 1 worker
 
 
-  1) [chromium] › tests\e2e\tabs.storybook.spec.ts:21:3 › Tab Switching in Storybook › should switch query editor content when clicking between tabs 
+=== ARIA Roles Found in DataTable ===
+[
+  {
+    "role": "region",
+    "tagName": "DIV"
+  },
+  {
+    "role": "table",
+    "tagName": "DIV"
+  },
+  {
+    "role": "grid",
+    "tagName": "DIV"
+  },
+  {
+    "role": "rowgroup",
+    "tagName": "DIV"
+  },
+  {
+    "role": "row",
+    "tagName": "DIV"
+  },
+  {
+    "role": "columnheader",
+    "tagName": "DIV"
+  },
+  {
+    "role": "columnheader",
+    "tagName": "DIV"
+  },
+  {
+    "role": "columnheader",
+    "tagName": "DIV"
+  },
+  {
+    "role": "columnheader",
+    "tagName": "DIV"
+  },
+  {
+    "role": "row",
+    "tagName": "DIV"
+  },
+  {
+    "role": "gridcell",
+    "tagName": "DIV"
+  },
+  {
+    "role": "gridcell",
+    "tagName": "DIV"
+  },
+  {
+    "role": "gridcell",
+    "tagName": "DIV"
+  },
+  {
+    "role": "gridcell",
+    "tagName": "DIV"
+  },
+  {
+    "role": "row",
+    "tagName": "DIV"
+  },
+  {
+    "role": "gridcell",
+    "tagName": "DIV"
+  },
+  {
+    "role": "gridcell",
+    "tagName": "DIV"
+  },
+  {
+    "role": "gridcell",
+    "tagName": "DIV"
+  },
+  {
+    "role": "gridcell",
+    "tagName": "DIV"
+  },
+  {
+    "role": "row",
+    "tagName": "DIV"
+  },
+  {
+    "role": "gridcell",
+    "tagName": "DIV"
+  },
+  {
+    "role": "gridcell",
+    "tagName": "DIV"
+  },
+  {
+    "role": "gridcell",
+    "tagName": "DIV"
+  },
+  {
+    "role": "gridcell",
+    "tagName": "DIV"
+  }
+]
 
-    Error: [2mexpect([22m[31mreceived[39m[2m).[22mnot[2m.[22mtoBe[2m([22m[32mexpected[39m[2m) // Object.is equality[22m
+=== All ARIA Roles ===
+region, table, grid, rowgroup, row, columnheader, columnheader, columnheader, columnheader, row, gridcell, gridcell, gridcell, gridcell, row, gridcell, gridcell, gridcell, gridcell, row, gridcell, gridcell, gridcell, gridcell
 
-    Expected: not [32m"SELECT * WHERE { ?s ?p ?o } LIMIT 10"[39m
+=== ARIA Structure Check ===
+Has table role: true
+Has row role: true
+Has columnheader role: true
+Has cell/gridcell role: true
 
-      54 |     const editorContent1 = await editor.textContent();
-      55 |     console.log('[E2E Test] Tab 1 editor content:', editorContent1);
-    > 56 |     expect(editorContent1).not.toBe(tab2Query); // Tab 1 should NOT show tab 2's query
-         |                                ^
-      57 |     expect(editorContent1 || '').toBe(''); // Tab 1 should be empty
-      58 |
-      59 |     // Step 6: Click back to tab 2
-        at c:\rd\CHUCC-SQUI\tests\e2e\tabs.storybook.spec.ts:56:32
+=== Sample Grid Elements ===
+[
+  {
+    "tag": "DIV",
+    "role": "grid",
+    "class": "wx-table-box s-SDIYQLuI1_Z2",
+    "text": " person   name   birthDate   nationality      dbr:"
+  },
+  {
+    "tag": "DIV",
+    "role": "rowgroup",
+    "class": "wx-header s-aw3vi09W3GfH",
+    "text": " person   name   birthDate   nationality  "
+  },
+  {
+    "tag": "DIV",
+    "role": "row",
+    "class": "wx-h-row",
+    "text": " person   name   birthDate   nationality  "
+  },
+  {
+    "tag": "DIV",
+    "role": "columnheader",
+    "class": "wx-cell   s-z3w4ZS1vP9Xu",
+    "text": " person  "
+  },
+  {
+    "tag": "DIV",
+    "role": "columnheader",
+    "class": "wx-cell   s-z3w4ZS1vP9Xu",
+    "text": " name  "
+  },
+  {
+    "tag": "DIV",
+    "role": "columnheader",
+    "class": "wx-cell   s-z3w4ZS1vP9Xu",
+    "text": " birthDate  "
+  },
+  {
+    "tag": "DIV",
+    "role": "columnheader",
+    "class": "wx-cell   s-z3w4ZS1vP9Xu",
+    "text": " nationality  "
+  },
+  {
+    "tag": "DIV",
+    "role": "row",
+    "class": "wx-row s-SDIYQLuI1_Z2",
+    "text": "  dbr:Albert_Einstein  Albert Einstein@en  1879-03"
+  },
+  {
+    "tag": "DIV",
+    "role": "gridcell",
+    "class": "wx-cell s-vnDG-dZT3cPC",
+    "text": "  dbr:Albert_Einstein"
+  },
+  {
+    "tag": "DIV",
+    "role": "gridcell",
+    "class": "wx-cell s-vnDG-dZT3cPC",
+    "text": "  Albert Einstein@en"
+  }
+]
+  ok  1 [chromium] › tests\e2e\accessibility-grid-check.storybook.spec.ts:9:3 › DataTable Accessibility › should have proper ARIA roles on grid elements (3.5s)
 
-    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
-    test-results\tabs.storybook-Tab-Switchi-2c482--when-clicking-between-tabs-chromium\test-failed-1.png
-    ────────────────────────────────────────────────────────────────────────────────────────────────
+=== Focused Element After Tab ===
+{
+  "tag": "A",
+  "class": "uri-link",
+  "role": null
+}
+Keyboard navigation test completed
+  ok  2 [chromium] › tests\e2e\accessibility-grid-check.storybook.spec.ts:78:3 › DataTable Accessibility › should support keyboard navigation (4.7s)
 
-    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
-    test-results\tabs.storybook-Tab-Switchi-2c482--when-clicking-between-tabs-chromium\video.webm
-    ────────────────────────────────────────────────────────────────────────────────────────────────
+=== ARIA Live Region Found ===
+{
+  "role": "status",
+  "aria-live": "polite",
+  "aria-atomic": "true",
+  "class": "sr-only s-ZaTkuFo_srdz"
+}
+Live region text: "Query is executing"
+  ok  3 [chromium] › tests\e2e\accessibility-live-regions.storybook.spec.ts:9:3 › ARIA Live Regions for Query Feedback › should have aria-live region in ResultsPlaceholder (2.8s)
 
-    Error Context: test-results\tabs.storybook-Tab-Switchi-2c482--when-clicking-between-tabs-chromium\error-context.md
+=== Loading State Announcement ===
+Text: "Query is executing"
+  ok  4 [chromium] › tests\e2e\accessibility-live-regions.storybook.spec.ts:39:3 › ARIA Live Regions for Query Feedback › should announce "Query is executing" when loading (2.9s)
 
-  2) [chromium] › tests\e2e\tabs.storybook.spec.ts:69:3 › Tab Switching in Storybook › should switch results when clicking between tabs 
+=== Error State Announcement ===
+Text: "Query execution failed"
+  ok  5 [chromium] › tests\e2e\accessibility-live-regions.storybook.spec.ts:58:3 › ARIA Live Regions for Query Feedback › should announce "Query execution failed" on error (2.3s)
 
-    Error: [2mexpect([22m[31mlocator[39m[2m).[22mtoBeVisible[2m([22m[2m)[22m failed
+=== Success State Announcement ===
+Text: "Query execution complete"
+  ok  6 [chromium] › tests\e2e\accessibility-live-regions.storybook.spec.ts:77:3 › ARIA Live Regions for Query Feedback › should announce "Query execution complete" when results load (2.8s)
 
-    Locator: locator('#storybook-preview-iframe').contentFrame().locator('.results-container')
-    Expected: visible
-    Timeout: 5000ms
-    Error: element(s) not found
+=== Screen Reader Only Styles ===
+{
+  "position": "absolute",
+  "width": "1px",
+  "height": "1px",
+  "overflow": "hidden",
+  "clip": "rect(0px, 0px, 0px, 0px)"
+}
+  ok  7 [chromium] › tests\e2e\accessibility-live-regions.storybook.spec.ts:96:3 › ARIA Live Regions for Query Feedback › should have screen reader only styling (2.2s)
 
-    Call log:
-    [2m  - Expect "toBeVisible" with timeout 5000ms[22m
-    [2m  - waiting for locator('#storybook-preview-iframe').contentFrame().locator('.results-container')[22m
+=== ErrorNotification ARIA Attributes ===
+{
+  "role": "alert"
+}
+Has alert/status role: true
+  ok  8 [chromium] › tests\e2e\accessibility-live-regions.storybook.spec.ts:128:3 › ARIA Live Regions for Query Feedback › should check ErrorNotification accessibility via Error story (2.3s)
 
+=== Visible Loading Message ===
+Text: "Executing Query Please wait..."
+Has role="status" and aria-live="polite" ✓
+  ok  9 [chromium] › tests\e2e\accessibility-live-regions.storybook.spec.ts:166:3 › ARIA Live Regions for Query Feedback › should verify loading state has aria-live on visible content (2.2s)
+  ok 10 [chromium] › tests\e2e\endpoint-capabilities.storybook.spec.ts:24:5 › Endpoint Capabilities Components › EndpointCapabilities › should render loading state (1.5s)
+  ok 11 [chromium] › tests\e2e\endpoint-capabilities.storybook.spec.ts:37:5 › Endpoint Capabilities Components › EndpointCapabilities › should render full capabilities with all data (2.1s)
+  ok 12 [chromium] › tests\e2e\endpoint-capabilities.storybook.spec.ts:86:5 › Endpoint Capabilities Components › EndpointCapabilities › should render error state with retry button (1.6s)
+  ok 13 [chromium] › tests\e2e\endpoint-capabilities.storybook.spec.ts:104:5 › Endpoint Capabilities Components › EndpointCapabilities › should render no endpoint state (1.6s)
+  ok 14 [chromium] › tests\e2e\endpoint-capabilities.storybook.spec.ts:115:5 › Endpoint Capabilities Components › EndpointCapabilities › should render not available state (1.7s)
+  ok 15 [chromium] › tests\e2e\endpoint-capabilities.storybook.spec.ts:133:5 › Endpoint Capabilities Components › EndpointCapabilities › should show extension functions in Functions tab (2.3s)
+  ok 16 [chromium] › tests\e2e\endpoint-capabilities.storybook.spec.ts:151:5 › Endpoint Capabilities Components › EndpointCapabilities › should show extension aggregates in Aggregates tab (2.8s)
+  ok 17 [chromium] › tests\e2e\endpoint-capabilities.storybook.spec.ts:173:5 › Endpoint Capabilities Components › LanguageSupport › should show all supported languages (1.3s)
+  ok 18 [chromium] › tests\e2e\endpoint-capabilities.storybook.spec.ts:186:5 › Endpoint Capabilities Components › LanguageSupport › should show mixed support states (1.4s)
+  ok 19 [chromium] › tests\e2e\endpoint-capabilities.storybook.spec.ts:197:5 › Endpoint Capabilities Components › LanguageSupport › should show query-only support (1.3s)
+  ok 20 [chromium] › tests\e2e\endpoint-capabilities.storybook.spec.ts:211:5 › Endpoint Capabilities Components › FeatureList › should display all features (1.3s)
+  ok 21 [chromium] › tests\e2e\endpoint-capabilities.storybook.spec.ts:224:5 › Endpoint Capabilities Components › FeatureList › should display common features (1.2s)
+  ok 22 [chromium] › tests\e2e\endpoint-capabilities.storybook.spec.ts:235:5 › Endpoint Capabilities Components › FeatureList › should show empty state when no features (1.3s)
+  ok 23 [chromium] › tests\e2e\endpoint-capabilities.storybook.spec.ts:247:5 › Endpoint Capabilities Components › FormatList › should display common result formats (1.2s)
+  ok 24 [chromium] › tests\e2e\endpoint-capabilities.storybook.spec.ts:261:5 › Endpoint Capabilities Components › FormatList › should display RDF formats (1.2s)
+  ok 25 [chromium] › tests\e2e\endpoint-capabilities.storybook.spec.ts:275:5 › Endpoint Capabilities Components › FormatList › should show empty state when no formats (1.3s)
+  ok 26 [chromium] › tests\e2e\endpoint-capabilities.storybook.spec.ts:287:5 › Endpoint Capabilities Components › ExtensionList › should display multiple functions (1.3s)
+  ok 27 [chromium] › tests\e2e\endpoint-capabilities.storybook.spec.ts:300:5 › Endpoint Capabilities Components › ExtensionList › should display aggregates (1.2s)
+  ok 28 [chromium] › tests\e2e\endpoint-capabilities.storybook.spec.ts:312:5 › Endpoint Capabilities Components › ExtensionList › should display single function (1.3s)
+  ok 29 [chromium] › tests\e2e\endpoint-capabilities.storybook.spec.ts:322:5 › Endpoint Capabilities Components › ExtensionList › should show empty state when no extensions (1.3s)
+  ok 30 [chromium] › tests\e2e\endpoint-capabilities.storybook.spec.ts:334:5 › Endpoint Capabilities Components › DatasetInfo › should display single dataset (1.2s)
+  ok 31 [chromium] › tests\e2e\endpoint-capabilities.storybook.spec.ts:347:5 › Endpoint Capabilities Components › DatasetInfo › should display multiple datasets (1.4s)
+  ok 32 [chromium] › tests\e2e\endpoint-capabilities.storybook.spec.ts:358:5 › Endpoint Capabilities Components › DatasetInfo › should show entailment regimes (1.6s)
+  ok 33 [chromium] › tests\e2e\endpoint-capabilities.storybook.spec.ts:370:5 › Endpoint Capabilities Components › DatasetInfo › should show empty state when no datasets (1.3s)
+  ok 34 [chromium] › tests\e2e\endpoint-capabilities.storybook.spec.ts:380:5 › Endpoint Capabilities Components › DatasetInfo › should display graph names and triple counts (1.5s)
+  ok 35 [chromium] › tests\e2e\endpoint-capabilities.storybook.spec.ts:405:5 › Endpoint Capabilities Components › DatasetInfo › should display triple counts for multiple datasets (1.5s)
+  ok 36 [chromium] › tests\e2e\function-library.storybook.spec.ts:17:3 › FunctionLibrary Component › should render function library with functions (3.2s)
+  ok 37 [chromium] › tests\e2e\function-library.storybook.spec.ts:40:3 › FunctionLibrary Component › should display function details in tabs (3.5s)
+  ok 38 [chromium] › tests\e2e\function-library.storybook.spec.ts:59:3 › FunctionLibrary Component › should filter functions with search (3.8s)
+  ok 39 [chromium] › tests\e2e\function-library.storybook.spec.ts:85:3 › FunctionLibrary Component › should show Details button for functions (3.5s)
+  ok 40 [chromium] › tests\e2e\function-library.storybook.spec.ts:101:3 › FunctionLibrary Component › should handle empty functions gracefully (3.3s)
+  ok 41 [chromium] › tests\e2e\function-library.storybook.spec.ts:112:3 › FunctionLibrary Component › should display many functions with scrolling (3.0s)
+  ok 42 [chromium] › tests\e2e\function-library.storybook.spec.ts:135:3 › FunctionLibrary Component › should show only aggregates in Aggregates tab (3.0s)
+  ok 43 [chromium] › tests\e2e\function-library.storybook.spec.ts:162:3 › FunctionDetails Component › should display function details (3.5s)
+  ok 44 [chromium] › tests\e2e\function-library.storybook.spec.ts:182:3 › FunctionDetails Component › should display function with examples (2.9s)
+  ok 45 [chromium] › tests\e2e\function-library.storybook.spec.ts:196:3 › FunctionDetails Component › should display function with optional parameters (3.1s)
+  ok 46 [chromium] › tests\e2e\function-library.storybook.spec.ts:207:3 › FunctionDetails Component › should display documentation link (2.8s)
+  ok 47 [chromium] › tests\e2e\function-library.storybook.spec.ts:221:3 › FunctionDetails Component › should handle minimal function (2.9s)
+[E2E Test] Found 4 completion items
+  ok 48 [chromium] › tests\e2e\graph-name-completion.storybook.spec.ts:20:3 › Graph Name Auto-completion › should show completion popup for FROM clause (2.9s)
+[E2E Test] Found 3 named graph completion items
+[E2E Test] First completion item: http://example.org/graph/events12,089 triples • OWL-DL
+  ok 49 [chromium] › tests\e2e\graph-name-completion.storybook.spec.ts:64:3 › Graph Name Auto-completion › should show only named graphs for FROM NAMED (1.5s)
+[E2E Test] Found 3 filtered completion items
+[E2E Test] Filtered item 1: http://example.org/graph/people8,420 triples
+[E2E Test] Filtered item 2: http://example.org/graph/places3,156 triples
+[E2E Test] Filtered item 3: http://example.org/graph/products15,230 triples
+  ok 50 [chromium] › tests\e2e\graph-name-completion.storybook.spec.ts:113:3 › Graph Name Auto-completion › should filter completions based on partial input (1.6s)
+[E2E Test] Completion item with metadata: http://example.org/customers523 triples
+[E2E Test] ✓ Metadata found in completion item
+  ok 51 [chromium] › tests\e2e\graph-name-completion.storybook.spec.ts:162:3 › Graph Name Auto-completion › should show metadata in completion items (1.8s)
+[E2E Test] Initially selected: http://example.org/graph/events12,089 triples • OWL-DL
+[E2E Test] After ArrowDown: http://example.org/graph/people8,420 triples • RDFS
+[E2E Test] ✓ Keyboard navigation works
+  ok 52 [chromium] › tests\e2e\graph-name-completion.storybook.spec.ts:203:3 › Graph Name Auto-completion › should support keyboard navigation in completion popup (2.5s)
+[E2E Test] Initial content: PREFIX ex: <http://example.org/>SELECT *FROM 
+[E2E Test] Content after selection: PREFIX ex: <http://example.org/>SELECT *FROM <http://example.org/customers>
+[E2E Test] ✓ Graph IRI inserted successfully
+  ok 53 [chromium] › tests\e2e\graph-name-completion.storybook.spec.ts:258:3 › Graph Name Auto-completion › should insert graph IRI on selection (2.2s)
+[E2E Test] No completion popup (expected without service description)
+[E2E Test] ✓ Graceful handling without service description
+  ok 54 [chromium] › tests\e2e\graph-name-completion.storybook.spec.ts:305:3 › Graph Name Auto-completion › should handle editor without service description gracefully (1.6s)
+  ok 55 [chromium] › tests\e2e\query-validation.storybook.spec.ts:11:3 › ValidationMessages Component › should render empty state with no issues (722ms)
+  ok 56 [chromium] › tests\e2e\query-validation.storybook.spec.ts:19:3 › ValidationMessages Component › should render single warning correctly (1.0s)
+  ok 57 [chromium] › tests\e2e\query-validation.storybook.spec.ts:44:3 › ValidationMessages Component › should render multiple warnings (1.1s)
+  ok 58 [chromium] › tests\e2e\query-validation.storybook.spec.ts:62:3 › ValidationMessages Component › should render single info message (1.1s)
+  ok 59 [chromium] › tests\e2e\query-validation.storybook.spec.ts:83:3 › ValidationMessages Component › should render multiple info messages (989ms)
+  ok 60 [chromium] › tests\e2e\query-validation.storybook.spec.ts:96:3 › ValidationMessages Component › should render single error message (854ms)
+  ok 61 [chromium] › tests\e2e\query-validation.storybook.spec.ts:113:3 › ValidationMessages Component › should render multiple errors (1.0s)
+  ok 62 [chromium] › tests\e2e\query-validation.storybook.spec.ts:127:3 › ValidationMessages Component › should render mixed severity levels separately (1.1s)
+  ok 63 [chromium] › tests\e2e\query-validation.storybook.spec.ts:148:3 › ValidationMessages Component › should render SPARQL 1.0 endpoint warnings correctly (1.2s)
+  ok 64 [chromium] › tests\e2e\query-validation.storybook.spec.ts:163:3 › ValidationMessages Component › should render feature support warnings correctly (843ms)
+  ok 65 [chromium] › tests\e2e\query-validation.storybook.spec.ts:177:3 › ValidationMessages Component › should handle long messages with proper layout (776ms)
+  ok 66 [chromium] › tests\e2e\query-validation.storybook.spec.ts:195:3 › ValidationMessages Component › should show close button when enabled (839ms)
+  ok 67 [chromium] › tests\e2e\query-validation.storybook.spec.ts:206:3 › ValidationMessages Component › should have accessible action buttons (1.3s)
+  ok 68 [chromium] › tests\e2e\query-validation.storybook.spec.ts:221:3 › ValidationMessages Component › should use list structure for multiple issues (1.1s)
+  ok 69 [chromium] › tests\e2e\query-validation.storybook.spec.ts:235:3 › ValidationMessages Component › should handle rapid severity switching (1.4s)
+  ok 70 [chromium] › tests\e2e\query-validation.storybook.spec.ts:253:3 › ValidationMessages Component › should render correctly in different viewport sizes (973ms)
+  ok 71 [chromium] › tests\e2e\result-format-selector.storybook.spec.ts:10:3 › ResultFormatSelector › should render Default story with format selector (2.4s)
+  ok 72 [chromium] › tests\e2e\result-format-selector.storybook.spec.ts:23:3 › ResultFormatSelector › should show binding formats for SELECT query (2.3s)
+  ok 73 [chromium] › tests\e2e\result-format-selector.storybook.spec.ts:33:3 › ResultFormatSelector › should show RDF formats for CONSTRUCT query (2.4s)
+  ok 74 [chromium] › tests\e2e\result-format-selector.storybook.spec.ts:43:3 › ResultFormatSelector › should show RDF formats for DESCRIBE query (2.3s)
+  ok 75 [chromium] › tests\e2e\result-format-selector.storybook.spec.ts:53:3 › ResultFormatSelector › should show helper text when service description unavailable (2.3s)
+  ok 76 [chromium] › tests\e2e\result-format-selector.storybook.spec.ts:63:3 › ResultFormatSelector › should handle queries with PREFIX declarations (2.4s)
+  ok 77 [chromium] › tests\e2e\result-format-selector.storybook.spec.ts:73:3 › ResultFormatSelector › should be disabled when disabled prop is true (2.3s)
+  ok 78 [chromium] › tests\e2e\result-format-selector.storybook.spec.ts:84:3 › ResultFormatSelector › should show pre-selected CSV format (2.2s)
+  ok 79 [chromium] › tests\e2e\result-format-selector.storybook.spec.ts:94:3 › ResultFormatSelector › should show pre-selected Turtle format for CONSTRUCT (2.2s)
+[BROWSER CONSOLE] [SparqlQueryUI] Tab store subscription triggered: {activeTabId: tab-1762530236171-j8jdqg844, currentActiveTabId: tab-1762530236171-j8jdqg844, tabCount: 1}
+[E2E Test] Tab 1 initial content (first 50 chars): PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-synt
+[BROWSER CONSOLE] [SparqlQueryUI] Tab store subscription triggered: {activeTabId: tab-1762530236912-a0iws1osi, currentActiveTabId: tab-1762530236171-j8jdqg844, tabCount: 2}
+[BROWSER CONSOLE] [SparqlQueryUI] Saving old tab before switch: {tabId: tab-1762530236171-j8jdqg844, queryText: PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-synt}
+[BROWSER CONSOLE] [SparqlQueryUI] Switching to tab (FRESH DATA): {tabId: tab-1762530236912-a0iws1osi, tabName: Query 2, queryText: }
+[BROWSER CONSOLE] [SparqlQueryUI] Calling queryStore.setState with: 
+[BROWSER CONSOLE] [SparqlQueryUI] Tab store subscription triggered: {activeTabId: tab-1762530236912-a0iws1osi, currentActiveTabId: tab-1762530236912-a0iws1osi, tabCount: 2}
+[BROWSER CONSOLE] [SparqlQueryUI] Tab store subscription triggered: {activeTabId: tab-1762530236912-a0iws1osi, currentActiveTabId: tab-1762530236912-a0iws1osi, tabCount: 2}
+[BROWSER CONSOLE] [QueryTabs] User clicked tab: {selectedIndex: 0, selectedTab: Object, currentActiveTabId: tab-1762530236912-a0iws1osi}
+[BROWSER CONSOLE] [SparqlQueryUI] Tab store subscription triggered: {activeTabId: tab-1762530236171-j8jdqg844, currentActiveTabId: tab-1762530236912-a0iws1osi, tabCount: 2}
+[BROWSER CONSOLE] [SparqlQueryUI] Saving old tab before switch: {tabId: tab-1762530236912-a0iws1osi, queryText: SELECT * WHERE { ?s ?p ?o } LIMIT 10}
+[BROWSER CONSOLE] [SparqlQueryUI] Switching to tab (FRESH DATA): {tabId: tab-1762530236171-j8jdqg844, tabName: Query 1, queryText: PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-synt}
+[BROWSER CONSOLE] [SparqlQueryUI] Calling queryStore.setState with: PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-synt
+[BROWSER CONSOLE] [SparqlQueryUI] Tab store subscription triggered: {activeTabId: tab-1762530236171-j8jdqg844, currentActiveTabId: tab-1762530236171-j8jdqg844, tabCount: 2}
+[BROWSER CONSOLE] [SparqlQueryUI] Tab store subscription triggered: {activeTabId: tab-1762530236171-j8jdqg844, currentActiveTabId: tab-1762530236171-j8jdqg844, tabCount: 2}
+[E2E Test] Tab 1 editor content after switch (first 50 chars): PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-synt
+[BROWSER CONSOLE] [QueryTabs] User clicked tab: {selectedIndex: 1, selectedTab: Object, currentActiveTabId: tab-1762530236171-j8jdqg844}
+[BROWSER CONSOLE] [SparqlQueryUI] Tab store subscription triggered: {activeTabId: tab-1762530236912-a0iws1osi, currentActiveTabId: tab-1762530236171-j8jdqg844, tabCount: 2}
+[BROWSER CONSOLE] [SparqlQueryUI] Saving old tab before switch: {tabId: tab-1762530236171-j8jdqg844, queryText: PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-synt}
+[BROWSER CONSOLE] [SparqlQueryUI] Switching to tab (FRESH DATA): {tabId: tab-1762530236912-a0iws1osi, tabName: Query 2, queryText: SELECT * WHERE { ?s ?p ?o } LIMIT 10}
+[BROWSER CONSOLE] [SparqlQueryUI] Calling queryStore.setState with: SELECT * WHERE { ?s ?p ?o } LIMIT 10
+[BROWSER CONSOLE] [SparqlQueryUI] Tab store subscription triggered: {activeTabId: tab-1762530236912-a0iws1osi, currentActiveTabId: tab-1762530236912-a0iws1osi, tabCount: 2}
+[BROWSER CONSOLE] [SparqlQueryUI] Tab store subscription triggered: {activeTabId: tab-1762530236912-a0iws1osi, currentActiveTabId: tab-1762530236912-a0iws1osi, tabCount: 2}
+[E2E Test] Tab 2 editor content: SELECT * WHERE { ?s ?p ?o } LIMIT 10
+  ok 80 [chromium] › tests\e2e\tabs.storybook.spec.ts:35:3 › Tab Switching in Storybook › should switch query editor content when clicking between tabs (4.2s)
+[BROWSER CONSOLE] [SparqlQueryUI] Tab store subscription triggered: {activeTabId: tab-1762530240291-pt90r1pza, currentActiveTabId: tab-1762530240291-pt90r1pza, tabCount: 1}
+[BROWSER CONSOLE] [SparqlQueryUI] Tab store subscription triggered: {activeTabId: tab-1762530241068-tcarb4umv, currentActiveTabId: tab-1762530240291-pt90r1pza, tabCount: 2}
+[BROWSER CONSOLE] [SparqlQueryUI] Saving old tab before switch: {tabId: tab-1762530240291-pt90r1pza, queryText: PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-synt}
+[BROWSER CONSOLE] [SparqlQueryUI] Switching to tab (FRESH DATA): {tabId: tab-1762530241068-tcarb4umv, tabName: Query 2, queryText: }
+[BROWSER CONSOLE] [SparqlQueryUI] Calling queryStore.setState with: 
+[BROWSER CONSOLE] [SparqlQueryUI] Tab store subscription triggered: {activeTabId: tab-1762530241068-tcarb4umv, currentActiveTabId: tab-1762530241068-tcarb4umv, tabCount: 2}
+[BROWSER CONSOLE] [SparqlQueryUI] Tab store subscription triggered: {activeTabId: tab-1762530241068-tcarb4umv, currentActiveTabId: tab-1762530241068-tcarb4umv, tabCount: 2}
+[BROWSER CONSOLE] [QueryTabs] User clicked tab: {selectedIndex: 0, selectedTab: Object, currentActiveTabId: tab-1762530241068-tcarb4umv}
+[BROWSER CONSOLE] [SparqlQueryUI] Tab store subscription triggered: {activeTabId: tab-1762530240291-pt90r1pza, currentActiveTabId: tab-1762530241068-tcarb4umv, tabCount: 2}
+[BROWSER CONSOLE] [SparqlQueryUI] Saving old tab before switch: {tabId: tab-1762530241068-tcarb4umv, queryText: }
+[BROWSER CONSOLE] [SparqlQueryUI] Switching to tab (FRESH DATA): {tabId: tab-1762530240291-pt90r1pza, tabName: Query 1, queryText: PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-synt}
+[BROWSER CONSOLE] [SparqlQueryUI] Calling queryStore.setState with: PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-synt
+[BROWSER CONSOLE] [SparqlQueryUI] Tab store subscription triggered: {activeTabId: tab-1762530240291-pt90r1pza, currentActiveTabId: tab-1762530240291-pt90r1pza, tabCount: 2}
+[BROWSER CONSOLE] [SparqlQueryUI] Tab store subscription triggered: {activeTabId: tab-1762530240291-pt90r1pza, currentActiveTabId: tab-1762530240291-pt90r1pza, tabCount: 2}
+  ok 81 [chromium] › tests\e2e\tabs.storybook.spec.ts:87:3 › Tab Switching in Storybook › should switch results when clicking between tabs (3.1s)
+  -  82 [chromium] › tests\e2e\tabs.storybook.spec.ts:120:8 › Tab Switching in Storybook › should isolate tabs across multiple story instances on docs page
+[BROWSER CONSOLE] [SparqlQueryUI] Tab store subscription triggered: {activeTabId: tab-1762530243251-pw1fsc1ct, currentActiveTabId: tab-1762530243251-pw1fsc1ct, tabCount: 1}
+[BROWSER CONSOLE] [SparqlQueryUI] Tab store subscription triggered: {activeTabId: tab-1762530243987-cmjoqlplu, currentActiveTabId: tab-1762530243251-pw1fsc1ct, tabCount: 2}
+[BROWSER CONSOLE] [SparqlQueryUI] Saving old tab before switch: {tabId: tab-1762530243251-pw1fsc1ct, queryText: PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-synt}
+[BROWSER CONSOLE] [SparqlQueryUI] Switching to tab (FRESH DATA): {tabId: tab-1762530243987-cmjoqlplu, tabName: Query 2, queryText: }
+[BROWSER CONSOLE] [SparqlQueryUI] Calling queryStore.setState with: 
+[BROWSER CONSOLE] [SparqlQueryUI] Tab store subscription triggered: {activeTabId: tab-1762530243987-cmjoqlplu, currentActiveTabId: tab-1762530243987-cmjoqlplu, tabCount: 2}
+[BROWSER CONSOLE] [SparqlQueryUI] Tab store subscription triggered: {activeTabId: tab-1762530243987-cmjoqlplu, currentActiveTabId: tab-1762530243987-cmjoqlplu, tabCount: 2}
+[BROWSER CONSOLE] [SparqlQueryUI] Tab store subscription triggered: {activeTabId: tab-1762530244057-ehrwr23z7, currentActiveTabId: tab-1762530243987-cmjoqlplu, tabCount: 3}
+[BROWSER CONSOLE] [SparqlQueryUI] Saving old tab before switch: {tabId: tab-1762530243987-cmjoqlplu, queryText: }
+[BROWSER CONSOLE] [SparqlQueryUI] Switching to tab (FRESH DATA): {tabId: tab-1762530244057-ehrwr23z7, tabName: Query 3, queryText: }
+[BROWSER CONSOLE] [SparqlQueryUI] Calling queryStore.setState with: 
+[BROWSER CONSOLE] [SparqlQueryUI] Tab store subscription triggered: {activeTabId: tab-1762530244057-ehrwr23z7, currentActiveTabId: tab-1762530244057-ehrwr23z7, tabCount: 3}
+[BROWSER CONSOLE] [SparqlQueryUI] Tab store subscription triggered: {activeTabId: tab-1762530244057-ehrwr23z7, currentActiveTabId: tab-1762530244057-ehrwr23z7, tabCount: 3}
+[BROWSER CONSOLE] [SparqlQueryUI] Tab store subscription triggered: {activeTabId: tab-1762530244859-8c8yempyx, currentActiveTabId: tab-1762530244859-8c8yempyx, tabCount: 1}
+  ok 83 [chromium] › tests\e2e\tabs.storybook.spec.ts:151:3 › Tab Switching in Storybook › should clear tabs after CTRL+F5 (hard refresh) (4.1s)
+  ok 84 [chromium] › tests\e2e\tabs.storybook.spec.ts:178:3 › Tab UI Interactions › should show close buttons when multiple tabs exist (2.9s)
+  ok 85 [chromium] › tests\e2e\tabs.storybook.spec.ts:192:3 › Tab UI Interactions › should close tabs without navigation (3.3s)
+  ok 86 [chromium] › tests\e2e\tabs.storybook.spec.ts:210:3 › Tab UI Interactions › should highlight active tab (4.5s)
 
-       97 |     // In real scenario, check for specific result content
-       98 |     const resultsContainer = storyFrame.locator('.results-container');
-    >  99 |     await expect(resultsContainer).toBeVisible();
-          |                                    ^
-      100 |   });
-      101 |
-      102 |   test('should isolate tabs across multiple story instances on docs page', async ({ page }) => {
-        at c:\rd\CHUCC-SQUI\tests\e2e\tabs.storybook.spec.ts:99:36
+  1 skipped
+  85 passed (3.0m)
 
-    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
-    test-results\tabs.storybook-Tab-Switchi-c898f--when-clicking-between-tabs-chromium\test-failed-1.png
-    ────────────────────────────────────────────────────────────────────────────────────────────────
-
-    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
-    test-results\tabs.storybook-Tab-Switchi-c898f--when-clicking-between-tabs-chromium\video.webm
-    ────────────────────────────────────────────────────────────────────────────────────────────────
-
-    Error Context: test-results\tabs.storybook-Tab-Switchi-c898f--when-clicking-between-tabs-chromium\error-context.md
-
-  3) [chromium] › tests\e2e\tabs.storybook.spec.ts:174:3 › Tab UI Interactions › should close tabs without navigation 
-
-    Error: [2mexpect([22m[31mpage[39m[2m).[22mtoHaveURL[2m([22m[32mexpected[39m[2m)[22m failed
-
-    Expected pattern: [32m/story\/squi-sparqlqueryui--allfeaturesenabled/[39m
-    Received string:  [31m"http://localhost:6006/?path=/story/squi-sparqlqueryui--all-features-enabled"[39m
-    Timeout: 5000ms
-
-    Call log:
-    [2m  - Expect "toHaveURL" with timeout 5000ms[22m
-    [2m    9 × unexpected value "http://localhost:6006/?path=/story/squi-sparqlqueryui--all-features-enabled"[22m
-
-
-      187 |
-      188 |     // Verify we're still on the same story (no navigation occurred)
-    > 189 |     await expect(page).toHaveURL(/story\/squi-sparqlqueryui--allfeaturesenabled/);
-          |                        ^
-      190 |   });
-      191 |
-      192 |   test('should highlight active tab', async ({ page }) => {
-        at c:\rd\CHUCC-SQUI\tests\e2e\tabs.storybook.spec.ts:189:24
-
-    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
-    test-results\tabs.storybook-Tab-UI-Inte-237af-ose-tabs-without-navigation-chromium\test-failed-1.png
-    ────────────────────────────────────────────────────────────────────────────────────────────────
-
-    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
-    test-results\tabs.storybook-Tab-UI-Inte-237af-ose-tabs-without-navigation-chromium\video.webm
-    ────────────────────────────────────────────────────────────────────────────────────────────────
-
-    Error Context: test-results\tabs.storybook-Tab-UI-Inte-237af-ose-tabs-without-navigation-chromium\error-context.md
-
-  4) [chromium] › tests\e2e\tabs.storybook.spec.ts:192:3 › Tab UI Interactions › should highlight active tab 
-
-    Error: [2mexpect([22m[31mlocator[39m[2m).[22mtoHaveAttribute[2m([22m[32mexpected[39m[2m)[22m failed
-
-    Locator:  locator('#storybook-preview-iframe').contentFrame().locator('[role="tab"]').first()
-    Expected: [32m"[7mtru[27me"[39m
-    Received: [31m"[7mfals[27me"[39m
-    Timeout:  5000ms
-
-    Call log:
-    [2m  - Expect "toHaveAttribute" with timeout 5000ms[22m
-    [2m  - waiting for locator('#storybook-preview-iframe').contentFrame().locator('[role="tab"]').first()[22m
-    [2m    9 × locator resolved to <a href="#" role="tab" tabindex="0" aria-selected="false" aria-disabled="false" id="ccs-0.byx7wsbt7hd" class="bx--tabs__nav-link">…</a>[22m
-    [2m      - unexpected value "false"[22m
-
-
-      208 |
-      209 |     // First tab should now be active
-    > 210 |     await expect(tab1).toHaveAttribute('aria-selected', 'true');
-          |                        ^
-      211 |     await expect(tab2).toHaveAttribute('aria-selected', 'false');
-      212 |   });
-      213 | });
-        at c:\rd\CHUCC-SQUI\tests\e2e\tabs.storybook.spec.ts:210:24
-
-    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
-    test-results\tabs.storybook-Tab-UI-Inte-0a625-should-highlight-active-tab-chromium\test-failed-1.png
-    ────────────────────────────────────────────────────────────────────────────────────────────────
-
-    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
-    test-results\tabs.storybook-Tab-UI-Inte-0a625-should-highlight-active-tab-chromium\video.webm
-    ────────────────────────────────────────────────────────────────────────────────────────────────
-
-    Error Context: test-results\tabs.storybook-Tab-UI-Inte-0a625-should-highlight-active-tab-chromium\error-context.md
-
-  4 failed
-    [chromium] › tests\e2e\tabs.storybook.spec.ts:21:3 › Tab Switching in Storybook › should switch query editor content when clicking between tabs 
-    [chromium] › tests\e2e\tabs.storybook.spec.ts:69:3 › Tab Switching in Storybook › should switch results when clicking between tabs 
-    [chromium] › tests\e2e\tabs.storybook.spec.ts:174:3 › Tab UI Interactions › should close tabs without navigation 
-    [chromium] › tests\e2e\tabs.storybook.spec.ts:192:3 › Tab UI Interactions › should highlight active tab 
-  3 passed (44.5s)
-
-[36m  Serving HTML report at http://localhost:64772. Press Ctrl+C to quit.[39m
+To open last HTML report run:
+[36m[39m
+[36m  npx playwright show-report[39m
+[36m[39m

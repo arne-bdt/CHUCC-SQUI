@@ -65,7 +65,8 @@
     padding: 1rem;
     background: var(--cds-notification-background-warning);
     border-left: 3px solid var(--cds-support-warning);
-    font-size: 0.875rem;
+    font-size: var(--cds-body-compact-01);
+    line-height: 1.43;
   }
 
   .truncation-details p {

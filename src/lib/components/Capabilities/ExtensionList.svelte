@@ -57,7 +57,8 @@
 
 <style>
   .extension-list {
-    font-size: 0.875rem;
+    font-size: var(--cds-body-compact-01);
+    line-height: 1.43;
   }
 
   .extension-list ul {
@@ -91,21 +92,23 @@
   .extension-name {
     font-family: 'IBM Plex Mono', 'Menlo', 'DejaVu Sans Mono', 'Bitstream Vera Sans Mono',
       Courier, monospace;
-    font-size: 0.875rem;
+    font-size: var(--cds-code-02);
+    line-height: 1.43;
     color: var(--cds-text-primary);
     font-weight: 600;
   }
 
   .extension-description {
     color: var(--cds-text-secondary);
-    font-size: 0.8125rem;
+    font-size: var(--cds-label-02);
+    line-height: 1.38;
     margin: var(--cds-spacing-03) 0;
-    line-height: 1.4;
   }
 
   .extension-uri {
     margin-top: var(--cds-spacing-03);
-    font-size: 0.75rem;
+    font-size: var(--cds-label-01);
+    line-height: 1.34;
   }
 
   .extension-uri :global(a) {
@@ -115,7 +118,8 @@
   .empty-state {
     color: var(--cds-text-secondary);
     font-style: italic;
-    font-size: 0.875rem;
+    font-size: var(--cds-body-compact-01);
+    line-height: 1.43;
     margin: 0;
   }
 </style>

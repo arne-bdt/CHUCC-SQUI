@@ -129,8 +129,9 @@
   }
 
   .error-details summary {
-    font-size: 0.875rem;
+    font-size: var(--cds-body-compact-01);
     font-weight: 600;
+    line-height: 1.43;
     color: var(--cds-text-secondary, #525252);
     user-select: none;
   }
@@ -143,8 +144,8 @@
     border-radius: 4px;
     font-family: 'IBM Plex Mono', 'Menlo', 'DejaVu Sans Mono', 'Bitstream Vera Sans Mono',
       Courier, monospace;
-    font-size: 0.75rem;
-    line-height: 1.4;
+    font-size: var(--cds-code-01);
+    line-height: 1.34;
     overflow-x: auto;
     white-space: pre-wrap;
     word-wrap: break-word;

@@ -42,13 +42,15 @@
   .placeholder-content h3 {
     margin: 0 0 var(--cds-spacing-03, 0.5rem) 0;
     color: var(--cds-text-primary, #161616);
-    font-size: 1.25rem;
+    font-size: var(--cds-productive-heading-02);
     font-weight: 400;
+    line-height: 1.5;
   }
 
   .placeholder-content p {
     margin: var(--cds-spacing-02, 0.25rem) 0;
-    font-size: 0.875rem;
+    font-size: var(--cds-body-compact-01);
+    line-height: 1.43;
   }
 
   .placeholder-content .hint {

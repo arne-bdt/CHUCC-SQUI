@@ -150,13 +150,14 @@
     border: 1px solid var(--cds-support-warning, #f1c21b);
     border-radius: 4px;
     padding: var(--cds-spacing-05, 1rem);
-    font-size: 0.875rem;
-    line-height: 1.4;
+    font-size: var(--cds-body-compact-01);
+    line-height: 1.43;
   }
 
   .stats {
     color: var(--cds-text-secondary, #525252);
-    font-size: 0.875rem;
+    font-size: var(--cds-body-compact-01);
+    line-height: 1.43;
     font-style: italic;
   }
 

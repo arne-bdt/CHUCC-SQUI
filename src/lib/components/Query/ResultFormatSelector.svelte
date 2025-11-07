@@ -114,7 +114,8 @@
   }
 
   .helper-text {
-    font-size: 0.875rem;
+    font-size: var(--cds-body-compact-01);
+    line-height: 1.43;
     color: var(--cds-text-secondary);
     font-style: italic;
     margin: 0;
@@ -130,7 +131,8 @@
   }
 
   .format-description {
-    font-size: 0.875rem;
+    font-size: var(--cds-body-compact-01);
+    line-height: 1.43;
     color: var(--cds-text-secondary);
     margin: 0;
   }

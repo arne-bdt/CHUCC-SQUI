@@ -146,8 +146,9 @@
   }
 
   .tab-name {
-    font-size: 0.875rem;
+    font-size: var(--cds-body-compact-01);
     font-weight: 400;
+    line-height: 1.43;
   }
 
   .close-button {

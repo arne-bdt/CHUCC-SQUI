@@ -121,8 +121,9 @@
   }
 
   .section-title {
-    font-size: 1rem;
+    font-size: var(--cds-productive-heading-01);
     font-weight: 600;
+    line-height: 1.43;
     color: var(--cds-text-primary, #161616);
     margin: 0;
     padding-bottom: var(--cds-spacing-03, 0.5rem);
@@ -160,8 +161,9 @@
     justify-content: center;
     padding: var(--cds-spacing-02, 0.25rem) var(--cds-spacing-03, 0.5rem);
     font-family: 'IBM Plex Mono', monospace;
-    font-size: 0.75rem;
+    font-size: var(--cds-code-01);
     font-weight: 600;
+    line-height: 1.34;
     background-color: var(--cds-layer-02, #ffffff);
     border: 1px solid var(--cds-border-subtle-01, #e0e0e0);
     border-radius: 3px;
@@ -173,7 +175,8 @@
 
   .shortcut-description {
     flex: 1;
-    font-size: 0.875rem;
+    font-size: var(--cds-body-compact-01);
+    line-height: 1.43;
     color: var(--cds-text-secondary, #525252);
     text-align: right;
   }

@@ -315,7 +315,8 @@
     cursor: pointer;
     color: var(--cds-text-primary, #161616);
     font-family: 'IBM Plex Sans', 'Helvetica Neue', Arial, sans-serif;
-    font-size: 0.875rem;
+    font-size: var(--cds-body-compact-01);
+    line-height: 1.43;
   }
 
   :global(.wx-menu-trigger:hover) {
@@ -340,7 +341,8 @@
     cursor: pointer;
     color: var(--cds-text-primary, #161616);
     font-family: 'IBM Plex Sans', 'Helvetica Neue', Arial, sans-serif;
-    font-size: 0.875rem;
+    font-size: var(--cds-body-compact-01);
+    line-height: 1.43;
     display: flex;
     align-items: center;
     gap: var(--cds-spacing-03, 0.5rem);
@@ -409,7 +411,8 @@
   /* Carbon-compatible styling for wx-svelte-grid */
   :global(.wx-grid) {
     font-family: 'IBM Plex Sans', 'Helvetica Neue', Arial, sans-serif;
-    font-size: 0.875rem;
+    font-size: var(--cds-body-compact-01);
+    line-height: 1.43;
     color: var(--cds-text-primary, #161616);
     background-color: var(--cds-layer-01, #f4f4f4);
   }
@@ -514,7 +517,8 @@
   }
 
   .empty-state .hint {
-    font-size: 0.875rem;
+    font-size: var(--cds-body-compact-01);
+    line-height: 1.43;
     font-style: italic;
     color: var(--cds-text-helper, #6f6f6f);
   }
@@ -534,7 +538,8 @@
     padding: var(--cds-spacing-03, 0.5rem) var(--cds-spacing-05, 1rem);
     border-top: 1px solid var(--cds-border-subtle-01, #e0e0e0);
     background-color: var(--cds-layer-02, #ffffff);
-    font-size: 0.75rem;
+    font-size: var(--cds-label-01);
+    line-height: 1.34;
     color: var(--cds-text-secondary, #525252);
     display: flex;
     gap: var(--cds-spacing-03, 0.5rem);

@@ -209,8 +209,9 @@
   }
 
   .performance-panel__header h2 {
-    font-size: 1.25rem;
+    font-size: var(--cds-productive-heading-02);
     font-weight: 600;
+    line-height: 1.5;
     margin: 0;
   }
 
@@ -221,8 +222,9 @@
 
   .performance-panel__stats h3,
   .performance-panel__metrics h3 {
-    font-size: 1rem;
+    font-size: var(--cds-productive-heading-01);
     font-weight: 600;
+    line-height: 1.43;
     margin: 0 0 var(--cds-spacing-05) 0;
   }
 
@@ -240,21 +242,24 @@
   }
 
   .stat-label {
-    font-size: 0.75rem;
+    font-size: var(--cds-label-01);
+    line-height: 1.34;
     color: var(--cds-text-secondary);
     text-transform: uppercase;
     margin-bottom: var(--cds-spacing-02);
   }
 
   .stat-value {
-    font-size: 1.5rem;
+    font-size: var(--cds-productive-heading-04);
     font-weight: 600;
+    line-height: 1.29;
     color: var(--cds-text-primary);
     margin-bottom: var(--cds-spacing-02);
   }
 
   .stat-detail {
-    font-size: 0.75rem;
+    font-size: var(--cds-label-01);
+    line-height: 1.34;
     color: var(--cds-text-secondary);
   }
 
@@ -274,7 +279,8 @@
   .metrics-table {
     width: 100%;
     border-collapse: collapse;
-    font-size: 0.875rem;
+    font-size: var(--cds-body-compact-01);
+    line-height: 1.43;
   }
 
   .metrics-table th {

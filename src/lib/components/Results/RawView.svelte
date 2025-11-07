@@ -147,7 +147,7 @@
     flex: 1;
     overflow: auto;
     font-family: 'IBM Plex Mono', 'Menlo', 'Monaco', 'Courier New', monospace;
-    font-size: 0.875rem;
+    font-size: var(--cds-code-02);
     line-height: 1.5;
   }
 
@@ -156,7 +156,7 @@
     flex: 1;
     overflow: auto;
     font-family: 'IBM Plex Mono', 'Menlo', 'Monaco', 'Courier New', monospace;
-    font-size: 0.875rem;
+    font-size: var(--cds-code-02);
     line-height: 1.5;
     padding: var(--cds-spacing-05, 1rem);
     margin: 0;
@@ -168,7 +168,8 @@
   .raw-view-editor :global(.cm-editor) {
     height: 100%;
     font-family: 'IBM Plex Mono', 'Menlo', 'Monaco', 'Courier New', monospace;
-    font-size: 0.875rem;
+    font-size: var(--cds-code-02);
+    line-height: 1.43;
   }
 
   .raw-view-editor :global(.cm-scroller) {
