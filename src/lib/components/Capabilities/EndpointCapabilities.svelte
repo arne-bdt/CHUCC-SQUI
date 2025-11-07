@@ -133,19 +133,19 @@
 
 <style>
   .capabilities-panel {
-    padding: 1rem;
+    padding: var(--cds-spacing-05);
     font-size: 0.875rem;
   }
 
   .loading-state {
-    padding: 1rem 0;
+    padding: var(--cds-spacing-05) 0;
   }
 
   .panel-header {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    margin-bottom: 1.5rem;
+    margin-bottom: var(--cds-spacing-06);
   }
 
   .panel-title {
@@ -156,8 +156,8 @@
   }
 
   .capability-section {
-    margin-bottom: 1.5rem;
-    padding-bottom: 1rem;
+    margin-bottom: var(--cds-spacing-06);
+    padding-bottom: var(--cds-spacing-05);
     border-bottom: 1px solid var(--cds-border-subtle-01);
   }
 
@@ -180,12 +180,12 @@
   }
 
   .expandable-content {
-    padding-top: 1rem;
+    padding-top: var(--cds-spacing-05);
   }
 
   .metadata {
-    margin-top: 1.5rem;
-    padding-top: 1rem;
+    margin-top: var(--cds-spacing-06);
+    padding-top: var(--cds-spacing-05);
     border-top: 1px solid var(--cds-border-subtle-01);
     font-size: 0.75rem;
     color: var(--cds-text-secondary);
@@ -196,12 +196,12 @@
   }
 
   .metadata-value {
-    margin-left: 0.5rem;
+    margin-left: var(--cds-spacing-03);
   }
 
   .error-state,
   .no-service-description {
-    padding: 2rem 1rem;
+    padding: var(--cds-spacing-07) var(--cds-spacing-05);
     text-align: center;
   }
 
@@ -209,13 +209,13 @@
   .empty-message {
     color: var(--cds-text-primary);
     font-weight: 500;
-    margin: 0 0 0.5rem 0;
+    margin: 0 0 var(--cds-spacing-03) 0;
   }
 
   .empty-hint {
     color: var(--cds-text-secondary);
     font-size: 0.8125rem;
-    margin: 0 0 1rem 0;
+    margin: 0 0 var(--cds-spacing-05) 0;
   }
 
   .error-state .error-message {

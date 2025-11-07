@@ -90,7 +90,7 @@
   .format-list {
     display: flex;
     flex-wrap: wrap;
-    gap: 0.5rem;
+    gap: var(--cds-spacing-03);
   }
 
   .empty-state {

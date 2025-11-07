@@ -46,8 +46,8 @@
   .language-support li {
     display: flex;
     align-items: center;
-    gap: 0.5rem;
-    padding: 0.25rem 0;
+    gap: var(--cds-spacing-03);
+    padding: var(--cds-spacing-02) 0;
     color: var(--cds-text-secondary);
   }
 

@@ -69,11 +69,12 @@ test.describe('Endpoint Capabilities Components', () => {
       await expect(page.getByText('Input Formats')).toBeVisible();
       await expect(page.getByText('Turtle')).toBeVisible();
 
-      // Should show Extension Functions section (expandable)
-      await expect(page.getByText(/Extension Functions \(2\)/)).toBeVisible();
+      // Should show Extension Functions heading
+      await expect(page.getByText('Extension Functions')).toBeVisible();
 
-      // Should show Extension Aggregates section (expandable)
-      await expect(page.getByText(/Extension Aggregates \(1\)/)).toBeVisible();
+      // Should show Functions and Aggregates tabs with counts
+      await expect(page.getByRole('tab', { name: /Functions \(2\)/ })).toBeVisible();
+      await expect(page.getByRole('tab', { name: /Aggregates \(1\)/ })).toBeVisible();
 
       // Should show Datasets section
       await expect(page.getByText(/^Datasets$/).first()).toBeVisible();
@@ -129,7 +130,7 @@ test.describe('Endpoint Capabilities Components', () => {
       await expect(fetchButton).toBeVisible();
     });
 
-    test('should expand extension functions section', async ({ page }) => {
+    test('should show extension functions in Functions tab', async ({ page }) => {
       await page.goto(
         `${STORYBOOK_URL}/iframe.html?id=components-capabilities-endpointcapabilities--with-full-capabilities&viewMode=story`
       );
@@ -137,20 +138,17 @@ test.describe('Endpoint Capabilities Components', () => {
       // Wait for component to render
       await page.waitForTimeout(1500);
 
-      // Click to expand Extension Functions
-      const extensionFunctionsSection = page.getByText(/Extension Functions \(2\)/);
-      await expect(extensionFunctionsSection).toBeVisible({ timeout: 5000 });
-      await extensionFunctionsSection.click();
+      // Functions tab should be selected by default and show function details
+      const functionsTab = page.getByRole('tab', { name: /Functions \(2\)/ });
+      await expect(functionsTab).toBeVisible({ timeout: 5000 });
+      await expect(functionsTab).toHaveAttribute('aria-selected', 'true');
 
-      // Wait for expansion animation
-      await page.waitForTimeout(500);
-
-      // Should show function details
+      // Should show function details in the Functions tab
       await expect(page.getByText('customFunction').first()).toBeVisible();
       await expect(page.getByText('geoDistance').first()).toBeVisible();
     });
 
-    test('should expand extension aggregates section', async ({ page }) => {
+    test('should show extension aggregates in Aggregates tab', async ({ page }) => {
       await page.goto(
         `${STORYBOOK_URL}/iframe.html?id=components-capabilities-endpointcapabilities--with-full-capabilities&viewMode=story`
       );
@@ -158,15 +156,15 @@ test.describe('Endpoint Capabilities Components', () => {
       // Wait for component to render
       await page.waitForTimeout(1500);
 
-      // Click to expand Extension Aggregates
-      const extensionAggregatesSection = page.getByText(/Extension Aggregates \(1\)/);
-      await expect(extensionAggregatesSection).toBeVisible({ timeout: 5000 });
-      await extensionAggregatesSection.click();
+      // Click on Aggregates tab to switch to it
+      const aggregatesTab = page.getByRole('tab', { name: /Aggregates \(1\)/ });
+      await expect(aggregatesTab).toBeVisible({ timeout: 5000 });
+      await aggregatesTab.click();
 
-      // Wait for expansion animation
+      // Wait for tab content to render
       await page.waitForTimeout(500);
 
-      // Should show aggregate details
+      // Should show aggregate details in the Aggregates tab
       await expect(page.getByText('MEDIAN').first()).toBeVisible();
     });
   });

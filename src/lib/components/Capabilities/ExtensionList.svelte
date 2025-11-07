@@ -67,7 +67,7 @@
   }
 
   .extension-list li {
-    margin-bottom: 1rem;
+    margin-bottom: var(--cds-spacing-05);
   }
 
   .extension-list li:last-child {
@@ -75,7 +75,7 @@
   }
 
   .extension-item {
-    padding: 0.75rem;
+    padding: var(--cds-spacing-04);
     background: var(--cds-layer-01);
     border-left: 3px solid var(--cds-border-interactive);
     border-radius: 2px;
@@ -85,7 +85,7 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-    margin-bottom: 0.25rem;
+    margin-bottom: var(--cds-spacing-02);
   }
 
   .extension-name {
@@ -99,12 +99,12 @@
   .extension-description {
     color: var(--cds-text-secondary);
     font-size: 0.8125rem;
-    margin: 0.5rem 0;
+    margin: var(--cds-spacing-03) 0;
     line-height: 1.4;
   }
 
   .extension-uri {
-    margin-top: 0.5rem;
+    margin-top: var(--cds-spacing-03);
     font-size: 0.75rem;
   }
 

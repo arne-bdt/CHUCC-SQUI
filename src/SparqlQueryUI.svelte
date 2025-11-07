@@ -212,72 +212,84 @@
 </script>
 
 <!--
-  Main component structure:
+  Main component structure with Carbon 2x Grid:
+  - Carbon Grid: 16/8/4 responsive columns with max-width constraint
   - QueryTabs: Tabbed interface for multiple queries (if enabled)
   - Toolbar: Top bar with endpoint selector and controls
   - SplitPane: Resizable container with editor and results
 -->
 <div class="squi-container theme-{currentTheme}">
-  <!-- Query Tabs (if enabled) -->
-  {#if features.enableTabs !== false}
-    <QueryTabs />
-  {/if}
-
-  <!-- Top toolbar for controls and endpoint selector -->
-  <Toolbar>
-    <ToolbarContent>
-      <div class="toolbar-content">
-        <!-- Run Query Button -->
-        <RunButton />
-
-        <!-- Endpoint Selector or Info -->
-        {#if endpoint?.hideSelector}
-          <!-- Show static endpoint info when selector is hidden -->
-          <div class="toolbar-info">
-            <span class="endpoint-info">
-              <strong>Endpoint:</strong>
-              {_currentEndpoint || 'Not configured'}
-            </span>
-          </div>
-        {:else}
-          <!-- Show endpoint selector for choosing/entering endpoints -->
-          <div class="endpoint-selector-wrapper">
-            <EndpointSelector
-              bind:value={_currentEndpoint}
-              onchange={handleEndpointChange}
-              label=""
-              placeholder="Select or enter SPARQL endpoint"
-            />
-          </div>
+  <!-- Carbon Grid Container: provides responsive padding and max-width -->
+  <div class="bx--grid bx--grid--full-width squi-grid">
+    <div class="bx--row squi-row">
+      <div class="bx--col-lg-16 bx--col-md-8 bx--col-sm-4 squi-col">
+        <!-- Query Tabs (if enabled) -->
+        {#if features.enableTabs !== false}
+          <QueryTabs />
         {/if}
 
-        <!-- Format Selector - controls Accept header for queries -->
-        <div class="format-selector-wrapper">
-          <FormatSelector
-            value={$resultsStore.format}
-            queryType={$queryStore.type}
-            onchange={handleFormatChange}
-            disabled={$resultsStore.loading}
-          />
+        <!-- Top toolbar for controls and endpoint selector -->
+        <Toolbar>
+          <ToolbarContent>
+            <div class="toolbar-content">
+              <!-- Run Query Button -->
+              <RunButton />
+
+              <!-- Endpoint Selector or Info -->
+              {#if endpoint?.hideSelector}
+                <!-- Show static endpoint info when selector is hidden -->
+                <div class="toolbar-info">
+                  <span class="endpoint-info">
+                    <strong>Endpoint:</strong>
+                    {_currentEndpoint || 'Not configured'}
+                  </span>
+                </div>
+              {:else}
+                <!-- Show endpoint selector for choosing/entering endpoints -->
+                <div class="endpoint-selector-wrapper">
+                  <EndpointSelector
+                    bind:value={_currentEndpoint}
+                    onchange={handleEndpointChange}
+                    label=""
+                    placeholder="Select or enter SPARQL endpoint"
+                  />
+                </div>
+              {/if}
+
+              <!-- Format Selector - controls Accept header for queries -->
+              <div class="format-selector-wrapper">
+                <FormatSelector
+                  value={$resultsStore.format}
+                  queryType={$queryStore.type}
+                  onchange={handleFormatChange}
+                  disabled={$resultsStore.loading}
+                />
+              </div>
+            </div>
+          </ToolbarContent>
+        </Toolbar>
+
+        <!-- Main content area with resizable editor and results panes -->
+        <div class="squi-main">
+          <SplitPane initialSplit={0.5} minTopHeight={200} minBottomHeight={150}>
+            {#snippet top()}
+              <SparqlEditor />
+            {/snippet}
+            {#snippet bottom()}
+              <ResultsPlaceholder maxResults={limits.maxRows} />
+            {/snippet}
+          </SplitPane>
         </div>
       </div>
-    </ToolbarContent>
-  </Toolbar>
-
-  <!-- Main content area with resizable editor and results panes -->
-  <div class="squi-main">
-    <SplitPane initialSplit={0.5} minTopHeight={200} minBottomHeight={150}>
-      {#snippet top()}
-        <SparqlEditor />
-      {/snippet}
-      {#snippet bottom()}
-        <ResultsPlaceholder maxResults={limits.maxRows} />
-      {/snippet}
-    </SplitPane>
+    </div>
   </div>
 </div>
 
 <style>
+  /* ============================================
+   * Carbon 2x Grid Integration (Task 63)
+   * ============================================ */
+
   .squi-container {
     width: 100%;
     height: 100%;
@@ -285,6 +297,45 @@
     flex-direction: column;
     overflow: hidden;
   }
+
+  /* Grid container fills available height */
+  .squi-grid {
+    height: 100%;
+    max-width: none; /* Full width mode for application layout */
+    padding: 0; /* Remove default grid padding - use column padding instead */
+  }
+
+  /* Row uses vertical flex layout instead of default horizontal */
+  .squi-row {
+    height: 100%;
+    flex-direction: column; /* Override default row direction */
+    margin: 0; /* Remove default row margins */
+  }
+
+  /* Column spans full width and fills height */
+  .squi-col {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    padding-left: var(--cds-spacing-05); /* 16px on small/medium */
+    padding-right: var(--cds-spacing-05); /* 16px on small/medium */
+  }
+
+  /* Larger padding on large screens (≥1056px) */
+  @media (min-width: 66rem) {
+    /* 66rem = 1056px */
+    .squi-col {
+      padding-left: var(--cds-spacing-07); /* 32px on large screens */
+      padding-right: var(--cds-spacing-07); /* 32px on large screens */
+    }
+  }
+
+  /* Alternative: Constrained width mode (uncomment if needed)
+  .squi-grid {
+    max-width: 99rem;
+    margin: 0 auto;
+  }
+  */
 
   .squi-main {
     flex: 1;

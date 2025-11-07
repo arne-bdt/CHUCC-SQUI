@@ -219,16 +219,16 @@
 
   .dataset-summary {
     display: flex;
-    gap: 1rem;
+    gap: var(--cds-spacing-05);
     flex-wrap: wrap;
-    margin-bottom: 1rem;
+    margin-bottom: var(--cds-spacing-05);
   }
 
   .stat-item {
     display: flex;
     align-items: center;
-    gap: 0.75rem;
-    padding: 0.75rem;
+    gap: var(--cds-spacing-04);
+    padding: var(--cds-spacing-04);
     background: var(--cds-layer-01);
     border-radius: 4px;
     flex: 1;
@@ -263,28 +263,28 @@
     font-size: 0.875rem;
     font-weight: 600;
     color: var(--cds-text-primary);
-    margin: 1rem 0 0.5rem 0;
+    margin: var(--cds-spacing-05) 0 var(--cds-spacing-03) 0;
   }
 
   .entailment-section {
-    margin-bottom: 1rem;
+    margin-bottom: var(--cds-spacing-05);
   }
 
   .entailment-list {
     display: flex;
     flex-wrap: wrap;
-    gap: 0.5rem;
+    gap: var(--cds-spacing-03);
   }
 
   .dataset-details {
-    margin-top: 1rem;
+    margin-top: var(--cds-spacing-05);
   }
 
   .dataset-item {
-    padding: 0.75rem;
+    padding: var(--cds-spacing-04);
     background: var(--cds-layer-01);
     border-radius: 4px;
-    margin-bottom: 0.5rem;
+    margin-bottom: var(--cds-spacing-03);
   }
 
   .dataset-item:last-child {
@@ -294,7 +294,7 @@
   .dataset-uri,
   .dataset-label {
     font-weight: 500;
-    margin-bottom: 0.25rem;
+    margin-bottom: var(--cds-spacing-02);
   }
 
   .dataset-label {
@@ -303,7 +303,7 @@
 
   .graph-counts {
     display: flex;
-    gap: 1rem;
+    gap: var(--cds-spacing-05);
     font-size: 0.8125rem;
     color: var(--cds-text-secondary);
   }
@@ -314,8 +314,8 @@
   }
 
   .graph-list {
-    margin-top: 1rem;
-    padding-top: 0.75rem;
+    margin-top: var(--cds-spacing-05);
+    padding-top: var(--cds-spacing-04);
     border-top: 1px solid var(--cds-border-subtle-01);
   }
 
@@ -323,7 +323,7 @@
     font-size: 0.8125rem;
     font-weight: 600;
     color: var(--cds-text-secondary);
-    margin: 0 0 0.5rem 0;
+    margin: 0 0 var(--cds-spacing-03) 0;
     text-transform: uppercase;
     letter-spacing: 0.5px;
   }
@@ -331,11 +331,11 @@
   .graph-items {
     display: flex;
     flex-direction: column;
-    gap: 0.5rem;
+    gap: var(--cds-spacing-03);
   }
 
   .graph-entry {
-    padding: 0.5rem;
+    padding: var(--cds-spacing-03);
     background: var(--cds-layer-02);
     border-radius: 4px;
     border-left: 3px solid var(--cds-border-interactive);
@@ -346,7 +346,7 @@
     color: var(--cds-text-primary);
     word-break: break-all;
     font-family: 'IBM Plex Mono', monospace;
-    margin-bottom: 0.25rem;
+    margin-bottom: var(--cds-spacing-02);
   }
 
   .graph-triple-count {

@@ -226,3 +226,54 @@ export const FullConfiguration: Story = {
     backgrounds: { default: 'g10' },
   },
 };
+
+/**
+ * Responsive Grid Layout Demonstration (Task 63)
+ * Showcases Carbon 2x Grid system with responsive behavior:
+ * - Large screens (≥1056px): 16 columns with 32px side padding
+ * - Medium screens (672px-1055px): 8 columns with 16px side padding
+ * - Small screens (<672px): 4 columns with 16px side padding
+ *
+ * Use Storybook's viewport toolbar to test different screen sizes:
+ * - Mobile (375px) - 4 columns
+ * - Tablet (768px) - 8 columns
+ * - Desktop (1024px, 1440px, 1920px) - 16 columns
+ */
+export const ResponsiveGridLayout: Story = {
+  args: {
+    instanceId: 'story-grid',
+    disablePersistence: true,
+    endpoint: {
+      url: 'https://dbpedia.org/sparql',
+      hideSelector: false,
+    },
+  },
+  parameters: {
+    docs: {
+      description: {
+        story:
+          'Demonstrates Carbon 2x Grid system with responsive column layout (16/8/4) and consistent side padding. Resize the viewport or use the viewport toolbar to see how the layout adapts at different breakpoints.',
+      },
+    },
+    viewport: {
+      viewports: {
+        mobile: {
+          name: 'Mobile',
+          styles: { width: '375px', height: '667px' },
+        },
+        tablet: {
+          name: 'Tablet',
+          styles: { width: '768px', height: '1024px' },
+        },
+        desktop: {
+          name: 'Desktop',
+          styles: { width: '1440px', height: '900px' },
+        },
+        wide: {
+          name: 'Wide Desktop',
+          styles: { width: '1920px', height: '1080px' },
+        },
+      },
+    },
+  },
+};
