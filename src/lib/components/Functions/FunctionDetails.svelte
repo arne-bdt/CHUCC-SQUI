@@ -84,7 +84,7 @@
   }
 
   .function-details section {
-    margin-bottom: 1.5rem;
+    margin-bottom: var(--cds-spacing-06);
   }
 
   .function-details section:last-child {
@@ -92,7 +92,7 @@
   }
 
   .function-details h4 {
-    margin-bottom: 0.5rem;
+    margin-bottom: var(--cds-spacing-03);
     margin-top: 0;
     font-weight: 600;
     font-size: 0.875rem;
@@ -112,8 +112,8 @@
   }
 
   .parameter-list li {
-    margin-bottom: 0.75rem;
-    padding: 0.75rem;
+    margin-bottom: var(--cds-spacing-04);
+    padding: var(--cds-spacing-04);
     background: var(--cds-layer-01, #f4f4f4);
     border-radius: 4px;
   }
@@ -124,19 +124,19 @@
 
   .parameter-list li code {
     font-weight: 600;
-    margin-right: 0.5rem;
+    margin-right: var(--cds-spacing-03);
     font-family: var(--cds-code-font-family, 'IBM Plex Mono', monospace);
     font-size: 0.875rem;
   }
 
   .param-description {
-    margin-top: 0.5rem !important;
+    margin-top: var(--cds-spacing-03) !important;
     color: var(--cds-text-secondary, #525252);
     font-size: 0.8125rem;
   }
 
   .example {
-    margin-bottom: 1rem;
+    margin-bottom: var(--cds-spacing-05);
   }
 
   .example:last-child {
@@ -154,7 +154,7 @@
 
   /* Ensure Tag components have proper spacing */
   .parameter-list li :global(.bx--tag) {
-    margin-right: 0.25rem;
+    margin-right: var(--cds-spacing-02);
     vertical-align: middle;
   }
 
