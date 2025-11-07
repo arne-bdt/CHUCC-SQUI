@@ -6,8 +6,7 @@ This directory contains documentation for the SPARQL Query UI Web Component (SQU
 
 **Status:**
 - ✅ **Tasks 51-56**: SPARQL Service Description Support - COMPLETED
-- ✅ **Task 60**: Remove CDN Dependencies - COMPLETED
-- 📝 **Tasks 61-62**: Self-Contained/Offline Support - PENDING
+- ✅ **Tasks 60-62**: Self-Contained/Offline Support - COMPLETED
 - 📝 **Tasks 63-68**: Carbon Design System Compliance - PENDING
 
 ## Task Index
@@ -63,17 +62,17 @@ These tasks ensure CHUCC-SQUI can operate in isolated environments without inter
   - Font override for offline operation
   - E2E tests to verify no external requests
 
-- **[Task 61: Add Configuration to Disable External Prefix Lookup](./61-add-offline-mode-config.md)** 📝 **MEDIUM PRIORITY**
-  - Add `enablePrefixLookup` config option to PrefixConfig
-  - Disable prefix.cc API calls for air-gapped environments
+- **[Task 61: Add Configuration to Disable External Prefix Lookup](./61-add-offline-mode-config.md)** ✅ **COMPLETED**
+  - Added `enablePrefixLookup` config option to PrefixConfig
+  - Disabled prefix.cc API calls for air-gapped environments
   - Clear, specific naming (not "offline mode")
-  - **Depends on**: Task 60
+  - URL parameter support for standalone builds
 
-- **[Task 62: Audit External Dependencies](./62-audit-external-dependencies.md)** 📝 **LOW PRIORITY**
-  - Security documentation
-  - Build checks for CDN usage
-  - Deployment guidelines
-  - **Depends on**: Task 60, 61
+- **[Task 62: Audit External Dependencies](./62-audit-external-dependencies.md)** ✅ **COMPLETED**
+  - Security documentation created (docs/SECURITY.md)
+  - Build checks for CDN usage implemented
+  - Deployment guidelines documented
+  - Complete offline capability verified
 
 ### SPARQL Service Description Support (Tasks 51-56)
 
@@ -139,7 +138,7 @@ These tasks implement [W3C SPARQL 1.1 Service Description](https://www.w3.org/TR
 
 All features passed quality checks including build, unit tests, integration tests, Storybook stories, and E2E tests.
 
-**Self-Contained/Offline Support (Task 60):**
+**Self-Contained/Offline Support (Tasks 60-62):**
 
 - ✅ **Task 60**: Remove CDN Dependencies - COMPLETED
   - Removed Carbon CSS CDN dependency (unpkg.com)
@@ -149,6 +148,22 @@ All features passed quality checks including build, unit tests, integration test
   - Added comprehensive E2E test suite (6 tests) to verify offline capability
   - All tests passing: Unit (1,098), E2E Standalone (6)
   - **Result**: Standalone build now works 100% offline with zero external network requests
+
+- ✅ **Task 61**: Add Configuration to Disable External Prefix Lookup - COMPLETED
+  - Added `enablePrefixLookup` option to PrefixConfig (default: true)
+  - Prefix service respects configuration and skips prefix.cc API when disabled
+  - URL parameter `disableExternalPrefixLookup=true` for standalone builds
+  - Documentation updated in README.md for air-gapped deployments
+  - Unit tests verify prefix lookup can be disabled
+  - Backward compatible (defaults to enabled)
+
+- ✅ **Task 62**: Audit External Dependencies - COMPLETED
+  - Created comprehensive security documentation (docs/SECURITY.md)
+  - Implemented automated build check script (scripts/check-external-deps.js)
+  - Added ESLint rule to prevent CDN usage in source code
+  - Documented offline deployment checklist and CSP recommendations
+  - All external dependencies audited and documented
+  - Build verification passes: `npm run check:external`
 
 ## Implemented Features
 
@@ -277,9 +292,9 @@ CHUCC-SQUI must fully comply with the IBM Carbon Design System to ensure:
 --cds-label-01: 0.75rem (12px);               /* Labels */
 ```
 
-## Previous Focus: Self-Contained Deployment (Tasks 60-62)
+## Previous Focus: Self-Contained Deployment (Tasks 60-62) ✅ COMPLETED
 
-CHUCC-SQUI must be capable of running in isolated environments without web access. This is a critical requirement for:
+CHUCC-SQUI is now fully capable of running in isolated environments without web access. This critical requirement supports:
 
 - Government/military deployments
 - Healthcare systems (HIPAA compliance)
@@ -287,10 +302,10 @@ CHUCC-SQUI must be capable of running in isolated environments without web acces
 - Air-gapped research environments
 - Offline development/testing
 
-**Implementation Order:**
-1. **Task 60** (CRITICAL): Remove CDN dependencies
-2. **Task 61** (MEDIUM): Add offline mode configuration
-3. **Task 62** (LOW): Audit and document
+**Implementation Completed:**
+1. ✅ **Task 60**: Removed all CDN dependencies
+2. ✅ **Task 61**: Added offline mode configuration
+3. ✅ **Task 62**: Audited and documented all external dependencies
 
 ## Development Guidelines
 
