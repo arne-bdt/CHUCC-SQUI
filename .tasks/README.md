@@ -8,8 +8,50 @@ This directory contains documentation for the SPARQL Query UI Web Component (SQU
 - ✅ **Tasks 51-56**: SPARQL Service Description Support - COMPLETED
 - ✅ **Task 60**: Remove CDN Dependencies - COMPLETED
 - 📝 **Tasks 61-62**: Self-Contained/Offline Support - PENDING
+- 📝 **Tasks 63-68**: Carbon Design System Compliance - PENDING
 
 ## Task Index
+
+### Carbon Design System Compliance (Tasks 63-68) 🆕
+
+These tasks ensure CHUCC-SQUI fully complies with the IBM Carbon Design System, implementing the 2x Grid, standardized spacing (8px rhythm), and typography scale for a consistent, professional, and accessible UI.
+
+- **[Task 63: Add Carbon Grid System to Main Layout](./63-add-carbon-grid-system.md)** 📝 **HIGH PRIORITY**
+  - Implement Carbon's 2x Grid (16/8/4 responsive columns)
+  - Add max-width container (1584px)
+  - Consistent gutters and responsive breakpoints
+  - **Start here** for Carbon compliance
+
+- **[Task 64: Standardize Spacing in Capabilities Components](./64-standardize-spacing-capabilities.md)** 📝 **MEDIUM PRIORITY**
+  - Replace hardcoded spacing with Carbon tokens
+  - Apply 8px rhythm to all padding/margin/gap
+  - 6 components: DatasetInfo, EndpointCapabilities, ExtensionList, LanguageSupport, FeatureList, FormatList
+  - **Can run parallel** with Task 63
+
+- **[Task 65: Standardize Spacing in Functions Components](./65-standardize-spacing-functions.md)** 📝 **MEDIUM PRIORITY**
+  - Replace hardcoded spacing with Carbon tokens
+  - 2 components: FunctionLibrary, FunctionDetails
+  - Consistent card padding and gaps
+  - **Can run parallel** with Tasks 63, 64
+
+- **[Task 66: Standardize Spacing in Remaining Components](./66-standardize-spacing-remaining.md)** 📝 **MEDIUM PRIORITY**
+  - Complete spacing standardization
+  - 4 components: PerformancePanel, QueryWarningDialog, QueryTabs, SplitPane
+  - Improve touch targets (tab close button)
+  - **Can run parallel** with Tasks 63-65
+
+- **[Task 67: Apply Carbon Typography Scale](./67-apply-carbon-typography.md)** 📝 **MEDIUM PRIORITY**
+  - Replace hardcoded font-size with Carbon type tokens
+  - Standardize headings, body text, labels, code
+  - Ensure consistent hierarchy and readability
+  - **Depends on**: Tasks 64-66 (spacing should be complete first)
+
+- **[Task 68: Verify Carbon Design System Compliance](./68-verify-carbon-compliance.md)** 📝 **HIGH PRIORITY**
+  - Comprehensive verification of Tasks 63-67
+  - Automated testing (build, lint, unit, E2E)
+  - Visual inspection checklist
+  - Accessibility verification (WCAG AA)
+  - **Depends on**: Tasks 63-67 (all previous tasks)
 
 ### Self-Contained & Offline Support (Tasks 60-62) 🆕
 
@@ -195,7 +237,47 @@ When adding dependencies:
 
 This project uses **Apache License 2.0**.
 
-## Current Focus: Self-Contained Deployment (Tasks 60-62)
+## Current Focus: Carbon Design System Compliance (Tasks 63-68)
+
+CHUCC-SQUI must fully comply with the IBM Carbon Design System to ensure:
+
+- **Consistent UX** - Professional, enterprise-grade interface
+- **Accessibility** - WCAG 2.1 AA compliance with proper contrast and spacing
+- **Maintainability** - Design tokens prevent arbitrary styling
+- **Responsive Design** - Grid system adapts to all screen sizes
+- **Theme Support** - Dark mode (g90, g100) works correctly
+
+**Implementation Order:**
+1. **Task 63** (HIGH): Add Carbon Grid System - Foundation for responsive layout
+2. **Tasks 64-66** (MEDIUM): Standardize Spacing - Can run in parallel
+3. **Task 67** (MEDIUM): Apply Typography Scale - After spacing is complete
+4. **Task 68** (HIGH): Comprehensive Verification - Final quality gate
+
+**Key Benefits:**
+- ✅ **8px Rhythm** - All spacing aligns to base unit (8, 16, 24, 32px)
+- ✅ **Responsive Grid** - 16/8/4 columns at large/medium/small breakpoints
+- ✅ **Type Scale** - Consistent heading hierarchy and text sizes
+- ✅ **No Arbitrary Values** - All spacing/typography uses design tokens
+- ✅ **Professional Appearance** - Matches IBM's enterprise design standards
+
+**Design Tokens Used:**
+```css
+/* Spacing (8px base unit) */
+--cds-spacing-03: 8px;   /* Small gap */
+--cds-spacing-04: 12px;  /* Medium gap */
+--cds-spacing-05: 16px;  /* Standard spacing */
+--cds-spacing-06: 24px;  /* Section spacing */
+--cds-spacing-07: 32px;  /* Large spacing */
+
+/* Typography (productive scale) */
+--cds-productive-heading-03: 1.25rem (20px);  /* Component heading */
+--cds-productive-heading-02: 1rem (16px);     /* Small heading */
+--cds-body-02: 1rem (16px);                   /* Body text */
+--cds-body-01: 0.875rem (14px);               /* Small body */
+--cds-label-01: 0.75rem (12px);               /* Labels */
+```
+
+## Previous Focus: Self-Contained Deployment (Tasks 60-62)
 
 CHUCC-SQUI must be capable of running in isolated environments without web access. This is a critical requirement for:
 
