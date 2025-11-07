@@ -100,7 +100,7 @@
     {#if top}
       {@render top()}
     {:else}
-      <div style="padding: 1rem; background: var(--cds-layer-01, #f4f4f4);">Top Pane</div>
+      <div style="padding: var(--cds-spacing-05); background: var(--cds-layer-01, #f4f4f4);">Top Pane</div>
     {/if}
   </div>
 
@@ -120,7 +120,7 @@
     {#if bottom}
       {@render bottom()}
     {:else}
-      <div style="padding: 1rem; background: var(--cds-layer-02, #e0e0e0);">Bottom Pane</div>
+      <div style="padding: var(--cds-spacing-05); background: var(--cds-layer-02, #e0e0e0);">Bottom Pane</div>
     {/if}
   </div>
 </div>

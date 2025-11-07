@@ -86,35 +86,35 @@
   .warning-content {
     display: flex;
     flex-direction: column;
-    gap: 1rem;
+    gap: var(--cds-spacing-05);
   }
 
   .intro {
-    margin: 0 0 0.5rem 0;
+    margin: 0 0 var(--cds-spacing-03) 0;
     font-size: 1rem;
     line-height: 1.5;
   }
 
   section {
-    margin: 0.5rem 0;
+    margin: var(--cds-spacing-03) 0;
   }
 
   h4 {
-    margin: 0 0 0.5rem 0;
+    margin: 0 0 var(--cds-spacing-03) 0;
     font-weight: 600;
     font-size: 0.875rem;
   }
 
   ul {
     margin: 0;
-    padding-left: 1.5rem;
+    padding-left: var(--cds-spacing-06);
   }
 
   .analysis-list,
   .recommendations-list {
     display: flex;
     flex-direction: column;
-    gap: 0.375rem;
+    gap: var(--cds-spacing-03);
   }
 
   li {
@@ -124,7 +124,7 @@
 
   code {
     background: var(--cds-field);
-    padding: 0.125rem 0.375rem;
+    padding: var(--cds-spacing-01) var(--cds-spacing-03);
     border-radius: 2px;
     font-family: 'IBM Plex Mono', monospace;
     font-size: 0.875rem;

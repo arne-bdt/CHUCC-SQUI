@@ -154,7 +154,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: 0.125rem;
+    padding: var(--cds-spacing-02);
     background: transparent;
     border: none;
     cursor: pointer;

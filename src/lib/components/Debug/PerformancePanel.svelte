@@ -192,8 +192,8 @@
   .performance-panel {
     display: flex;
     flex-direction: column;
-    gap: 1.5rem;
-    padding: 1rem;
+    gap: var(--cds-spacing-06);
+    padding: var(--cds-spacing-05);
     background: var(--cds-background);
     color: var(--cds-text-primary);
     height: 100%;
@@ -205,7 +205,7 @@
     justify-content: space-between;
     align-items: center;
     border-bottom: 1px solid var(--cds-border-subtle);
-    padding-bottom: 0.75rem;
+    padding-bottom: var(--cds-spacing-04);
   }
 
   .performance-panel__header h2 {
@@ -216,24 +216,24 @@
 
   .performance-panel__actions {
     display: flex;
-    gap: 0.5rem;
+    gap: var(--cds-spacing-03);
   }
 
   .performance-panel__stats h3,
   .performance-panel__metrics h3 {
     font-size: 1rem;
     font-weight: 600;
-    margin: 0 0 1rem 0;
+    margin: 0 0 var(--cds-spacing-05) 0;
   }
 
   .stats-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: 1rem;
+    gap: var(--cds-spacing-05);
   }
 
   .stat-card {
-    padding: 1rem;
+    padding: var(--cds-spacing-05);
     background: var(--cds-layer-01);
     border: 1px solid var(--cds-border-subtle);
     border-radius: 4px;
@@ -243,14 +243,14 @@
     font-size: 0.75rem;
     color: var(--cds-text-secondary);
     text-transform: uppercase;
-    margin-bottom: 0.25rem;
+    margin-bottom: var(--cds-spacing-02);
   }
 
   .stat-value {
     font-size: 1.5rem;
     font-weight: 600;
     color: var(--cds-text-primary);
-    margin-bottom: 0.25rem;
+    margin-bottom: var(--cds-spacing-02);
   }
 
   .stat-detail {
@@ -259,7 +259,7 @@
   }
 
   .empty-state {
-    padding: 2rem;
+    padding: var(--cds-spacing-07);
     text-align: center;
     color: var(--cds-text-secondary);
     font-style: italic;
@@ -279,7 +279,7 @@
 
   .metrics-table th {
     background: var(--cds-layer-01);
-    padding: 0.5rem;
+    padding: var(--cds-spacing-03);
     text-align: left;
     font-weight: 600;
     border-bottom: 1px solid var(--cds-border-subtle);
@@ -287,7 +287,7 @@
   }
 
   .metrics-table td {
-    padding: 0.5rem;
+    padding: var(--cds-spacing-03);
     border-bottom: 1px solid var(--cds-border-subtle-01);
   }
 
