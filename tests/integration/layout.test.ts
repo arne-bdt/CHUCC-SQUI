@@ -1,7 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import SparqlQueryUI from '../../src/SparqlQueryUI.svelte';
 import SplitPane from '../../src/lib/components/Layout/SplitPane.svelte';
-import EditorPlaceholder from '../../src/lib/components/Editor/EditorPlaceholder.svelte';
 import ResultsPlaceholder from '../../src/lib/components/Results/ResultsPlaceholder.svelte';
 
 /**
@@ -26,11 +25,6 @@ describe('Layout Integration', () => {
     it('should export SplitPane component', () => {
       expect(SplitPane).toBeDefined();
       expect(typeof SplitPane).toBe('function');
-    });
-
-    it('should export EditorPlaceholder component', () => {
-      expect(EditorPlaceholder).toBeDefined();
-      expect(typeof EditorPlaceholder).toBe('function');
     });
 
     it('should export ResultsPlaceholder component', () => {

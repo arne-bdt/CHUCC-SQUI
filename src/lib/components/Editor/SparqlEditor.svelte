@@ -309,30 +309,6 @@
   }
 
   /**
-   * OLD APPROACH: Sync store changes back to editor (for tab switching)
-   * REPLACED BY: Direct update in queryStore subscription above
-   * Keeping this commented out for reference
-   */
-  // $effect(() => {
-  //   if (!editorView) return;
-
-  //   const storeText = queryState.text;
-  //   const editorText = editorView.state.doc.toString();
-
-  //   debug.log('[SparqlEditor] $effect - checking if editor needs update:', {
-  //     storeText: storeText.substring(0, 50),
-  //     editorText: editorText.substring(0, 50),
-  //     needsUpdate: storeText !== editorText,
-  //   });
-
-  //   // Only update if content actually differs (prevents infinite loops)
-  //   if (storeText !== editorText) {
-  //     debug.log('[SparqlEditor] Updating editor to:', storeText.substring(0, 50));
-  //     setValue(storeText);
-  //   }
-  // });
-
-  /**
    * Update theme when theme store changes
    */
   $effect(() => {
