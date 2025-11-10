@@ -115,6 +115,8 @@ All licenses are compatible with Apache 2.0 distribution.
 ### For Developers
 
 1. **Never add CDN dependencies** - All assets must be bundled locally
+   - Run `npm run check:cdn` to verify no CDN URLs in source code
+   - This check is included in `npm run check` and CI pipeline
 2. **Audit new dependencies** - Check licenses and external requests
 3. **Run security checks** - Use `npm audit` regularly
 4. **Test offline** - Verify builds work without internet

@@ -259,7 +259,7 @@ npm test                    # All tests (unit + integration)
 npm run test:unit           # Unit tests only
 npm run test:integration    # Integration tests only
 npm run storybook           # Manual visual testing
-npm run test-storybook      # Automated Storybook tests (TODO)
+npm run test:storybook      # Automated Storybook tests
 npm run test:e2e:storybook  # E2E tests for Storybook stories (REQUIRED for UI components)
 ```
 

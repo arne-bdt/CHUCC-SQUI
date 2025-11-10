@@ -44,11 +44,8 @@ export default [js.configs.recommended, {
       argsIgnorePattern: '^_',
       varsIgnorePattern: '^_'
     }]
-    // TODO: Fix CDN detection rule - regex syntax issue with esquery
-    // 'no-restricted-syntax': ['error', {
-    //   selector: 'Literal[value=/https?:\\/\\/.*(?:unpkg|cdn|jsdelivr|cdnjs|fonts\\.googleapis|fonts\\.gstatic).*/]',
-    //   message: 'CDN URLs are not allowed. All assets must be bundled locally for offline/air-gapped deployment support.'
-    // }]
+    // Note: CDN detection is handled by scripts/check-cdn-urls.js (run via npm run check:cdn)
+    // ESLint's selector syntax doesn't support regex pattern matching in attribute values
   }
 }, {
   files: ['**/*.svelte'],
