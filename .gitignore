@@ -1,3 +1,6 @@
+# package lock  contains sensitive information
+package-lock.json
+
 # Dependencies
 node_modules/
 

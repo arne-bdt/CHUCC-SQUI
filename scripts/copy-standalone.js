@@ -137,6 +137,18 @@ html {
 fs.writeFileSync(path.join(cssDir, 'fonts-override.css'), fontsOverrideCss);
 console.log('  ✓ css/fonts-override.css (system fonts fallback)');
 
+// Copy favicon.ico
+console.log('Copying favicon...');
+const faviconSrc = path.join(rootDir, 'public/favicon.ico');
+const faviconDest = path.join(standaloneDir, 'favicon.ico');
+
+if (fs.existsSync(faviconSrc)) {
+  fs.copyFileSync(faviconSrc, faviconDest);
+  console.log('  ✓ favicon.ico');
+} else {
+  console.warn('  ⚠ Warning: favicon.ico not found in public/');
+}
+
 // Copy standalone.html
 console.log('Copying standalone.html...');
 const standaloneHtmlSrc = path.join(rootDir, 'standalone.html');
