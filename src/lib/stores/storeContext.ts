@@ -1,17 +1,12 @@
 /**
  * Store context utilities
  *
- * Provides type-safe access to stores from context with fallback to global instances
+ * Provides type-safe access to stores from Svelte context.
+ * All stores must be provided by a StoreProvider component.
+ * Throws clear errors if StoreProvider is not present (fail fast).
  */
 
-import { getContext, hasContext } from 'svelte';
-import { queryStore as globalQueryStore } from './queryStore';
-import { resultsStore as globalResultsStore } from './resultsStore';
-import { uiStore as globalUIStore } from './uiStore';
-import { defaultEndpoint as globalEndpointStore } from './endpointStore';
-import { serviceDescriptionStore as globalServiceDescriptionStore } from './serviceDescriptionStore';
-import { settingsStore as globalSettingsStore } from './settingsStore';
-import { themeStore as globalThemeStore } from './theme';
+import { getContext } from 'svelte';
 import type {
   QueryStoreContext,
   ResultsStoreContext,
@@ -19,85 +14,127 @@ import type {
 } from './contextKeys';
 
 /**
- * Get query store from context with fallback to global instance
+ * Get query store from context
  *
  * @returns Query store instance
+ * @throws Error if StoreProvider is not present
  */
 export function getQueryStore(): QueryStoreContext {
-  if (hasContext('queryStore')) {
-    return getContext<QueryStoreContext>('queryStore');
+  const store = getContext<QueryStoreContext>('queryStore');
+
+  if (!store) {
+    throw new Error(
+      '[SQUI] queryStore not found in context. Wrap your component in <StoreProvider>.'
+    );
   }
-  return globalQueryStore;
+
+  return store;
 }
 
 /**
- * Get results store from context with fallback to global instance
+ * Get results store from context
  *
  * @returns Results store instance
+ * @throws Error if StoreProvider is not present
  */
 export function getResultsStore(): ResultsStoreContext {
-  if (hasContext('resultsStore')) {
-    return getContext<ResultsStoreContext>('resultsStore');
+  const store = getContext<ResultsStoreContext>('resultsStore');
+
+  if (!store) {
+    throw new Error(
+      '[SQUI] resultsStore not found in context. Wrap your component in <StoreProvider>.'
+    );
   }
-  return globalResultsStore;
+
+  return store;
 }
 
 /**
- * Get UI store from context with fallback to global instance
+ * Get UI store from context
  *
  * @returns UI store instance
+ * @throws Error if StoreProvider is not present
  */
 export function getUIStore(): UIStoreContext {
-  if (hasContext('uiStore')) {
-    return getContext<UIStoreContext>('uiStore');
+  const store = getContext<UIStoreContext>('uiStore');
+
+  if (!store) {
+    throw new Error(
+      '[SQUI] uiStore not found in context. Wrap your component in <StoreProvider>.'
+    );
   }
-  return globalUIStore;
+
+  return store;
 }
 
 /**
- * Get endpoint store from context with fallback to global instance
+ * Get endpoint store from context
  *
  * @returns Endpoint store (writable)
+ * @throws Error if StoreProvider is not present
  */
 export function getEndpointStore() {
-  if (hasContext('endpointStore')) {
-    return getContext('endpointStore');
+  const store = getContext('endpointStore');
+
+  if (!store) {
+    throw new Error(
+      '[SQUI] endpointStore not found in context. Wrap your component in <StoreProvider>.'
+    );
   }
-  return globalEndpointStore;
+
+  return store;
 }
 
 /**
- * Get service description store from context with fallback to global instance
+ * Get service description store from context
  *
  * @returns Service description store instance
+ * @throws Error if StoreProvider is not present
  */
 export function getServiceDescriptionStore() {
-  if (hasContext('serviceDescriptionStore')) {
-    return getContext('serviceDescriptionStore');
+  const store = getContext('serviceDescriptionStore');
+
+  if (!store) {
+    throw new Error(
+      '[SQUI] serviceDescriptionStore not found in context. Wrap your component in <StoreProvider>.'
+    );
   }
-  return globalServiceDescriptionStore;
+
+  return store;
 }
 
 /**
- * Get settings store from context with fallback to global instance
+ * Get settings store from context
  *
  * @returns Settings store instance
+ * @throws Error if StoreProvider is not present
  */
 export function getSettingsStore() {
-  if (hasContext('settingsStore')) {
-    return getContext('settingsStore');
+  const store = getContext('settingsStore');
+
+  if (!store) {
+    throw new Error(
+      '[SQUI] settingsStore not found in context. Wrap your component in <StoreProvider>.'
+    );
   }
-  return globalSettingsStore;
+
+  return store;
 }
 
 /**
- * Get theme store from context with fallback to global instance
+ * Get theme store from context
  *
  * @returns Theme store instance
+ * @throws Error if StoreProvider is not present
  */
 export function getThemeStore() {
-  if (hasContext('themeStore')) {
-    return getContext('themeStore');
+  const store = getContext('themeStore');
+
+  if (!store) {
+    throw new Error(
+      '[SQUI] themeStore not found in context. Wrap your component in <StoreProvider>.'
+    );
   }
-  return globalThemeStore;
+
+  return store;
 }

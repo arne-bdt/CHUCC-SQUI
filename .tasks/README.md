@@ -60,7 +60,7 @@ These tasks implement context-based store instances using Svelte 5's context API
 **Solution:**
 - Create `StoreProvider` component for isolated store instances
 - Use Svelte context API to provide stores to child components
-- Automatic fallback to global stores for backward compatibility
+- One clean pattern - no backward compatibility needed (pre-release)
 - Enable proper state isolation in Storybook and multi-instance scenarios
 
 #### Task Breakdown
@@ -78,10 +78,10 @@ These tasks implement context-based store instances using Svelte 5's context API
   - Add TypeScript types for factory return values
 
 - **[Task 72: Refactor Components to Use Context](./72-refactor-components-context.md)** 🆕
-  - Update components to use `getQueryStore()`, etc.
+  - Update ALL components to use `getQueryStore()`, etc.
   - Replace direct store imports with context accessors
-  - Maintain backward compatibility via fallback to global stores
-  - Update SparqlEditor, RunButton, ResultsPlaceholder, and other components
+  - Complete migration (no gradual approach needed)
+  - Wrap main app in StoreProvider
 
 - **[Task 73: Update Storybook Configuration](./73-update-storybook-config.md)** 🆕
   - Add `withStoreProvider` decorator to `.storybook/preview.ts`
@@ -89,11 +89,11 @@ These tasks implement context-based store instances using Svelte 5's context API
   - Remove store manipulation from story decorators
   - Use story parameters for initial state
 
-- **[Task 74: Add Backward Compatibility Fallbacks](./74-backward-compatibility.md)** 🆕
-  - Enhanced context utilities with automatic fallback
-  - Migration utilities (`copyStoreState`, `syncWithGlobalStores`)
-  - Deprecation warnings in dev mode
-  - Migration guide documentation
+- **[Task 74: Finalize Context-Based Stores](./74-finalization.md)** 🆕
+  - Verify consistent pattern usage across codebase
+  - Document context-based store architecture
+  - Final cleanup and quality checks
+  - Simple, no backward compatibility needed (pre-release)
 
 - **[Task 75: Verify State Isolation with Tests](./75-verify-state-isolation.md)** 🆕
   - Comprehensive unit tests for StoreProvider
@@ -125,9 +125,9 @@ Task 75 (Verification & Testing)
 
 **For Development:**
 - ✅ Multiple independent component instances (tabs)
-- ✅ Better testability (mock stores per test)
-- ✅ Backward compatible (no breaking changes)
-- ✅ Incremental migration path
+- ✅ Better testability (isolated stores per test)
+- ✅ Clean architecture (one pattern, no technical debt)
+- ✅ Simple, maintainable codebase
 
 **For Architecture:**
 - ✅ Follows Svelte 5 best practices

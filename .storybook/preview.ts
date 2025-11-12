@@ -3,9 +3,7 @@ import 'carbon-components-svelte/css/all.css';
 import './preview.css';
 import type { CarbonTheme, ServiceDescription } from '../src/lib/types';
 import StoreProvider from '../src/lib/components/StoreProvider.svelte';
-import { serviceDescriptionStore } from '../src/lib/stores/serviceDescriptionStore';
 import { serviceDescriptionCache } from '../src/lib/services/serviceDescriptionCache';
-import { defaultEndpoint } from '../src/lib/stores/endpointStore';
 
 /**
  * Storybook preview configuration for SQUI
@@ -15,6 +13,9 @@ import { defaultEndpoint } from '../src/lib/stores/endpointStore';
 /**
  * Graph completion mock decorator - sets up service description for graph completion stories
  * This ensures the mock data is available BEFORE the CodeMirror editor initializes
+ *
+ * NOTE: This decorator runs AFTER withStoreProvider, so stores are provided via context.
+ * We only set up the cache here - the component will read from cache via its context stores.
  */
 const withGraphCompletionMocks: Decorator = (story, context) => {
   // Check if this is a graph completion story
@@ -26,7 +27,7 @@ const withGraphCompletionMocks: Decorator = (story, context) => {
                                   title.includes('sparqleditor') && storyName.includes('graph');
 
   if (isGraphCompletionStory && typeof window !== 'undefined') {
-    const mockEndpoint = 'http://example.org/sparql';
+    const mockEndpoint = context.parameters?.initialEndpoint || 'http://example.org/sparql';
 
     // Determine which mock data to use based on story name
     let mockServiceDesc: ServiceDescription;
@@ -147,15 +148,12 @@ const withGraphCompletionMocks: Decorator = (story, context) => {
       };
     }
 
-    // Set up the cache and store BEFORE rendering
-    // 1. Set cache so fetchForEndpoint can find it
+    // Set up the cache so components can fetch from it
+    // Components will use their context-based serviceDescriptionStore
     serviceDescriptionCache.set(mockEndpoint, mockServiceDesc);
 
-    // 2. Load from cache into store (this is synchronous when cached)
-    serviceDescriptionStore.fetchForEndpoint(mockEndpoint);
-
-    // 3. Set the default endpoint
-    defaultEndpoint.set(mockEndpoint);
+    // NOTE: No need to call fetchForEndpoint here - the component will do it
+    // using its context-based store when it mounts
   }
 
   return story();

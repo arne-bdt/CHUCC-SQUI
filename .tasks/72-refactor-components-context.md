@@ -2,7 +2,7 @@
 
 ## Overview
 
-Update all components to access stores via Svelte context instead of direct imports. This enables state isolation while maintaining backward compatibility through fallback to global stores.
+Update all components to access stores via Svelte context instead of direct imports. This is a **complete, one-time refactoring** - no gradual migration or backward compatibility needed since the project hasn't been released yet.
 
 ## Motivation
 
@@ -20,10 +20,10 @@ let queryState = $state($queryStore);
 - No state isolation in Storybook
 - Cannot have multiple independent instances
 
-### New Pattern (Context with Fallback)
+### New Pattern (Context-Based)
 
 ```typescript
-// ✅ NEW: Context with fallback to global
+// ✅ NEW: Context-based stores
 import { getQueryStore } from '../../stores/storeContext';
 
 const queryStore = getQueryStore();
@@ -31,26 +31,22 @@ let queryState = $state($queryStore);
 ```
 
 **Benefits:**
-- Uses context store if available (StoreProvider)
-- Falls back to global store if no context (backward compatible)
-- State isolation in Storybook and tabs
-- No breaking changes to existing code
+- Each StoreProvider creates isolated store instances
+- State isolation in Storybook and multi-instance scenarios
+- Clean dependency injection pattern
 
 ## Requirements
 
 ### 1. Components to Update
 
-Based on previous analysis, these components access stores:
+Based on store usage analysis:
 
-#### High Priority (Direct Store Usage)
-- ✅ `src/lib/components/Editor/SparqlEditor.svelte` - queryStore, resultsStore, endpointStore
-- ✅ `src/lib/components/Toolbar/RunButton.svelte` - queryStore, resultsStore, endpointStore
-- ✅ `src/lib/components/Results/ResultsPlaceholder.svelte` - resultsStore
-- ✅ `src/lib/components/Query/ResultFormatSelector.svelte` - queryStore
-- ✅ `src/SparqlQueryUI.svelte` - Multiple stores
-
-#### Already Using Context Pattern
-- `src/lib/components/Tabs/QueryTabs.svelte` - Already uses context for tabStore ✅
+#### Components with Direct Store Usage
+- `src/lib/components/Editor/SparqlEditor.svelte` - queryStore, resultsStore, endpointStore
+- `src/lib/components/Toolbar/RunButton.svelte` - queryStore, resultsStore, endpointStore
+- `src/lib/components/Results/ResultsPlaceholder.svelte` - resultsStore
+- `src/lib/components/Query/ResultFormatSelector.svelte` - queryStore
+- `src/SparqlQueryUI.svelte` - Multiple stores
 
 ### 2. Refactoring Pattern
 
@@ -73,7 +69,7 @@ Based on previous analysis, these components access stores:
 <script lang="ts">
   import { getQueryStore, getResultsStore, getEndpointStore } from '../../stores/storeContext';
 
-  // Get stores from context (or fallback to global)
+  // Get stores from context
   const queryStore = getQueryStore();
   const resultsStore = getResultsStore();
   const endpointStore = getEndpointStore();
@@ -85,160 +81,203 @@ Based on previous analysis, these components access stores:
 </script>
 ```
 
-### 3. Example: SparqlEditor.svelte
+### 3. Update storeContext.ts
 
-**Current (lines 31-34):**
+Create simple context accessors that throw if StoreProvider is missing:
+
 ```typescript
-import { queryStore } from '../../stores';
-import { resultsStore } from '../../stores/resultsStore';
-import { defaultEndpoint } from '../../stores/endpointStore';
-import { serviceDescriptionStore } from '../../stores/serviceDescriptionStore';
-```
+/**
+ * Store context utilities
+ *
+ * Provides type-safe access to stores from Svelte context.
+ * Throws error if StoreProvider is not present (fail fast).
+ */
 
-**Updated:**
-```typescript
-import {
-  getQueryStore,
-  getResultsStore,
-  getEndpointStore,
-  getServiceDescriptionStore
-} from '../../stores/storeContext';
-
-// Get stores from context (with fallback to global)
-const queryStore = getQueryStore();
-const resultsStore = getResultsStore();
-const defaultEndpoint = getEndpointStore();
-const serviceDescriptionStore = getServiceDescriptionStore();
-```
-
-### 4. Example: RunButton.svelte
-
-**Current (lines 9-11):**
-```typescript
-import { queryStore } from '../../stores/queryStore';
-import { resultsStore } from '../../stores/resultsStore';
-import { defaultEndpoint } from '../../stores/endpointStore';
-```
-
-**Updated:**
-```typescript
-import { getQueryStore, getResultsStore, getEndpointStore } from '../../stores/storeContext';
-
-// Get stores from context
-const queryStore = getQueryStore();
-const resultsStore = getResultsStore();
-const defaultEndpoint = getEndpointStore();
-```
-
-### 5. Services Integration
-
-Some services also access stores. Update them to accept store instances as parameters:
-
-**Before:**
-```typescript
-// src/lib/services/queryExecutionService.ts
-import { queryStore } from '../stores/queryStore';
-import { resultsStore } from '../stores/resultsStore';
-
-export const queryExecutionService = {
-  async executeQuery(params) {
-    const query = get(queryStore).text; // ❌ Uses global store
-    resultsStore.setLoading(true);
-    // ...
-  }
-};
-```
-
-**After:**
-```typescript
-// src/lib/services/queryExecutionService.ts
+import { getContext } from 'svelte';
+import type {
+  QueryStoreContext,
+  ResultsStoreContext,
+  UIStoreContext,
+} from './contextKeys';
 
 /**
- * Create query execution service instance
+ * Get query store from context
  *
- * @param stores - Store instances to use
+ * @throws Error if StoreProvider is not present
  */
-export function createQueryExecutionService(stores: {
-  queryStore: ReturnType<typeof createQueryStore>;
-  resultsStore: ReturnType<typeof createResultsStore>;
-}) {
-  return {
-    async executeQuery(params) {
-      const query = get(stores.queryStore).text; // ✅ Uses provided store
-      stores.resultsStore.setLoading(true);
-      // ...
-    }
-  };
+export function getQueryStore(): QueryStoreContext {
+  const store = getContext<QueryStoreContext>('queryStore');
+
+  if (!store) {
+    throw new Error(
+      '[SQUI] queryStore not found in context. Wrap your component in <StoreProvider>.'
+    );
+  }
+
+  return store;
 }
 
-// Global instance for backward compatibility
-export const queryExecutionService = createQueryExecutionService({
-  queryStore,
-  resultsStore,
-});
+/**
+ * Get results store from context
+ *
+ * @throws Error if StoreProvider is not present
+ */
+export function getResultsStore(): ResultsStoreContext {
+  const store = getContext<ResultsStoreContext>('resultsStore');
+
+  if (!store) {
+    throw new Error(
+      '[SQUI] resultsStore not found in context. Wrap your component in <StoreProvider>.'
+    );
+  }
+
+  return store;
+}
+
+/**
+ * Get UI store from context
+ *
+ * @throws Error if StoreProvider is not present
+ */
+export function getUIStore(): UIStoreContext {
+  const store = getContext<UIStoreContext>('uiStore');
+
+  if (!store) {
+    throw new Error(
+      '[SQUI] uiStore not found in context. Wrap your component in <StoreProvider>.'
+    );
+  }
+
+  return store;
+}
+
+/**
+ * Get endpoint store from context
+ *
+ * @throws Error if StoreProvider is not present
+ */
+export function getEndpointStore() {
+  const store = getContext('endpointStore');
+
+  if (!store) {
+    throw new Error(
+      '[SQUI] endpointStore not found in context. Wrap your component in <StoreProvider>.'
+    );
+  }
+
+  return store;
+}
+
+/**
+ * Get service description store from context
+ *
+ * @throws Error if StoreProvider is not present
+ */
+export function getServiceDescriptionStore() {
+  const store = getContext('serviceDescriptionStore');
+
+  if (!store) {
+    throw new Error(
+      '[SQUI] serviceDescriptionStore not found in context. Wrap your component in <StoreProvider>.'
+    );
+  }
+
+  return store;
+}
+
+/**
+ * Get settings store from context
+ *
+ * @throws Error if StoreProvider is not present
+ */
+export function getSettingsStore() {
+  const store = getContext('settingsStore');
+
+  if (!store) {
+    throw new Error(
+      '[SQUI] settingsStore not found in context. Wrap your component in <StoreProvider>.'
+    );
+  }
+
+  return store;
+}
+```
+
+### 4. Wrap Main App in StoreProvider
+
+Update `src/SparqlQueryUI.svelte`:
+
+```typescript
+<script lang="ts">
+  import StoreProvider from './lib/components/StoreProvider.svelte';
+  import SplitPane from './lib/components/Layout/SplitPane.svelte';
+  // ... other imports
+
+  // Props for initial configuration
+  interface Props {
+    initialEndpoint?: string;
+    initialQuery?: string;
+  }
+
+  let { initialEndpoint = '', initialQuery = '' }: Props = $props();
+</script>
+
+<StoreProvider {initialEndpoint} {initialQuery}>
+  <div class="sparql-query-ui">
+    <SplitPane>
+      <!-- App content -->
+    </SplitPane>
+  </div>
+</StoreProvider>
 ```
 
 ## Implementation Steps
 
-### Step 1: Update SparqlEditor.svelte
+### Step 1: Update storeContext.ts
+1. Remove fallback logic (no `hasContext()` checks)
+2. Throw clear errors when StoreProvider is missing
+3. Add JSDoc documentation
+4. Remove deprecation warnings (not needed)
+
+### Step 2: Update All Components
 1. Replace direct store imports with `getQueryStore()`, etc.
 2. Update all store references
-3. Test editor functionality
-4. Verify CodeMirror integration still works
+3. Test each component
+4. No need to test "without StoreProvider" - it should fail
 
-### Step 2: Update RunButton.svelte
-1. Replace direct store imports
-2. Update derived state computations
-3. Test button enabled/disabled logic
-4. Verify query execution works
-
-### Step 3: Update ResultsPlaceholder.svelte
-1. Replace `resultsStore` import
-2. Test loading state display
-3. Test empty state display
-4. Test error state display
-
-### Step 4: Update ResultFormatSelector.svelte
-1. Replace `queryStore` import
-2. Test format selection logic
-3. Verify query type detection
-
-### Step 5: Update SparqlQueryUI.svelte
-1. Replace all store imports
-2. Update component integration
+### Step 3: Wrap Main App
+1. Update `SparqlQueryUI.svelte` to use StoreProvider
+2. Pass initial values via props
 3. Test full application workflow
+4. Verify all features work
 
-### Step 6: Update Services (Optional Enhancement)
-1. Refactor services to accept store instances
-2. Create factory functions for services
-3. Maintain global service instances for backward compatibility
-
-### Step 7: Integration Testing
-1. Test components in isolation (no StoreProvider)
-2. Test components wrapped in StoreProvider
-3. Test multiple StoreProvider instances
-4. Test Storybook stories
+### Step 4: Update All Tests
+1. Update tests to use StoreProvider
+2. Remove tests for "global fallback" (doesn't exist)
+3. Ensure all tests pass
+4. Update test setup files if needed
 
 ## Acceptance Criteria
 
 ### Functional Requirements
 - ✅ All components use context-based store access
-- ✅ Components work with StoreProvider (context stores)
-- ✅ Components work without StoreProvider (global fallback)
+- ✅ Components throw clear error without StoreProvider
+- ✅ Main app wrapped in StoreProvider
 - ✅ No functional regressions
-- ✅ All features continue to work as before
+- ✅ All features continue to work
 
 ### Code Quality
 - ✅ Consistent pattern across all components
-- ✅ No direct store imports (except in tests)
+- ✅ No direct store imports in components
 - ✅ Clean, readable code
 - ✅ Proper TypeScript types
+- ✅ No backward compatibility code
 
 ### Testing
+- ✅ All tests updated to use StoreProvider
 - ✅ All existing tests still pass
-- ✅ New tests for context-based access
-- ✅ Test fallback behavior
-- ✅ Test isolation with multiple instances
+- ✅ Components fail fast without StoreProvider
+- ✅ No tests for "fallback" behavior
 
 ### Build & Quality Checks
 ```bash
@@ -257,47 +296,9 @@ For each component:
 - [ ] Call getter functions: `const queryStore = getQueryStore()`
 - [ ] Update all store references to use local const
 - [ ] Remove unused imports
-- [ ] Test component in isolation
-- [ ] Test component with StoreProvider
-- [ ] Update component tests if needed
-- [ ] Update Storybook story if needed
-
-## Example Test
-
-```typescript
-// tests/integration/RunButton.test.ts
-
-import { render, screen } from '@testing-library/svelte';
-import { describe, it, expect } from 'vitest';
-import RunButton from '$lib/components/Toolbar/RunButton.svelte';
-import StoreProvider from '$lib/components/StoreProvider.svelte';
-
-describe('RunButton with context stores', () => {
-  it('works with StoreProvider context', async () => {
-    render(StoreProvider, {
-      props: {
-        initialQuery: 'SELECT * WHERE { ?s ?p ?o }',
-        initialEndpoint: 'http://example.org/sparql',
-        children: RunButton,
-      },
-    });
-
-    const button = screen.getByRole('button', { name: /run/i });
-    expect(button).not.toBeDisabled(); // Has query and endpoint
-  });
-
-  it('falls back to global stores without StoreProvider', () => {
-    // Set global stores
-    queryStore.setText('SELECT * WHERE { ?s ?p ?o }');
-    defaultEndpoint.set('http://example.org/sparql');
-
-    render(RunButton);
-
-    const button = screen.getByRole('button', { name: /run/i });
-    expect(button).not.toBeDisabled();
-  });
-});
-```
+- [ ] Test component works with StoreProvider
+- [ ] Update component tests to use StoreProvider
+- [ ] Update Storybook story (handled in Task 73)
 
 ## Dependencies
 
@@ -307,35 +308,33 @@ describe('RunButton with context stores', () => {
 
 **Required for:**
 - Task 73: Update Storybook Configuration
-- Task 74: Add Backward Compatibility Fallbacks
+- Task 75: Verify State Isolation
+
+**Task 74 (Backward Compatibility)**: **DELETED** - Not needed
 
 ## Technical Notes
 
-### Why This Pattern Works
+### Why No Fallback?
 
-1. **Context Check**: `hasContext()` checks if StoreProvider is present
-2. **Automatic Fallback**: Falls back to global store if no context
-3. **No Breaking Changes**: Existing code works without modification
-4. **Incremental Migration**: Can update components one at a time
+- **No external users**: Project hasn't been released
+- **Simpler code**: One execution path, not two
+- **Fail fast**: Clear error messages if StoreProvider is missing
+- **No technical debt**: Clean architecture from day one
 
-### Performance Considerations
+### What About Global Stores?
 
-- **Minimal Overhead**: `getContext()` is a simple lookup
-- **No Additional Subscriptions**: Same reactivity as before
-- **One-Time Cost**: Context lookup happens once during component init
+**Option 1**: Keep global store exports for potential future use
+- Allows standalone component usage if needed later
+- No harm in keeping them
 
-### Migration Strategy
+**Option 2**: Remove global store exports entirely
+- Forces use of StoreProvider everywhere
+- Cleaner but less flexible
 
-**Phase 1**: Update core components (Editor, RunButton)
-**Phase 2**: Update secondary components (Results, Toolbar)
-**Phase 3**: Update remaining components
-**Phase 4**: Update services (optional)
-
-Each phase can be tested independently.
+**Recommendation**: Keep global exports but don't use them in components
 
 ## Future Enhancements
 
-- **Strict Mode**: Option to require StoreProvider (no fallback)
 - **DevTools**: Visualize which stores a component uses
 - **Performance Monitoring**: Track context lookups
 - **Type Guards**: Runtime validation of store types

@@ -17,6 +17,9 @@
   import { createQueryStore } from '../stores/queryStore';
   import { createResultsStore } from '../stores/resultsStore';
   import { createUIStore } from '../stores/uiStore';
+  import { createServiceDescriptionStore } from '../stores/serviceDescriptionStore';
+  import { createSettingsStore } from '../stores/settingsStore';
+  import { createThemeStore } from '../stores/theme';
   import { writable } from 'svelte/store';
 
   /**
@@ -37,6 +40,9 @@
   const queryStore = createQueryStore();
   const resultsStore = createResultsStore();
   const uiStore = createUIStore();
+  const serviceDescriptionStore = createServiceDescriptionStore();
+  const settingsStore = createSettingsStore();
+  const themeStore = createThemeStore();
   const endpointStore = writable(initialEndpoint);
 
   // Initialize with props if provided
@@ -51,6 +57,9 @@
   setContext('queryStore', queryStore);
   setContext('resultsStore', resultsStore);
   setContext('uiStore', uiStore);
+  setContext('serviceDescriptionStore', serviceDescriptionStore);
+  setContext('settingsStore', settingsStore);
+  setContext('themeStore', themeStore);
   setContext('endpointStore', endpointStore);
 </script>
 

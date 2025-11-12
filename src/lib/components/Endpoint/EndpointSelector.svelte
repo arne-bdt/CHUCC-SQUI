@@ -7,10 +7,14 @@
    */
 
   import { ComboBox } from 'carbon-components-svelte';
-  import { endpointCatalogue, defaultEndpoint } from '../../stores/endpointStore';
+  import { endpointCatalogue } from '../../stores/endpointStore';
+  import { getEndpointStore } from '../../stores/storeContext';
   import { validateEndpoint } from '../../utils/endpointValidator';
   import type { Endpoint } from '../../types';
   import type { ValidationResult } from '../../utils/endpointValidator';
+
+  // Get endpoint store from context
+  const defaultEndpoint = getEndpointStore();
 
   interface Props {
     /** Current endpoint URL value */
