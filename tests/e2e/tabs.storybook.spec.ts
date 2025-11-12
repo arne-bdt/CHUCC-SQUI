@@ -108,16 +108,10 @@ test.describe('Tab Switching in Storybook', () => {
     await expect(resultsPlaceholder).toBeVisible();
   });
 
-  // SKIPPED: This test fails due to a Storybook docs-mode limitation
-  // When multiple component instances are rendered on the docs page,
-  // the "Create new query tab" button click doesn't actually create a new tab.
-  // The button registers as clicked (shows [active] state in error context),
-  // but the tab count remains at 1 instead of increasing to 2.
-  // This appears to be a Storybook rendering issue specific to docs mode,
-  // not a bug in the component itself (all other tab tests pass).
-  // In real usage, users won't have multiple instances on the same page,
-  // so this edge case is unlikely to occur in production.
-  test.skip('should isolate tabs across multiple story instances on docs page', async ({ page }) => {
+  // This test verifies that the context-based store architecture provides
+  // true isolation between multiple component instances on the docs page.
+  // Previously skipped due to global store state leakage.
+  test('should isolate tabs across multiple story instances on docs page', async ({ page }) => {
     // Navigate to docs page where multiple stories render simultaneously
     await page.goto('/?path=/docs/squi-sparqlqueryui--docs');
     await page.waitForLoadState('networkidle');

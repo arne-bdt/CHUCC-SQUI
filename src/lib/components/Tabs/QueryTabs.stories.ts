@@ -92,16 +92,17 @@ export const WithQueryContent: Story = {
 export const DarkTheme: Story = {
   name: 'Dark Theme (G90)',
   args: {} as any,
+
   parameters: {
-    backgrounds: { default: 'dark' },
     docs: {
       description: {
         story:
           'QueryTabs in dark theme (G90). All interactive elements maintain proper contrast. ' +
           'Click the "+" button to add tabs and see the dark theme styling.',
       },
-    },
+    }
   },
+
   decorators: [
     (story) => {
       const container = document.createElement('div');
@@ -111,6 +112,12 @@ export const DarkTheme: Story = {
       return story();
     },
   ],
+
+  globals: {
+    backgrounds: {
+      value: "dark"
+    }
+  }
 };
 
 /**

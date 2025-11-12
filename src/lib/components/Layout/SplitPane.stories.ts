@@ -113,7 +113,9 @@ export const DarkTheme: Story = {
   args: {
     initialSplit: 0.5,
   },
-  parameters: {
-    backgrounds: { default: 'g90' },
+  globals: {
+    backgrounds: {
+      value: "g90"
+    }
   },
 };

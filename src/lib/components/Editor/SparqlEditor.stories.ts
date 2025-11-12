@@ -271,8 +271,10 @@ export const WhiteTheme: Story = {
   args: {
     initialValue: 'SELECT * WHERE { ?s ?p ?o }',
   },
-  parameters: {
-    backgrounds: { default: 'white' },
+  globals: {
+    backgrounds: {
+      value: "white"
+    }
   },
 };
 
@@ -284,8 +286,10 @@ export const G10Theme: Story = {
   args: {
     initialValue: 'SELECT * WHERE { ?s ?p ?o }',
   },
-  parameters: {
-    backgrounds: { default: 'g10' },
+  globals: {
+    backgrounds: {
+      value: "g10"
+    }
   },
 };
 
@@ -305,8 +309,10 @@ WHERE {
 }
 ORDER BY DESC(?value)`,
   },
-  parameters: {
-    backgrounds: { default: 'g90' },
+  globals: {
+    backgrounds: {
+      value: "g90"
+    }
   },
 };
 
@@ -326,8 +332,10 @@ WHERE {
 }
 ORDER BY DESC(?value)`,
   },
-  parameters: {
-    backgrounds: { default: 'g100' },
+  globals: {
+    backgrounds: {
+      value: "g100"
+    }
   },
 };
 

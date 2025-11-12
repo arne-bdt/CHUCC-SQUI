@@ -246,36 +246,40 @@ const preview: Preview = {
     },
     // Backgrounds configuration synchronized with themes
     backgrounds: {
-      default: 'white',
-      values: [
-        {
+      options: {
+        white: {
           name: 'white',
           value: '#ffffff',
         },
-        {
+
+        g10: {
           name: 'g10',
           value: '#f4f4f4',
         },
-        {
+
+        g90: {
           name: 'g90',
           value: '#262626',
         },
-        {
+
+        g100: {
           name: 'g100',
           value: '#161616',
-        },
-      ],
+        }
+      }
     },
     // Docs configuration
     docs: {
       toc: true,
     },
   },
+
   // Apply decorators - execution order is REVERSE: withTheme → withStoreProvider → withGraphCompletionMocks
   // 1. withTheme applies Carbon theme classes
   // 2. withStoreProvider creates isolated store instances
   // 3. withGraphCompletionMocks sets up service description mocks
   decorators: [withGraphCompletionMocks, withStoreProvider, withTheme],
+
   // Global types for toolbar controls
   globalTypes: {
     theme: {
@@ -294,6 +298,12 @@ const preview: Preview = {
       },
     },
   },
+
+  initialGlobals: {
+    backgrounds: {
+      value: 'white'
+    }
+  }
 };
 
 export default preview;

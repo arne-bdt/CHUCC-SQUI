@@ -222,8 +222,10 @@ export const FullConfiguration: Story = {
       timeout: 30000,
     },
   },
-  parameters: {
-    backgrounds: { default: 'g10' },
+  globals: {
+    backgrounds: {
+      value: "g10"
+    }
   },
 };
 
