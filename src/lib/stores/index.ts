@@ -3,32 +3,41 @@
  */
 
 // Theme store
-export { themeStore, CARBON_THEMES } from './theme';
-export type { ThemeState } from './theme';
+export { createThemeStore, themeStore, CARBON_THEMES } from './theme';
+export type { ThemeState, ThemeStore } from './theme';
 
 // Query store
-export { queryStore } from './queryStore';
+export { createQueryStore, queryStore } from './queryStore';
+export type { QueryStore } from './queryStore';
 
 // Results store
-export { resultsStore } from './resultsStore';
+export { createResultsStore, resultsStore } from './resultsStore';
+export type { ResultsStore } from './resultsStore';
 
 // UI store
-export { uiStore } from './uiStore';
-export type { UIState } from './uiStore';
+export { createUIStore, uiStore } from './uiStore';
+export type { UIState, UIStore } from './uiStore';
 
 // Endpoint store
-export { endpointCatalogue, defaultEndpoint } from './endpointStore';
+export {
+  createEndpointCatalogueStore,
+  createEndpointStore,
+  endpointCatalogue,
+  defaultEndpoint,
+} from './endpointStore';
+export type { EndpointCatalogueStore, EndpointStore } from './endpointStore';
 
 // Tab store
-export { tabStore } from './tabStore';
+export { createTabStore, tabStore } from './tabStore';
+export type { TabStore } from './tabStore';
 
 // Service description store
-export { serviceDescriptionStore } from './serviceDescriptionStore';
-export type { ServiceDescriptionState } from './serviceDescriptionStore';
+export { createServiceDescriptionStore, serviceDescriptionStore } from './serviceDescriptionStore';
+export type { ServiceDescriptionState, ServiceDescriptionStore } from './serviceDescriptionStore';
 
 // Settings store
-export { settingsStore } from './settingsStore';
-export type { Settings, ValidationSettings } from './settingsStore';
+export { createSettingsStore, settingsStore } from './settingsStore';
+export type { Settings, ValidationSettings, SettingsStore } from './settingsStore';
 
 // Re-export types from config
 export type { CarbonTheme } from '../types/config';
@@ -36,8 +45,3 @@ export type { CarbonTheme } from '../types/config';
 // Store context utilities
 export { getQueryStore, getResultsStore, getUIStore, getEndpointStore } from './storeContext';
 export type { QueryStoreContext, ResultsStoreContext, UIStoreContext } from './contextKeys';
-
-// Factory functions for creating store instances
-export { createQueryStore } from './queryStore';
-export { createResultsStore } from './resultsStore';
-export { createUIStore } from './uiStore';

@@ -1,5 +1,6 @@
 import { describe, it, expect, beforeEach } from 'vitest';
-import { queryStore } from '../../../src/lib/stores/queryStore';
+import { get } from 'svelte/store';
+import { createQueryStore, queryStore } from '../../../src/lib/stores/queryStore';
 import type { QueryState } from '../../../src/lib/types';
 
 describe('Query Store', () => {
@@ -187,6 +188,55 @@ describe('Query Store', () => {
       expect(currentState?.prefixes).toEqual({});
       expect(currentState?.type).toBeUndefined();
       unsubscribe();
+    });
+  });
+
+  describe('Factory Function', () => {
+    it('should create independent store instances', () => {
+      const store1 = createQueryStore();
+      const store2 = createQueryStore();
+
+      store1.setText('Query 1');
+      store2.setText('Query 2');
+
+      expect(get(store1).text).toBe('Query 1');
+      expect(get(store2).text).toBe('Query 2');
+    });
+
+    it('should not share state between instances', () => {
+      const store1 = createQueryStore();
+      const store2 = createQueryStore();
+
+      store1.setText('SELECT * WHERE { ?s ?p ?o }');
+      store1.setEndpoint('https://dbpedia.org/sparql');
+      store1.setPrefixes({ rdf: 'http://www.w3.org/1999/02/22-rdf-syntax-ns#' });
+
+      store2.setText('ASK WHERE { ?s ?p ?o }');
+      store2.setEndpoint('https://wikidata.org/sparql');
+
+      const state1 = get(store1);
+      const state2 = get(store2);
+
+      expect(state1.text).toBe('SELECT * WHERE { ?s ?p ?o }');
+      expect(state1.endpoint).toBe('https://dbpedia.org/sparql');
+      expect(state1.prefixes).toHaveProperty('rdf');
+
+      expect(state2.text).toBe('ASK WHERE { ?s ?p ?o }');
+      expect(state2.endpoint).toBe('https://wikidata.org/sparql');
+      expect(state2.prefixes).toEqual({});
+    });
+
+    it('should allow independent reset of instances', () => {
+      const store1 = createQueryStore();
+      const store2 = createQueryStore();
+
+      store1.setText('Query 1');
+      store2.setText('Query 2');
+
+      store1.reset();
+
+      expect(get(store1).text).toBe('');
+      expect(get(store2).text).toBe('Query 2');
     });
   });
 });

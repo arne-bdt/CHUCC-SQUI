@@ -1,5 +1,11 @@
 import { describe, it, expect, beforeEach } from 'vitest';
-import { endpointCatalogue, defaultEndpoint } from '../../../src/lib/stores/endpointStore';
+import { get } from 'svelte/store';
+import {
+  createEndpointCatalogueStore,
+  createEndpointStore,
+  endpointCatalogue,
+  defaultEndpoint,
+} from '../../../src/lib/stores/endpointStore';
 import type { Endpoint } from '../../../src/lib/types';
 
 describe('Endpoint Catalogue Store', () => {
@@ -369,6 +375,92 @@ describe('Default Endpoint Store', () => {
 
       expect(currentEndpoint).toBe('https://dbpedia.org/sparql');
       unsubscribe();
+    });
+  });
+});
+
+describe('Factory Functions', () => {
+  describe('createEndpointCatalogueStore', () => {
+    it('should create independent store instances', () => {
+      const store1 = createEndpointCatalogueStore();
+      const store2 = createEndpointCatalogueStore();
+
+      const newEndpoint: Endpoint = {
+        url: 'https://test1.org/sparql',
+        name: 'Test 1',
+        description: 'First test endpoint',
+      };
+
+      store1.addEndpoint(newEndpoint);
+
+      expect(get(store1)).toHaveLength(5); // 4 default + 1 new
+      expect(get(store2)).toHaveLength(4); // 4 default only
+    });
+
+    it('should not share state between instances', () => {
+      const store1 = createEndpointCatalogueStore();
+      const store2 = createEndpointCatalogueStore();
+
+      store1.removeEndpoint('https://dbpedia.org/sparql');
+      store2.removeEndpoint('https://query.wikidata.org/sparql');
+
+      const catalogue1 = get(store1);
+      const catalogue2 = get(store2);
+
+      expect(catalogue1).toHaveLength(3);
+      expect(catalogue2).toHaveLength(3);
+      expect(catalogue1.find((e) => e.name === 'DBpedia')).toBeUndefined();
+      expect(catalogue1.find((e) => e.name === 'Wikidata')).toBeDefined();
+      expect(catalogue2.find((e) => e.name === 'DBpedia')).toBeDefined();
+      expect(catalogue2.find((e) => e.name === 'Wikidata')).toBeUndefined();
+    });
+
+    it('should allow independent reset of instances', () => {
+      const store1 = createEndpointCatalogueStore();
+      const store2 = createEndpointCatalogueStore();
+
+      store1.setCatalogue([]);
+      store2.setCatalogue([]);
+
+      store1.reset();
+
+      expect(get(store1)).toHaveLength(4); // Reset to defaults
+      expect(get(store2)).toHaveLength(0); // Still empty
+    });
+  });
+
+  describe('createEndpointStore', () => {
+    it('should create independent store instances', () => {
+      const store1 = createEndpointStore();
+      const store2 = createEndpointStore();
+
+      store1.set('https://endpoint1.org/sparql');
+      store2.set('https://endpoint2.org/sparql');
+
+      expect(get(store1)).toBe('https://endpoint1.org/sparql');
+      expect(get(store2)).toBe('https://endpoint2.org/sparql');
+    });
+
+    it('should accept initial endpoint parameter', () => {
+      const store = createEndpointStore('https://initial.org/sparql');
+
+      expect(get(store)).toBe('https://initial.org/sparql');
+    });
+
+    it('should default to empty string without parameter', () => {
+      const store = createEndpointStore();
+
+      expect(get(store)).toBe('');
+    });
+
+    it('should not share state between instances', () => {
+      const store1 = createEndpointStore('https://endpoint1.org/sparql');
+      const store2 = createEndpointStore('https://endpoint2.org/sparql');
+
+      store1.update((current) => current + '/modified');
+
+      expect(get(store1)).toBe('https://endpoint1.org/sparql/modified');
+      expect(get(store2)).toBe('https://endpoint2.org/sparql');
     });
   });
 });

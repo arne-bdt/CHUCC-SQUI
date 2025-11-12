@@ -29,10 +29,14 @@ const defaultCatalogue: Endpoint[] = [
 ];
 
 /**
- * Endpoint catalogue store
- * Manages the list of available SPARQL endpoints
+ * Create a new endpoint catalogue store instance
+ *
+ * Factory function allows creating multiple independent store instances
+ * for state isolation (Storybook, tabs, tests)
+ *
+ * @returns Endpoint catalogue store with methods
  */
-function createEndpointCatalogueStore(): {
+export function createEndpointCatalogueStore(): {
   subscribe: (_run: (_value: Endpoint[]) => void) => () => void;
   addEndpoint: (_endpoint: Endpoint) => void;
   removeEndpoint: (_url: string) => void;
@@ -90,12 +94,40 @@ function createEndpointCatalogueStore(): {
 }
 
 /**
- * Global endpoint catalogue store
+ * Endpoint catalogue store type
+ */
+export type EndpointCatalogueStore = ReturnType<typeof createEndpointCatalogueStore>;
+
+/**
+ * Global endpoint catalogue store instance
+ *
+ * Use this for backward compatibility with existing code.
+ * New code should use context-based stores via getEndpointStore()
  */
 export const endpointCatalogue = createEndpointCatalogueStore();
 
 /**
- * Default/current endpoint store
- * Tracks the currently selected endpoint URL
+ * Create a new endpoint store instance
+ *
+ * Factory function allows creating multiple independent store instances
+ * for state isolation (Storybook, tabs, tests)
+ *
+ * @param initialEndpoint - Initial endpoint URL (default: '')
+ * @returns Writable store for endpoint URL
  */
-export const defaultEndpoint = writable<string>('');
+export function createEndpointStore(initialEndpoint = '') {
+  return writable<string>(initialEndpoint);
+}
+
+/**
+ * Endpoint store type
+ */
+export type EndpointStore = ReturnType<typeof createEndpointStore>;
+
+/**
+ * Global default endpoint store instance
+ *
+ * Use this for backward compatibility with existing code.
+ * New code should use context-based stores via getEndpointStore()
+ */
+export const defaultEndpoint = createEndpointStore();

@@ -134,6 +134,11 @@ export function createQueryStore(): {
 }
 
 /**
+ * Query store type
+ */
+export type QueryStore = ReturnType<typeof createQueryStore>;
+
+/**
  * Global query store instance
  */
 export const queryStore = createQueryStore();

@@ -104,6 +104,11 @@ export function createUIStore(): {
 }
 
 /**
+ * UI store type
+ */
+export type UIStore = ReturnType<typeof createUIStore>;
+
+/**
  * Global UI store instance
  */
 export const uiStore = createUIStore();

@@ -361,6 +361,11 @@ export function createTabStore(options: {
 }
 
 /**
+ * Tab store type
+ */
+export type TabStore = ReturnType<typeof createTabStore>;
+
+/**
  * Global tab store instance
  */
 export const tabStore = createTabStore();

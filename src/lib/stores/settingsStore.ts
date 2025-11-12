@@ -89,7 +89,12 @@ function saveSettings(settings: Settings): void {
 }
 
 /**
- * Create settings store
+ * Create a new settings store instance
+ *
+ * Factory function allows creating multiple independent store instances
+ * for state isolation (Storybook, tabs, tests)
+ *
+ * @returns Settings store with methods for managing application settings
  */
 export function createSettingsStore() {
   const initialSettings = loadSettings();
@@ -152,6 +157,14 @@ export function createSettingsStore() {
 }
 
 /**
- * Singleton settings store instance
+ * Settings store type
+ */
+export type SettingsStore = ReturnType<typeof createSettingsStore>;
+
+/**
+ * Global settings store instance
+ *
+ * Use this for backward compatibility with existing code.
+ * New code should use context-based stores via getSettingsStore()
  */
 export const settingsStore = createSettingsStore();

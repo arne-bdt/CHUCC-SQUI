@@ -52,9 +52,14 @@ function getThemeForScheme(scheme: 'light' | 'dark'): CarbonTheme {
 }
 
 /**
- * Creates a theme store for managing Carbon Design System themes
+ * Create a new theme store instance
+ *
+ * Factory function allows creating multiple independent store instances
+ * for state isolation (Storybook, tabs, tests)
+ *
+ * @returns Theme store with methods for managing Carbon Design System themes
  */
-function createThemeStore(): {
+export function createThemeStore(): {
   subscribe: (_run: (_value: ThemeState) => void) => () => void;
   setTheme: (_theme: CarbonTheme) => void;
   detectAndApplyPreference: () => void;
@@ -167,6 +172,14 @@ function createThemeStore(): {
 }
 
 /**
+ * Theme store type
+ */
+export type ThemeStore = ReturnType<typeof createThemeStore>;
+
+/**
  * Global theme store instance
+ *
+ * Use this for backward compatibility with existing code.
+ * New code should use context-based stores via getThemeStore()
  */
 export const themeStore = createThemeStore();

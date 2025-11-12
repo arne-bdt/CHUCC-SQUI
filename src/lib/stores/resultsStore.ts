@@ -412,6 +412,11 @@ function addLimitOffset(query: string, limit: number, offset: number): string {
 }
 
 /**
+ * Results store type
+ */
+export type ResultsStore = ReturnType<typeof createResultsStore>;
+
+/**
  * Global results store instance
  */
 export const resultsStore = createResultsStore();

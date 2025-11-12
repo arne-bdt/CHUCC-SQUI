@@ -27,8 +27,12 @@ export interface ServiceDescriptionState {
 }
 
 /**
- * Create service description store
- * Provides reactive access to service descriptions with caching
+ * Create a new service description store instance
+ *
+ * Factory function allows creating multiple independent store instances
+ * for state isolation (Storybook, tabs, tests)
+ *
+ * @returns Service description store with methods for managing SPARQL service descriptions
  */
 export function createServiceDescriptionStore() {
   const initialState: ServiceDescriptionState = {
@@ -250,6 +254,14 @@ export function createServiceDescriptionStore() {
 }
 
 /**
- * Singleton service description store instance
+ * Service description store type
+ */
+export type ServiceDescriptionStore = ReturnType<typeof createServiceDescriptionStore>;
+
+/**
+ * Global service description store instance
+ *
+ * Use this for backward compatibility with existing code.
+ * New code should use context-based stores via getServiceDescriptionStore()
  */
 export const serviceDescriptionStore = createServiceDescriptionStore();
