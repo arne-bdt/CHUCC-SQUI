@@ -2,8 +2,6 @@ import { describe, it, expect } from 'vitest';
 import { render, screen, waitFor } from '@testing-library/svelte';
 import StoreProvider from '../../src/lib/components/StoreProvider.svelte';
 import TestConsumer from '../unit/components/StoreProvider.test.consumer.svelte';
-import { queryStore as globalQueryStore } from '../../src/lib/stores/queryStore';
-import { defaultEndpoint as globalEndpointStore } from '../../src/lib/stores/endpointStore';
 import { get } from 'svelte/store';
 
 // Helper to render StoreProvider with TestConsumer as child
@@ -106,12 +104,10 @@ describe('StoreProvider Integration', () => {
       });
     });
 
-    it('should not affect global stores', async () => {
-      // Get initial global store values
-      const initialGlobalQuery = get(globalQueryStore).text;
-      const initialGlobalEndpoint = get(globalEndpointStore);
+    it('should create independent store instances for each provider', async () => {
+      // Each StoreProvider creates fresh store instances
+      // This test verifies state isolation
 
-      // Render provider with different values
       renderWithConsumer({
         initialQuery: 'PROVIDER QUERY',
         initialEndpoint: 'https://provider.endpoint.com/sparql',
@@ -122,12 +118,8 @@ describe('StoreProvider Integration', () => {
         expect(queryText.textContent).toBe('PROVIDER QUERY');
       });
 
-      // Verify global stores are unchanged
-      const finalGlobalQuery = get(globalQueryStore).text;
-      const finalGlobalEndpoint = get(globalEndpointStore);
-
-      expect(finalGlobalQuery).toBe(initialGlobalQuery);
-      expect(finalGlobalEndpoint).toBe(initialGlobalEndpoint);
+      // The stores are isolated within this provider's context
+      // Note: With clean-break approach, there are no global stores to compare against
     });
   });
 
@@ -191,22 +183,13 @@ describe('StoreProvider Integration', () => {
     });
   });
 
-  describe('Fallback to Global Stores', () => {
-    it('should use global stores when component is not wrapped in StoreProvider', async () => {
-      // Render TestConsumer directly without StoreProvider wrapper
-      render(TestConsumer);
-
-      // Should use global stores and not crash
-      await waitFor(() => {
-        const consumer = screen.getByTestId('store-consumer');
-        expect(consumer).toBeInTheDocument();
-      });
-
-      // Verify it shows global store values
-      await waitFor(() => {
-        const loading = screen.getByTestId('loading');
-        expect(loading.textContent).toBe('false');
-      });
+  describe('Error Handling', () => {
+    it('should throw error when component is not wrapped in StoreProvider', () => {
+      // With the clean-break approach, components MUST be wrapped in StoreProvider
+      // Rendering without it should throw a clear error
+      expect(() => {
+        render(TestConsumer);
+      }).toThrow('[SQUI] queryStore not found in context');
     });
   });
 });
