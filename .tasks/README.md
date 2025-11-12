@@ -8,6 +8,7 @@ This directory contains documentation for the SPARQL Query UI Web Component (SQU
 - ✅ **Tasks 51-56**: SPARQL Service Description Support - COMPLETED
 - ✅ **Tasks 60-62**: Self-Contained/Offline Support - COMPLETED
 - ✅ **Tasks 63-68**: Carbon Design System Compliance - COMPLETED
+- 🆕 **Tasks 70-75**: Context-Based Store State Isolation - PENDING
 
 ## Task Index
 
@@ -46,7 +47,95 @@ CHUCC-SQUI now fully complies with the IBM Carbon Design System, implementing th
   - Fixed 5 spacing violations to achieve 100% compliance
   - Verified accessibility (WCAG AA)
 
-### Self-Contained & Offline Support (Tasks 60-62) 🆕
+### Context-Based Store State Isolation (Tasks 70-75) 🆕
+
+These tasks implement context-based store instances using Svelte 5's context API, eliminating state isolation issues in Storybook and enabling multiple independent component instances (e.g., tabs).
+
+**Current Problem:**
+- Storybook stories share global store state
+- RunButton appears disabled across all stories in overview mode
+- One story's decorator affects all other stories
+- Cannot have multiple independent instances of the same component
+
+**Solution:**
+- Create `StoreProvider` component for isolated store instances
+- Use Svelte context API to provide stores to child components
+- Automatic fallback to global stores for backward compatibility
+- Enable proper state isolation in Storybook and multi-instance scenarios
+
+#### Task Breakdown
+
+- **[Task 70: Create StoreProvider Component](./70-create-store-provider.md)** 🆕
+  - Create `StoreProvider.svelte` for fresh store instantiation
+  - Provide stores via Svelte context
+  - Support initial values via props
+  - Create context key constants and accessor utilities
+
+- **[Task 71: Update Store Factory Functions](./71-update-store-factories.md)** 🆕
+  - Ensure all stores export factory functions
+  - Maintain global singleton exports for backward compatibility
+  - Use consistent naming: `create<StoreName>Store()`
+  - Add TypeScript types for factory return values
+
+- **[Task 72: Refactor Components to Use Context](./72-refactor-components-context.md)** 🆕
+  - Update components to use `getQueryStore()`, etc.
+  - Replace direct store imports with context accessors
+  - Maintain backward compatibility via fallback to global stores
+  - Update SparqlEditor, RunButton, ResultsPlaceholder, and other components
+
+- **[Task 73: Update Storybook Configuration](./73-update-storybook-config.md)** 🆕
+  - Add `withStoreProvider` decorator to `.storybook/preview.ts`
+  - Wrap all stories in StoreProvider for isolation
+  - Remove store manipulation from story decorators
+  - Use story parameters for initial state
+
+- **[Task 74: Add Backward Compatibility Fallbacks](./74-backward-compatibility.md)** 🆕
+  - Enhanced context utilities with automatic fallback
+  - Migration utilities (`copyStoreState`, `syncWithGlobalStores`)
+  - Deprecation warnings in dev mode
+  - Migration guide documentation
+
+- **[Task 75: Verify State Isolation with Tests](./75-verify-state-isolation.md)** 🆕
+  - Comprehensive unit tests for StoreProvider
+  - Integration tests for component isolation
+  - E2E tests for Storybook state isolation
+  - Manual verification checklist
+
+#### Implementation Flow
+
+```
+Task 70 (StoreProvider) + Task 71 (Factories)
+    ↓
+Task 72 (Refactor Components)
+    ↓
+Task 73 (Storybook Config)
+    ↓
+Task 74 (Backward Compatibility)
+    ↓
+Task 75 (Verification & Testing)
+```
+
+#### Key Benefits
+
+**For Storybook:**
+- ✅ Each story gets independent store instances
+- ✅ No state leakage in story overview mode
+- ✅ RunButton stories show correct enabled/disabled states
+- ✅ Stories don't affect each other
+
+**For Development:**
+- ✅ Multiple independent component instances (tabs)
+- ✅ Better testability (mock stores per test)
+- ✅ Backward compatible (no breaking changes)
+- ✅ Incremental migration path
+
+**For Architecture:**
+- ✅ Follows Svelte 5 best practices
+- ✅ Clean dependency injection pattern
+- ✅ Better separation of concerns
+- ✅ Easier debugging and state inspection
+
+### Self-Contained & Offline Support (Tasks 60-62) ✅ COMPLETED
 
 These tasks ensure CHUCC-SQUI can operate in isolated environments without internet access, meeting security and deployment requirements for air-gapped systems.
 
