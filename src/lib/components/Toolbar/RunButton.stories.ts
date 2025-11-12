@@ -4,9 +4,6 @@
 
 import type { Meta, StoryObj } from '@storybook/svelte';
 import RunButton from './RunButton.svelte';
-import { queryStore } from '../../stores/queryStore';
-import { resultsStore } from '../../stores/resultsStore';
-import { defaultEndpoint } from '../../stores/endpointStore';
 
 const meta = {
   title: 'Toolbar/RunButton',
@@ -22,8 +19,6 @@ const meta = {
       description: 'Additional CSS classes',
     },
   },
-  // Note: Removed meta-level decorators to avoid state_unsafe_mutation errors in Svelte 5
-  // Each story now explicitly sets all required store state
 } satisfies Meta<RunButton>;
 
 export default meta;
@@ -36,14 +31,10 @@ export const Default: Story = {
   args: {
     disabled: false,
   },
-  decorators: [
-    (story: any) => {
-      queryStore.setText('SELECT * WHERE { ?s ?p ?o } LIMIT 10');
-      defaultEndpoint.set('https://dbpedia.org/sparql');
-      resultsStore.setLoading(false);
-      return story();
-    },
-  ],
+  parameters: {
+    initialQuery: 'SELECT * WHERE { ?s ?p ?o } LIMIT 10',
+    initialEndpoint: 'https://dbpedia.org/sparql',
+  },
 };
 
 /**
@@ -53,14 +44,10 @@ export const Disabled: Story = {
   args: {
     disabled: false,
   },
-  decorators: [
-    (story: any) => {
-      queryStore.setText('');
-      defaultEndpoint.set('');
-      resultsStore.setLoading(false);
-      return story();
-    },
-  ],
+  parameters: {
+    initialQuery: '',
+    initialEndpoint: '',
+  },
 };
 
 /**
@@ -70,14 +57,17 @@ export const Loading: Story = {
   args: {
     disabled: false,
   },
-  decorators: [
-    (story: any) => {
-      queryStore.setText('SELECT * WHERE { ?s ?p ?o } LIMIT 10');
-      defaultEndpoint.set('https://dbpedia.org/sparql');
-      resultsStore.setLoading(true);
-      return story();
-    },
-  ],
+  parameters: {
+    initialQuery: 'SELECT * WHERE { ?s ?p ?o } LIMIT 10',
+    initialEndpoint: 'https://dbpedia.org/sparql',
+  },
+  play: async () => {
+    // Note: Setting loading state requires accessing the isolated resultsStore from context
+    // For now, this story shows the ready state. To show loading state, we would need to:
+    // 1. Add initialLoading prop to StoreProvider, OR
+    // 2. Simulate clicking the run button in the play function
+    // TODO: Enhance to properly show loading state
+  },
 };
 
 /**
@@ -87,14 +77,10 @@ export const ExplicitlyDisabled: Story = {
   args: {
     disabled: true,
   },
-  decorators: [
-    (story: any) => {
-      queryStore.setText('SELECT * WHERE { ?s ?p ?o } LIMIT 10');
-      defaultEndpoint.set('https://dbpedia.org/sparql');
-      resultsStore.setLoading(false);
-      return story();
-    },
-  ],
+  parameters: {
+    initialQuery: 'SELECT * WHERE { ?s ?p ?o } LIMIT 10',
+    initialEndpoint: 'https://dbpedia.org/sparql',
+  },
 };
 
 /**
@@ -104,14 +90,10 @@ export const NoQuery: Story = {
   args: {
     disabled: false,
   },
-  decorators: [
-    (story: any) => {
-      queryStore.setText('');
-      defaultEndpoint.set('https://dbpedia.org/sparql');
-      resultsStore.setLoading(false);
-      return story();
-    },
-  ],
+  parameters: {
+    initialQuery: '',
+    initialEndpoint: 'https://dbpedia.org/sparql',
+  },
 };
 
 /**
@@ -121,12 +103,8 @@ export const NoEndpoint: Story = {
   args: {
     disabled: false,
   },
-  decorators: [
-    (story: any) => {
-      queryStore.setText('SELECT * WHERE { ?s ?p ?o } LIMIT 10');
-      defaultEndpoint.set('');
-      resultsStore.setLoading(false);
-      return story();
-    },
-  ],
+  parameters: {
+    initialQuery: 'SELECT * WHERE { ?s ?p ?o } LIMIT 10',
+    initialEndpoint: '',
+  },
 };

@@ -2,8 +2,7 @@ import type { Preview, Decorator } from '@storybook/sveltekit';
 import 'carbon-components-svelte/css/all.css';
 import './preview.css';
 import type { CarbonTheme, ServiceDescription } from '../src/lib/types';
-import { resultsStore } from '../src/lib/stores/resultsStore';
-import { queryStore } from '../src/lib/stores/queryStore';
+import StoreProvider from '../src/lib/components/StoreProvider.svelte';
 import { serviceDescriptionStore } from '../src/lib/stores/serviceDescriptionStore';
 import { serviceDescriptionCache } from '../src/lib/services/serviceDescriptionCache';
 import { defaultEndpoint } from '../src/lib/stores/endpointStore';
@@ -163,21 +162,26 @@ const withGraphCompletionMocks: Decorator = (story, context) => {
 };
 
 /**
- * Store initialization decorator - ensures all stores are properly initialized
- * This prevents "Cannot convert undefined or null to object" errors
+ * Store Provider decorator - ensures each story gets isolated store instances
+ *
+ * This prevents state leakage between stories in the Storybook overview.
+ * Each story receives fresh store instances via Svelte context.
+ *
+ * CRITICAL: Must come BEFORE story-specific decorators in the decorator chain
  */
-const withStoreInit: Decorator = (story, context) => {
-  // Reset stores to initial state before each story
-  if (typeof window !== 'undefined') {
-    try {
-      resultsStore.reset();
-      queryStore.reset();
-    } catch (err) {
-      console.warn('Failed to reset stores:', err);
-    }
-  }
+const withStoreProvider: Decorator = (story, context) => {
+  // Get initial values from story parameters if provided
+  const initialEndpoint = context.parameters?.initialEndpoint || '';
+  const initialQuery = context.parameters?.initialQuery || '';
 
-  return story();
+  return {
+    Component: StoreProvider,
+    props: {
+      initialEndpoint,
+      initialQuery,
+      children: story(),
+    },
+  };
 };
 
 /**
@@ -269,8 +273,11 @@ const preview: Preview = {
       toc: true,
     },
   },
-  // Apply decorators - graph completion mocks first (before component renders), then store init, then theme
-  decorators: [withGraphCompletionMocks, withStoreInit, withTheme],
+  // Apply decorators - execution order is REVERSE: withTheme → withStoreProvider → withGraphCompletionMocks
+  // 1. withTheme applies Carbon theme classes
+  // 2. withStoreProvider creates isolated store instances
+  // 3. withGraphCompletionMocks sets up service description mocks
+  decorators: [withGraphCompletionMocks, withStoreProvider, withTheme],
   // Global types for toolbar controls
   globalTypes: {
     theme: {
