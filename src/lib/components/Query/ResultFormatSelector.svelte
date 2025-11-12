@@ -6,8 +6,7 @@
    */
 
   import { Select, SelectItem, Tag } from 'carbon-components-svelte';
-  import { serviceDescriptionStore } from '../../stores/serviceDescriptionStore.js';
-  import { queryStore } from '../../stores/queryStore.js';
+  import { getServiceDescriptionStore, getQueryStore } from '../../stores/storeContext.js';
   import { detectQueryType } from '../../utils/queryTypeDetection.js';
   import {
     getAvailableFormats,
@@ -16,6 +15,10 @@
     getFormatDescription,
   } from '../../utils/formatUtils.js';
   import type { QueryType } from '../../types/index.js';
+
+  // Get stores from context (with fallback to global)
+  const serviceDescriptionStore = getServiceDescriptionStore();
+  const queryStore = getQueryStore();
 
   /**
    * Props

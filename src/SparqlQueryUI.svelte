@@ -18,9 +18,8 @@
 
   import type { SquiConfig } from './lib/types';
   import type { CarbonTheme, ResultFormat } from './lib/types';
-  import { themeStore, queryStore, resultsStore } from './lib/stores';
+  import { getThemeStore, getQueryStore, getResultsStore, getEndpointStore } from './lib/stores/storeContext';
   import { createTabStore } from './lib/stores/tabStore';
-  import { defaultEndpoint } from './lib/stores/endpointStore';
   import { Toolbar, ToolbarContent } from 'carbon-components-svelte';
   import RunButton from './lib/components/Toolbar/RunButton.svelte';
   import EndpointSelector from './lib/components/Endpoint/EndpointSelector.svelte';
@@ -30,6 +29,12 @@
   import ResultsPlaceholder from './lib/components/Results/ResultsPlaceholder.svelte';
   import QueryTabs from './lib/components/Tabs/QueryTabs.svelte';
   import { setContext } from 'svelte';
+
+  // Get stores from context (with fallback to global)
+  const themeStore = getThemeStore();
+  const queryStore = getQueryStore();
+  const resultsStore = getResultsStore();
+  const defaultEndpoint = getEndpointStore();
 
   /**
    * Component props interface

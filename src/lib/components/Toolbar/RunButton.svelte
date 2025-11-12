@@ -6,11 +6,14 @@
 
   import { Button, ButtonSet, InlineLoading } from 'carbon-components-svelte';
   import { Play, StopOutline } from 'carbon-icons-svelte';
-  import { queryStore } from '../../stores/queryStore';
-  import { resultsStore } from '../../stores/resultsStore';
-  import { defaultEndpoint } from '../../stores/endpointStore';
+  import { getQueryStore, getResultsStore, getEndpointStore } from '../../stores/storeContext';
   import { queryExecutionService } from '../../services/queryExecutionService';
   import { t } from '../../localization';
+
+  // Get stores from context (with fallback to global)
+  const queryStore = getQueryStore();
+  const resultsStore = getResultsStore();
+  const defaultEndpoint = getEndpointStore();
 
   /**
    * Component props

@@ -9,6 +9,9 @@ import { queryStore as globalQueryStore } from './queryStore';
 import { resultsStore as globalResultsStore } from './resultsStore';
 import { uiStore as globalUIStore } from './uiStore';
 import { defaultEndpoint as globalEndpointStore } from './endpointStore';
+import { serviceDescriptionStore as globalServiceDescriptionStore } from './serviceDescriptionStore';
+import { settingsStore as globalSettingsStore } from './settingsStore';
+import { themeStore as globalThemeStore } from './theme';
 import type {
   QueryStoreContext,
   ResultsStoreContext,
@@ -61,4 +64,40 @@ export function getEndpointStore() {
     return getContext('endpointStore');
   }
   return globalEndpointStore;
+}
+
+/**
+ * Get service description store from context with fallback to global instance
+ *
+ * @returns Service description store instance
+ */
+export function getServiceDescriptionStore() {
+  if (hasContext('serviceDescriptionStore')) {
+    return getContext('serviceDescriptionStore');
+  }
+  return globalServiceDescriptionStore;
+}
+
+/**
+ * Get settings store from context with fallback to global instance
+ *
+ * @returns Settings store instance
+ */
+export function getSettingsStore() {
+  if (hasContext('settingsStore')) {
+    return getContext('settingsStore');
+  }
+  return globalSettingsStore;
+}
+
+/**
+ * Get theme store from context with fallback to global instance
+ *
+ * @returns Theme store instance
+ */
+export function getThemeStore() {
+  if (hasContext('themeStore')) {
+    return getContext('themeStore');
+  }
+  return globalThemeStore;
 }

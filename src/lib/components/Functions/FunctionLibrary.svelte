@@ -2,9 +2,12 @@
   import { Search, Button, Modal, Tabs, Tab, TabContent, Link } from 'carbon-components-svelte';
   import { Document } from 'carbon-icons-svelte';
   import FunctionDetails from './FunctionDetails.svelte';
-  import { serviceDescriptionStore } from '$lib/stores/serviceDescriptionStore';
+  import { getServiceDescriptionStore } from '$lib/stores/storeContext';
   import { buildFunctionCall, getFunctionName, filterFunctions } from '$lib/editor/utils/functionFormatting';
   import type { ExtensionFunction, ExtensionAggregate } from '$lib/types';
+
+  // Get store from context (with fallback to global)
+  const serviceDescriptionStore = getServiceDescriptionStore();
 
   interface Props {
     /** Currently active endpoint URL */

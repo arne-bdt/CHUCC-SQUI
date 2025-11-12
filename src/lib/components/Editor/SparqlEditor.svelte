@@ -28,16 +28,26 @@
   import { extensionFunctionCompletion } from '../../editor/extensions/functionCompletion';
   import { functionSignatureTooltip } from '../../editor/extensions/functionSignatureTooltip';
   import { templateService } from '../../services/templateService';
-  import { queryStore } from '../../stores';
-  import { resultsStore } from '../../stores/resultsStore';
-  import { defaultEndpoint } from '../../stores/endpointStore';
-  import { serviceDescriptionStore } from '../../stores/serviceDescriptionStore';
-  import { settingsStore } from '../../stores/settingsStore';
+  import {
+    getQueryStore,
+    getResultsStore,
+    getEndpointStore,
+    getServiceDescriptionStore,
+    getSettingsStore,
+    getThemeStore,
+  } from '../../stores/storeContext';
   import { queryExecutionService } from '../../services/queryExecutionService';
-  import { themeStore } from '../../stores/theme';
   import { t } from '../../localization';
   import type { CarbonTheme, ServiceDescription } from '../../types';
   import { debug } from '../../utils/debug';
+
+  // Get stores from context (with fallback to global)
+  const queryStore = getQueryStore();
+  const resultsStore = getResultsStore();
+  const defaultEndpoint = getEndpointStore();
+  const serviceDescriptionStore = getServiceDescriptionStore();
+  const settingsStore = getSettingsStore();
+  const themeStore = getThemeStore();
 
   /**
    * Component props

@@ -5,7 +5,7 @@
 <script lang="ts">
   import { SkeletonText, Button, ExpandableTile } from 'carbon-components-svelte';
   import { Renew } from 'carbon-icons-svelte';
-  import { serviceDescriptionStore } from '../../stores/serviceDescriptionStore';
+  import { getServiceDescriptionStore } from '../../stores/storeContext';
 
   import LanguageSupport from './LanguageSupport.svelte';
   import FeatureList from './FeatureList.svelte';
@@ -13,6 +13,9 @@
   import ExtensionList from './ExtensionList.svelte';
   import DatasetInfo from './DatasetInfo.svelte';
   import FunctionLibrary from '../Functions/FunctionLibrary.svelte';
+
+  // Get store from context (with fallback to global)
+  const serviceDescriptionStore = getServiceDescriptionStore();
 
   interface Props {
     /** SPARQL endpoint URL to show capabilities for */

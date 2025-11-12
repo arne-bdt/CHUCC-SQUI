@@ -5,9 +5,7 @@
    * Task 36: Added view switching between Table and Raw views
    */
 
-  import { resultsStore } from '../../stores/resultsStore';
-  import { queryStore } from '../../stores/queryStore';
-  import { themeStore } from '../../stores/theme';
+  import { getResultsStore, getQueryStore, getThemeStore } from '../../stores/storeContext';
   import ErrorNotification from './ErrorNotification.svelte';
   import DataTable from './DataTable.svelte';
   import RawView from './RawView.svelte';
@@ -20,6 +18,11 @@
   import type { QueryError, SparqlJsonResults, ResultFormat } from '../../types';
   import type { ParsedTableData, ParsedAskResult } from '../../utils/resultsParser';
   import { t } from '../../localization';
+
+  // Get stores from context (with fallback to global)
+  const resultsStore = getResultsStore();
+  const queryStore = getQueryStore();
+  const themeStore = getThemeStore();
 
   interface Props {
     /** CSS class for the placeholder */
