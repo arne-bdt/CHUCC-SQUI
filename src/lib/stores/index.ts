@@ -32,3 +32,12 @@ export type { Settings, ValidationSettings } from './settingsStore';
 
 // Re-export types from config
 export type { CarbonTheme } from '../types/config';
+
+// Store context utilities
+export { getQueryStore, getResultsStore, getUIStore, getEndpointStore } from './storeContext';
+export type { QueryStoreContext, ResultsStoreContext, UIStoreContext } from './contextKeys';
+
+// Factory functions for creating store instances
+export { createQueryStore } from './queryStore';
+export { createResultsStore } from './resultsStore';
+export { createUIStore } from './uiStore';
