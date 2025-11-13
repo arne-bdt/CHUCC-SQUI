@@ -35,6 +35,11 @@
   let editorContainer = $state<HTMLDivElement | undefined>();
   let editorView: EditorView | null = null;
 
+  // Track previous values to detect actual changes
+  let previousData = $state<string | undefined>(undefined);
+  let previousContentType = $state<string | undefined>(undefined);
+  let previousTheme = $state<string | undefined>(undefined);
+
   // Determine if we should use dark theme
   const isDarkTheme = $derived(theme === 'g90' || theme === 'g100');
 
@@ -96,6 +101,10 @@
 
     try {
       initializeEditor();
+      // Track initial values after first render
+      previousData = data;
+      previousContentType = contentType;
+      previousTheme = theme;
     } catch (error) {
       console.error('RawView: Failed to initialize CodeMirror', error);
     }
@@ -109,14 +118,30 @@
     };
   });
 
-  // Re-initialize editor when data, contentType, or theme changes
+  // Re-initialize editor ONLY when data, contentType, or theme ACTUALLY changes
   $effect(() => {
-    if (data !== undefined || contentType !== undefined || theme !== undefined) {
-      if (isTestEnv) {
-        return;
-      }
+    // Skip if in test environment
+    if (isTestEnv) {
+      return;
+    }
+
+    // Skip if editor hasn't been initialized yet (onMount handles first init)
+    if (previousData === undefined) {
+      return;
+    }
+
+    // Only reinitialize if values have actually changed
+    const dataChanged = data !== previousData;
+    const contentTypeChanged = contentType !== previousContentType;
+    const themeChanged = theme !== previousTheme;
+
+    if (dataChanged || contentTypeChanged || themeChanged) {
       try {
         initializeEditor();
+        // Update tracked values
+        previousData = data;
+        previousContentType = contentType;
+        previousTheme = theme;
       } catch (error) {
         console.error('RawView: Failed to re-initialize CodeMirror', error);
       }
