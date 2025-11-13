@@ -170,6 +170,19 @@
     _touched = false;
     _validationResult = { valid: true };
   }
+
+  /**
+   * Compute the display text for the input field
+   * Shows the endpoint name (e.g., "DBpedia") if found in catalogue,
+   * otherwise shows the URL
+   */
+  const displayText = $derived.by(() => {
+    if (!value) return '';
+    // Find matching item in catalogue
+    const item = items.find((it) => it.id === value || it.url === value);
+    // Return the friendly name if found, otherwise the URL
+    return item ? item.text : value;
+  });
 </script>
 
 <div class="endpoint-selector-container {className}">
@@ -183,6 +196,7 @@
     {warn}
     {warnText}
     selectedId={value}
+    value={displayText}
     shouldFilterItem={(item, inputValue) => {
       // Filter by name or URL
       const search = inputValue.toLowerCase();
