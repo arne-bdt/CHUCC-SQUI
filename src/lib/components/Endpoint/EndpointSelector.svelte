@@ -170,32 +170,6 @@
     _touched = false;
     _validationResult = { valid: true };
   }
-
-  /**
-   * Local state for selected ID (two-way binding with ComboBox)
-   */
-  let _selectedId = $state<string>(value);
-
-  /**
-   * Local state for input text value (two-way binding with ComboBox)
-   */
-  let _inputValue = $state<string>('');
-
-  /**
-   * Initialize _inputValue and _selectedId from the incoming value prop
-   */
-  $effect(() => {
-    // When value prop changes externally, update local state
-    if (value) {
-      _selectedId = value;
-      // Find the item in catalogue to get its text
-      const item = items.find((it) => it.url === value || it.id === value);
-      _inputValue = item ? item.text : value;
-    } else {
-      _selectedId = '';
-      _inputValue = '';
-    }
-  });
 </script>
 
 <div class="endpoint-selector-container {className}">
@@ -208,8 +182,7 @@
     {invalidText}
     {warn}
     {warnText}
-    bind:selectedId={_selectedId}
-    bind:value={_inputValue}
+    selectedId={value}
     shouldFilterItem={(item, inputValue) => {
       // Filter by name or URL
       const search = inputValue.toLowerCase();
