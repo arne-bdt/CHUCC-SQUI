@@ -172,17 +172,30 @@
   }
 
   /**
-   * Find selected item from catalogue
+   * Local state for selected ID (two-way binding with ComboBox)
    */
-  const selectedItem = $derived(
-    items.find((item) => item.url === value) || { id: value, text: value, url: value }
-  );
+  let _selectedId = $state<string>(value);
 
   /**
-   * Display value for the ComboBox input
-   * Shows the name (text) if in catalogue, otherwise shows the URL
+   * Local state for input text value (two-way binding with ComboBox)
    */
-  const displayValue = $derived(selectedItem?.text || value || '');
+  let _inputValue = $state<string>('');
+
+  /**
+   * Initialize _inputValue and _selectedId from the incoming value prop
+   */
+  $effect(() => {
+    // When value prop changes externally, update local state
+    if (value) {
+      _selectedId = value;
+      // Find the item in catalogue to get its text
+      const item = items.find((it) => it.url === value || it.id === value);
+      _inputValue = item ? item.text : value;
+    } else {
+      _selectedId = '';
+      _inputValue = '';
+    }
+  });
 </script>
 
 <div class="endpoint-selector-container {className}">
@@ -195,8 +208,8 @@
     {invalidText}
     {warn}
     {warnText}
-    selectedId={selectedItem?.id}
-    value={displayValue}
+    bind:selectedId={_selectedId}
+    bind:value={_inputValue}
     shouldFilterItem={(item, inputValue) => {
       // Filter by name or URL
       const search = inputValue.toLowerCase();
