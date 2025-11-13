@@ -177,6 +177,12 @@
   const selectedItem = $derived(
     items.find((item) => item.url === value) || { id: value, text: value, url: value }
   );
+
+  /**
+   * Display value for the ComboBox input
+   * Shows the name (text) if in catalogue, otherwise shows the URL
+   */
+  const displayValue = $derived(selectedItem?.text || value || '');
 </script>
 
 <div class="endpoint-selector-container {className}">
@@ -190,6 +196,7 @@
     {warn}
     {warnText}
     selectedId={selectedItem?.id}
+    value={displayValue}
     shouldFilterItem={(item, inputValue) => {
       // Filter by name or URL
       const search = inputValue.toLowerCase();
