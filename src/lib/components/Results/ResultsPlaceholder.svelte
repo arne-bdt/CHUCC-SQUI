@@ -82,21 +82,19 @@
   const currentView = $derived($resultsStore?.view || 'table');
 
   // Task 36: View selection state (bound to RadioButtonGroup)
-  // Sync with store using $effect
-  let selectedView = $state<'table' | 'raw'>('table');
+  // Initialize from store, then user interactions update both local state and store
+  let selectedView = $state<'table' | 'raw'>($resultsStore?.view || 'table');
 
-  // Sync selectedView with store
-  $effect(() => {
-    if ($resultsStore?.view) {
-      selectedView = $resultsStore.view;
-    }
-  });
+  // Track previous view to avoid unnecessary store updates
+  let previousSelectedView = $state<'table' | 'raw' | null>(null);
 
-  // When selectedView changes (from user interaction), update store
+  // Single-direction sync: when selectedView changes (from user interaction), update store
+  // This effect runs when selectedView changes, but only updates store if value actually changed
   $effect(() => {
-    if ($resultsStore && $resultsStore.view !== selectedView) {
+    if (previousSelectedView !== null && selectedView !== previousSelectedView) {
       resultsStore.setView(selectedView);
     }
+    previousSelectedView = selectedView;
   });
 
   // Task 38: Handle download
