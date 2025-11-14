@@ -147,11 +147,9 @@ export class QueryExecutionService {
           resultsStore.setProgress({ phase: 'parsing', startTime: Date.now() });
           const parsed = parseResults(parsedData);
 
-          // For table results, update store with parsed data
-          if ('rows' in parsed) {
-            // Update results store with execution time and prefixes
-            resultsStore.setData(parsedData, executionTime);
-          }
+          // CRITICAL FIX: Always update store with results, not just if 'rows' exist
+          // ResultsPlaceholder can handle SELECT (with rows), ASK (boolean), and other query types
+          resultsStore.setData(parsedData, executionTime);
         } else if (isWorkerSupported()) {
           // Worker path: non-blocking parse (large results)
           resultsStore.setProgress({
@@ -183,18 +181,16 @@ export class QueryExecutionService {
             // Fallback to main thread parsing
             resultsStore.setProgress({ phase: 'parsing', startTime: Date.now() });
             const parsed = parseResults(parsedData);
-            if ('rows' in parsed) {
-              resultsStore.setData(parsedData, executionTime);
-            }
+            // CRITICAL FIX: Always update store, not just if 'rows' exist
+            resultsStore.setData(parsedData, executionTime);
           }
         } else {
           // Fallback: Workers not supported, use main thread
           console.warn('Web Workers not supported, using main thread parsing');
           resultsStore.setProgress({ phase: 'parsing', startTime: Date.now() });
           const parsed = parseResults(parsedData);
-          if ('rows' in parsed) {
-            resultsStore.setData(parsedData, executionTime);
-          }
+          // CRITICAL FIX: Always update store, not just if 'rows' exist
+          resultsStore.setData(parsedData, executionTime);
         }
       }
 
