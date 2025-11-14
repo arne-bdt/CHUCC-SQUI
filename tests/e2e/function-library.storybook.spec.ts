@@ -20,8 +20,8 @@ test.describe('FunctionLibrary Component', () => {
       `${STORYBOOK_URL}/iframe.html?id=components-functions-functionlibrary--with-functions&viewMode=story`
     );
 
-    // Wait for component to render and play function to complete
-    await page.waitForTimeout(1500);
+    // Wait for Storybook to fully initialize story
+    await page.waitForTimeout(3000);
 
     // Check for the header
     await expect(page.getByText('Extension Functions')).toBeVisible({ timeout: 5000 });
@@ -42,7 +42,7 @@ test.describe('FunctionLibrary Component', () => {
       `${STORYBOOK_URL}/iframe.html?id=components-functions-functionlibrary--with-functions&viewMode=story`
     );
 
-    await page.waitForTimeout(1500);
+    await page.waitForTimeout(3000);
 
     // Check Functions tab is active by default
     const functionsTab = page.getByRole('tab', { name: /Functions/ });
@@ -61,7 +61,7 @@ test.describe('FunctionLibrary Component', () => {
       `${STORYBOOK_URL}/iframe.html?id=components-functions-functionlibrary--with-functions&viewMode=story`
     );
 
-    await page.waitForTimeout(1500);
+    await page.waitForTimeout(3000);
 
     // Get initial count of Details buttons (one per function)
     const detailsButtons = page.getByRole('button', { name: 'Details' });
@@ -87,7 +87,7 @@ test.describe('FunctionLibrary Component', () => {
       `${STORYBOOK_URL}/iframe.html?id=components-functions-functionlibrary--with-functions&viewMode=story`
     );
 
-    await page.waitForTimeout(1500);
+    await page.waitForTimeout(3000);
 
     // Check for Details button (at least one should be visible)
     const detailsButton = page.getByRole('button', { name: 'Details' }).first();
@@ -103,7 +103,7 @@ test.describe('FunctionLibrary Component', () => {
       `${STORYBOOK_URL}/iframe.html?id=components-functions-functionlibrary--empty-functions&viewMode=story`
     );
 
-    await page.waitForTimeout(1500);
+    await page.waitForTimeout(3000);
 
     // Check for empty state message
     await expect(page.getByText(/No extension functions available/)).toBeVisible();
@@ -114,7 +114,7 @@ test.describe('FunctionLibrary Component', () => {
       `${STORYBOOK_URL}/iframe.html?id=components-functions-functionlibrary--many-functions&viewMode=story`
     );
 
-    await page.waitForTimeout(1500);
+    await page.waitForTimeout(3000);
 
     // Check that multiple functions are rendered
     const detailsButtons = page.getByRole('button', { name: 'Details' });
@@ -137,7 +137,7 @@ test.describe('FunctionLibrary Component', () => {
       `${STORYBOOK_URL}/iframe.html?id=components-functions-functionlibrary--only-aggregates&viewMode=story`
     );
 
-    await page.waitForTimeout(1500);
+    await page.waitForTimeout(3000);
 
     // Click Aggregates tab
     const aggregatesTab = page.getByRole('tab', { name: /Aggregates/ });
@@ -164,7 +164,7 @@ test.describe('FunctionDetails Component', () => {
       `${STORYBOOK_URL}/iframe.html?id=components-functions-functiondetails--complex-function&viewMode=story`
     );
 
-    await page.waitForTimeout(1500);
+    await page.waitForTimeout(3000);
 
     // Check for URI section - use heading role to be specific
     await expect(page.getByRole('heading', { name: 'URI', exact: true })).toBeVisible();
@@ -184,7 +184,7 @@ test.describe('FunctionDetails Component', () => {
       `${STORYBOOK_URL}/iframe.html?id=components-functions-functiondetails--function-with-examples&viewMode=story`
     );
 
-    await page.waitForTimeout(1500);
+    await page.waitForTimeout(3000);
 
     // Check for Examples section
     await expect(page.getByText('Examples', { exact: true })).toBeVisible();
@@ -198,7 +198,7 @@ test.describe('FunctionDetails Component', () => {
       `${STORYBOOK_URL}/iframe.html?id=components-functions-functiondetails--function-with-optional-params&viewMode=story`
     );
 
-    await page.waitForTimeout(1500);
+    await page.waitForTimeout(3000);
 
     // Check for optional parameter tags - use first() since there might be multiple
     await expect(page.getByText('optional').first()).toBeVisible();
@@ -209,7 +209,7 @@ test.describe('FunctionDetails Component', () => {
       `${STORYBOOK_URL}/iframe.html?id=components-functions-functiondetails--complex-function&viewMode=story`
     );
 
-    await page.waitForTimeout(1500);
+    await page.waitForTimeout(3000);
 
     // Check for Documentation section
     await expect(page.getByText('Documentation', { exact: true })).toBeVisible();
@@ -223,7 +223,7 @@ test.describe('FunctionDetails Component', () => {
       `${STORYBOOK_URL}/iframe.html?id=components-functions-functiondetails--minimal-function&viewMode=story`
     );
 
-    await page.waitForTimeout(1500);
+    await page.waitForTimeout(3000);
 
     // Should still render with just URI
     await expect(page.getByText('URI', { exact: true })).toBeVisible();

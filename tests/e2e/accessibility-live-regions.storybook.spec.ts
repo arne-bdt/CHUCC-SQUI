@@ -5,19 +5,18 @@
 
 import { test, expect } from '@playwright/test';
 
+const STORYBOOK_URL = 'http://localhost:6006';
+
 test.describe('ARIA Live Regions for Query Feedback', () => {
   test('should have aria-live region in ResultsPlaceholder', async ({ page }) => {
-    // Navigate to ResultsPlaceholder story with loading state
-    await page.goto('http://localhost:6006/?path=/story/results-resultsplaceholder--loading');
+    // Navigate to ResultsPlaceholder story with loading state (use iframe URL)
+    await page.goto(`${STORYBOOK_URL}/iframe.html?id=results-resultsplaceholder--loading&viewMode=story`);
 
-    // Wait for Storybook iframe
-    const storyFrame = page.frameLocator('#storybook-preview-iframe');
-
-    // Wait for component to render
-    await storyFrame.locator('.results-placeholder').waitFor({ timeout: 10000 });
+    // Wait for Storybook to fully initialize story and store updates to propagate
+    await page.waitForTimeout(3000);
 
     // Check for aria-live region
-    const liveRegion = storyFrame.locator('[aria-live="polite"][role="status"]').first();
+    const liveRegion = page.locator('[aria-live="polite"][role="status"].sr-only').first();
     await expect(liveRegion).toBeAttached();
     await expect(liveRegion).toHaveAttribute('aria-atomic', 'true');
 
@@ -37,13 +36,13 @@ test.describe('ARIA Live Regions for Query Feedback', () => {
   });
 
   test('should announce "Query is executing" when loading', async ({ page }) => {
-    await page.goto('http://localhost:6006/?path=/story/results-resultsplaceholder--loading');
+    await page.goto(`${STORYBOOK_URL}/iframe.html?id=results-resultsplaceholder--loading&viewMode=story`);
 
-    const storyFrame = page.frameLocator('#storybook-preview-iframe');
-    await storyFrame.locator('.results-placeholder').waitFor({ timeout: 10000 });
+    // Wait for Storybook to fully initialize story
+    await page.waitForTimeout(3000);
 
     // Find the screen reader live region
-    const liveRegion = storyFrame.locator('.sr-only[role="status"][aria-live="polite"]');
+    const liveRegion = page.locator('.sr-only[role="status"][aria-live="polite"]');
     await expect(liveRegion).toBeAttached();
 
     // Check the announcement text
@@ -56,13 +55,13 @@ test.describe('ARIA Live Regions for Query Feedback', () => {
   });
 
   test('should announce "Query execution failed" on error', async ({ page }) => {
-    await page.goto('http://localhost:6006/?path=/story/results-resultsplaceholder--error-generic');
+    await page.goto(`${STORYBOOK_URL}/iframe.html?id=results-resultsplaceholder--error-generic&viewMode=story`);
 
-    const storyFrame = page.frameLocator('#storybook-preview-iframe');
-    await storyFrame.locator('.results-placeholder').waitFor({ timeout: 10000 });
+    // Wait for Storybook to fully initialize story
+    await page.waitForTimeout(3000);
 
     // Find the screen reader live region
-    const liveRegion = storyFrame.locator('.sr-only[role="status"][aria-live="polite"]');
+    const liveRegion = page.locator('.sr-only[role="status"][aria-live="polite"]');
     await expect(liveRegion).toBeAttached();
 
     // Check the announcement text
@@ -75,13 +74,13 @@ test.describe('ARIA Live Regions for Query Feedback', () => {
   });
 
   test('should announce "Query execution complete" when results load', async ({ page }) => {
-    await page.goto('http://localhost:6006/?path=/story/results-resultsplaceholder--select-query-results');
+    await page.goto(`${STORYBOOK_URL}/iframe.html?id=results-resultsplaceholder--select-query-results&viewMode=story`);
 
-    const storyFrame = page.frameLocator('#storybook-preview-iframe');
-    await storyFrame.locator('.results-placeholder').waitFor({ timeout: 10000 });
+    // Wait for Storybook to fully initialize story
+    await page.waitForTimeout(3000);
 
     // Find the screen reader live region
-    const liveRegion = storyFrame.locator('.sr-only[role="status"][aria-live="polite"]');
+    const liveRegion = page.locator('.sr-only[role="status"][aria-live="polite"]');
     await expect(liveRegion).toBeAttached();
 
     // Check the announcement text
@@ -94,13 +93,13 @@ test.describe('ARIA Live Regions for Query Feedback', () => {
   });
 
   test('should have screen reader only styling', async ({ page }) => {
-    await page.goto('http://localhost:6006/?path=/story/results-resultsplaceholder--loading');
+    await page.goto(`${STORYBOOK_URL}/iframe.html?id=results-resultsplaceholder--loading&viewMode=story`);
 
-    const storyFrame = page.frameLocator('#storybook-preview-iframe');
-    await storyFrame.locator('.results-placeholder').waitFor({ timeout: 10000 });
+    // Wait for Storybook to fully initialize story
+    await page.waitForTimeout(3000);
 
     // Find the screen reader only element
-    const srOnly = storyFrame.locator('.sr-only[role="status"]');
+    const srOnly = page.locator('.sr-only[role="status"]');
     await expect(srOnly).toBeAttached();
 
     // Verify it's visually hidden but accessible to screen readers
@@ -127,15 +126,16 @@ test.describe('ARIA Live Regions for Query Feedback', () => {
 
   test('should check ErrorNotification accessibility via Error story', async ({ page }) => {
     // Test the error notification using the ErrorGeneric story which includes ErrorNotification
-    await page.goto('http://localhost:6006/?path=/story/results-resultsplaceholder--error-generic');
+    await page.goto(`${STORYBOOK_URL}/iframe.html?id=results-resultsplaceholder--error-generic&viewMode=story`);
 
-    const storyFrame = page.frameLocator('#storybook-preview-iframe');
+    // Wait for Storybook to fully initialize story
+    await page.waitForTimeout(3000);
 
     // Wait for error notification to render
-    await storyFrame.locator('.error-notification-wrapper').waitFor({ timeout: 10000 });
+    await page.locator('.error-notification-wrapper').waitFor({ timeout: 10000 });
 
     // Check if Carbon's InlineNotification has proper ARIA attributes
-    const notification = storyFrame.locator('[class*="bx--inline-notification"]').first();
+    const notification = page.locator('[class*="bx--inline-notification"]').first();
     await expect(notification).toBeVisible();
 
     // Get all ARIA attributes
@@ -164,13 +164,13 @@ test.describe('ARIA Live Regions for Query Feedback', () => {
   });
 
   test('should verify loading state has aria-live on visible content', async ({ page }) => {
-    await page.goto('http://localhost:6006/?path=/story/results-resultsplaceholder--loading');
+    await page.goto(`${STORYBOOK_URL}/iframe.html?id=results-resultsplaceholder--loading&viewMode=story`);
 
-    const storyFrame = page.frameLocator('#storybook-preview-iframe');
-    await storyFrame.locator('.results-placeholder').waitFor({ timeout: 10000 });
+    // Wait for Storybook to fully initialize story
+    await page.waitForTimeout(3000);
 
     // Check the visible loading message also has aria-live
-    const loadingMessage = storyFrame.locator('.placeholder-content[role="status"][aria-live="polite"]');
+    const loadingMessage = page.locator('.placeholder-content[role="status"][aria-live="polite"]');
 
     if (await loadingMessage.count() > 0) {
       await expect(loadingMessage).toBeVisible();

@@ -171,12 +171,26 @@ const withStoreProvider: Decorator = (story, context) => {
   // Get initial values from story parameters if provided
   const initialEndpoint = context.parameters?.initialEndpoint || '';
   const initialQuery = context.parameters?.initialQuery || '';
+  const initialResultsLoading = context.parameters?.initialResultsLoading;
+  const initialResultsError = context.parameters?.initialResultsError;
+  const initialResultsData = context.parameters?.initialResultsData;
+  const initialResultsExecutionTime = context.parameters?.initialResultsExecutionTime;
+  const initialServiceDescription = context.parameters?.initialServiceDescription;
+  const initialServiceDescriptionLoading = context.parameters?.initialServiceDescriptionLoading;
+  const initialServiceDescriptionError = context.parameters?.initialServiceDescriptionError;
 
   return {
     Component: StoreProvider,
     props: {
       initialEndpoint,
       initialQuery,
+      initialResultsLoading,
+      initialResultsError,
+      initialResultsData,
+      initialResultsExecutionTime,
+      initialServiceDescription,
+      initialServiceDescriptionLoading,
+      initialServiceDescriptionError,
       children: story(),
     },
   };

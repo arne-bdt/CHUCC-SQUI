@@ -26,8 +26,8 @@ test.describe('Endpoint Capabilities Components', () => {
         `${STORYBOOK_URL}/iframe.html?id=components-capabilities-endpointcapabilities--loading&viewMode=story`
       );
 
-      // Wait for component to render
-      await page.waitForTimeout(1000);
+      // Wait for Storybook to fully initialize story
+      await page.waitForTimeout(3000);
 
       // Should show loading skeleton
       const loadingState = page.locator('.loading-state');
@@ -39,8 +39,8 @@ test.describe('Endpoint Capabilities Components', () => {
         `${STORYBOOK_URL}/iframe.html?id=components-capabilities-endpointcapabilities--with-full-capabilities&viewMode=story`
       );
 
-      // Wait for component to render
-      await page.waitForTimeout(1500);
+      // Wait for Storybook to fully initialize story
+      await page.waitForTimeout(3000);
 
       // Should show main panel title and refresh button
       await expect(page.getByText('Endpoint Capabilities')).toBeVisible({ timeout: 5000 });
@@ -88,8 +88,8 @@ test.describe('Endpoint Capabilities Components', () => {
         `${STORYBOOK_URL}/iframe.html?id=components-capabilities-endpointcapabilities--error-state&viewMode=story`
       );
 
-      // Wait for component to render
-      await page.waitForTimeout(1000);
+      // Wait for Storybook to fully initialize story
+      await page.waitForTimeout(3000);
 
       // Should show error message
       await expect(
@@ -135,8 +135,8 @@ test.describe('Endpoint Capabilities Components', () => {
         `${STORYBOOK_URL}/iframe.html?id=components-capabilities-endpointcapabilities--with-full-capabilities&viewMode=story`
       );
 
-      // Wait for component to render
-      await page.waitForTimeout(1500);
+      // Wait for Storybook to fully initialize story
+      await page.waitForTimeout(3000);
 
       // Functions tab should be selected by default and show function details
       const functionsTab = page.getByRole('tab', { name: /Functions \(2\)/ });
@@ -153,8 +153,8 @@ test.describe('Endpoint Capabilities Components', () => {
         `${STORYBOOK_URL}/iframe.html?id=components-capabilities-endpointcapabilities--with-full-capabilities&viewMode=story`
       );
 
-      // Wait for component to render
-      await page.waitForTimeout(1500);
+      // Wait for Storybook to fully initialize story
+      await page.waitForTimeout(3000);
 
       // Click on Aggregates tab to switch to it
       const aggregatesTab = page.getByRole('tab', { name: /Aggregates \(1\)/ });

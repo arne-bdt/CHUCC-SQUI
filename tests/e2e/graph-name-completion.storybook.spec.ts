@@ -26,8 +26,8 @@ test.describe('Graph Name Auto-completion', () => {
     // Wait for editor to be ready
     await page.waitForSelector('.cm-editor', { timeout: 5000 });
 
-    // Wait for the play function to set up the service description and for reactive updates to propagate
-    await page.waitForTimeout(2000);
+    // Wait for Storybook to fully initialize story
+    await page.waitForTimeout(3000);
 
     // Click at the end of the editor to position cursor after "FROM "
     const editor = page.locator('.cm-editor .cm-content');
@@ -70,8 +70,8 @@ test.describe('Graph Name Auto-completion', () => {
     // Wait for editor to be ready
     await page.waitForSelector('.cm-editor', { timeout: 5000 });
 
-    // Wait for play function to set up service description
-    await page.waitForTimeout(500);
+    // Wait for Storybook to fully initialize story
+    await page.waitForTimeout(3000);
 
     // Click at the end of the editor
     const editor = page.locator('.cm-editor .cm-content');
@@ -120,7 +120,7 @@ test.describe('Graph Name Auto-completion', () => {
     await page.waitForSelector('.cm-editor', { timeout: 5000 });
 
     // Wait for play function
-    await page.waitForTimeout(500);
+    await page.waitForTimeout(3000);
 
     // Click at the end of the editor (already has partial IRI)
     const editor = page.locator('.cm-editor .cm-content');
@@ -167,7 +167,7 @@ test.describe('Graph Name Auto-completion', () => {
 
     // Wait for editor to be ready
     await page.waitForSelector('.cm-editor', { timeout: 5000 });
-    await page.waitForTimeout(500);
+    await page.waitForTimeout(3000);
 
     // Click at the end of the editor
     const editor = page.locator('.cm-editor .cm-content');
@@ -208,7 +208,7 @@ test.describe('Graph Name Auto-completion', () => {
 
     // Wait for editor to be ready
     await page.waitForSelector('.cm-editor', { timeout: 5000 });
-    await page.waitForTimeout(500);
+    await page.waitForTimeout(3000);
 
     // Click at the end of the editor
     const editor = page.locator('.cm-editor .cm-content');
@@ -263,7 +263,7 @@ test.describe('Graph Name Auto-completion', () => {
 
     // Wait for editor to be ready
     await page.waitForSelector('.cm-editor', { timeout: 5000 });
-    await page.waitForTimeout(500);
+    await page.waitForTimeout(3000);
 
     // Get initial editor content
     const editor = page.locator('.cm-editor .cm-content');
@@ -323,7 +323,7 @@ test.describe('Graph Name Auto-completion', () => {
     await page.keyboard.press('Control+Space');
 
     // Wait a bit
-    await page.waitForTimeout(500);
+    await page.waitForTimeout(3000);
 
     // Completion popup should either not appear or show SPARQL keyword completions
     // but not graph name completions (since no service description is available)

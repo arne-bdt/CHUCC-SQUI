@@ -1,8 +1,8 @@
 /**
  * Storybook stories for EndpointCapabilities component
  *
- * These stories demonstrate all states of the component using the play function
- * to set up the store state after rendering.
+ * These stories demonstrate all states of the component using StoreProvider parameters
+ * to initialize store state via isolated context stores.
  *
  * Test coverage:
  * - E2E tests: tests/e2e/endpoint-capabilities.storybook.spec.ts
@@ -10,7 +10,6 @@
  */
 import type { Meta, StoryObj } from '@storybook/svelte';
 import EndpointCapabilities from './EndpointCapabilities.svelte';
-import { serviceDescriptionStore } from '../../stores/serviceDescriptionStore';
 import {
   SPARQLLanguage,
   ServiceFeature,
@@ -56,15 +55,9 @@ export const Loading: Story = {
   args: {
     endpointUrl: 'https://example.org/sparql',
   },
-  play: async () => {
-    // Set loading state directly without triggering a fetch
-    serviceDescriptionStore.reset();
-    serviceDescriptionStore.update((state) => ({
-      ...state,
-      currentEndpoint: 'https://example.org/sparql',
-      loading: true,
-      error: null,
-    }));
+  parameters: {
+    initialEndpoint: 'https://example.org/sparql',
+    initialServiceDescriptionLoading: true,
   },
 };
 
@@ -75,8 +68,9 @@ export const WithFullCapabilities: Story = {
   args: {
     endpointUrl: 'https://example.org/sparql',
   },
-  play: async () => {
-    const mockServiceDesc: ServiceDescription = {
+  parameters: {
+    initialEndpoint: 'https://example.org/sparql',
+    initialServiceDescription: {
       endpoint: 'https://example.org/sparql',
       available: true,
       lastFetched: new Date(),
@@ -137,23 +131,7 @@ export const WithFullCapabilities: Story = {
           ],
         },
       ],
-    };
-
-    // Reset store and set the mock data
-    serviceDescriptionStore.reset();
-
-    // Manually update the store with mock data
-    serviceDescriptionStore.update((state) => {
-      const descriptions = new Map(state.descriptions);
-      descriptions.set('https://example.org/sparql', mockServiceDesc);
-      return {
-        ...state,
-        descriptions,
-        currentEndpoint: 'https://example.org/sparql',
-        loading: false,
-        error: null,
-      };
-    });
+    } satisfies ServiceDescription,
   },
 };
 
@@ -164,16 +142,9 @@ export const ErrorState: Story = {
   args: {
     endpointUrl: 'https://example.org/sparql',
   },
-  play: async () => {
-    // Reset store and set error state
-    serviceDescriptionStore.reset();
-
-    serviceDescriptionStore.update((state) => ({
-      ...state,
-      currentEndpoint: 'https://example.org/sparql',
-      loading: false,
-      error: 'Failed to fetch service description: Network error',
-    }));
+  parameters: {
+    initialEndpoint: 'https://example.org/sparql',
+    initialServiceDescriptionError: 'Failed to fetch service description: Network error',
   },
 };
 
@@ -182,9 +153,6 @@ export const ErrorState: Story = {
  */
 export const NoEndpoint: Story = {
   args: {},
-  play: async () => {
-    serviceDescriptionStore.reset();
-  },
 };
 
 /**
@@ -194,8 +162,9 @@ export const NotAvailable: Story = {
   args: {
     endpointUrl: 'https://example.org/sparql',
   },
-  play: async () => {
-    const unavailableDesc: ServiceDescription = {
+  parameters: {
+    initialEndpoint: 'https://example.org/sparql',
+    initialServiceDescription: {
       endpoint: 'https://example.org/sparql',
       available: false,
       lastFetched: new Date(),
@@ -206,20 +175,6 @@ export const NotAvailable: Story = {
       extensionFunctions: [],
       extensionAggregates: [],
       datasets: [],
-    };
-
-    serviceDescriptionStore.reset();
-
-    serviceDescriptionStore.update((state) => {
-      const descriptions = new Map(state.descriptions);
-      descriptions.set('https://example.org/sparql', unavailableDesc);
-      return {
-        ...state,
-        descriptions,
-        currentEndpoint: 'https://example.org/sparql',
-        loading: false,
-        error: null,
-      };
-    });
+    } satisfies ServiceDescription,
   },
 };

@@ -1,7 +1,15 @@
+/**
+ * Storybook stories for FunctionLibrary component
+ *
+ * These stories demonstrate the function library panel using StoreProvider parameters
+ * to initialize service description state via isolated context stores.
+ *
+ * Test coverage:
+ * - E2E tests: tests/e2e/function-library.storybook.spec.ts
+ */
 import type { Meta, StoryObj } from '@storybook/svelte';
 import FunctionLibrary from './FunctionLibrary.svelte';
-import type { ExtensionFunction, ExtensionAggregate } from '$lib/types';
-import { serviceDescriptionStore } from '$lib/stores/serviceDescriptionStore';
+import type { ExtensionFunction, ExtensionAggregate, ServiceDescription } from '$lib/types';
 
 const meta = {
   title: 'Components/Functions/FunctionLibrary',
@@ -87,32 +95,57 @@ const mockAggregates: ExtensionAggregate[] = [
 
 const mockEndpoint = 'http://localhost:3030/dataset/sparql';
 
+// Generate many functions for testing scrolling and search
+const generateManyFunctions = (): ExtensionFunction[] => {
+  const manyFunctions: ExtensionFunction[] = [];
+  const namespaces = ['math', 'string', 'geo', 'text', 'date'];
+  const operations = [
+    'add',
+    'subtract',
+    'multiply',
+    'divide',
+    'uppercase',
+    'lowercase',
+    'contains',
+    'distance',
+    'area',
+    'search',
+    'format',
+  ];
+
+  for (let i = 0; i < 50; i++) {
+    const ns = namespaces[i % namespaces.length];
+    const op = operations[i % operations.length];
+    manyFunctions.push({
+      uri: `http://example.org/${ns}#${op}${i}`,
+      label: `${op.charAt(0).toUpperCase() + op.slice(1)} ${i}`,
+      comment: `Description for ${op} function number ${i}`,
+      parameters: [{ name: 'x' }],
+      returnType: 'xsd:string',
+    });
+  }
+
+  return manyFunctions;
+};
+
 export const WithFunctions: Story = {
   args: {
     currentEndpoint: mockEndpoint,
   },
-  play: async () => {
-    // Set up mock service description with functions
-    serviceDescriptionStore.update((state) => {
-      const descriptions = new Map(state.descriptions);
-      descriptions.set(mockEndpoint, {
-        endpoint: mockEndpoint,
-        supportedLanguages: [],
-        features: [],
-        resultFormats: [],
-        inputFormats: [],
-        extensionFunctions: mockFunctions,
-        extensionAggregates: mockAggregates,
-        datasets: [],
-        lastFetched: new Date(),
-        available: true,
-      });
-      return {
-        ...state,
-        descriptions,
-        currentEndpoint: mockEndpoint,
-      };
-    });
+  parameters: {
+    initialEndpoint: mockEndpoint,
+    initialServiceDescription: {
+      endpoint: mockEndpoint,
+      supportedLanguages: [],
+      features: [],
+      resultFormats: [],
+      inputFormats: [],
+      extensionFunctions: mockFunctions,
+      extensionAggregates: mockAggregates,
+      datasets: [],
+      lastFetched: new Date(),
+      available: true,
+    } satisfies ServiceDescription,
   },
 };
 
@@ -120,28 +153,20 @@ export const EmptyFunctions: Story = {
   args: {
     currentEndpoint: 'http://localhost:3030/empty/sparql',
   },
-  play: async () => {
-    const endpoint = 'http://localhost:3030/empty/sparql';
-    serviceDescriptionStore.update((state) => {
-      const descriptions = new Map(state.descriptions);
-      descriptions.set(endpoint, {
-        endpoint,
-        supportedLanguages: [],
-        features: [],
-        resultFormats: [],
-        inputFormats: [],
-        extensionFunctions: [],
-        extensionAggregates: [],
-        datasets: [],
-        lastFetched: new Date(),
-        available: true,
-      });
-      return {
-        ...state,
-        descriptions,
-        currentEndpoint: endpoint,
-      };
-    });
+  parameters: {
+    initialEndpoint: 'http://localhost:3030/empty/sparql',
+    initialServiceDescription: {
+      endpoint: 'http://localhost:3030/empty/sparql',
+      supportedLanguages: [],
+      features: [],
+      resultFormats: [],
+      inputFormats: [],
+      extensionFunctions: [],
+      extensionAggregates: [],
+      datasets: [],
+      lastFetched: new Date(),
+      available: true,
+    } satisfies ServiceDescription,
   },
 };
 
@@ -149,57 +174,20 @@ export const ManyFunctions: Story = {
   args: {
     currentEndpoint: 'http://localhost:3030/many/sparql',
   },
-  play: async () => {
-    const endpoint = 'http://localhost:3030/many/sparql';
-    // Generate many functions for testing scrolling and search
-    const manyFunctions: ExtensionFunction[] = [];
-    const namespaces = ['math', 'string', 'geo', 'text', 'date'];
-    const operations = [
-      'add',
-      'subtract',
-      'multiply',
-      'divide',
-      'uppercase',
-      'lowercase',
-      'contains',
-      'distance',
-      'area',
-      'search',
-      'format',
-    ];
-
-    for (let i = 0; i < 50; i++) {
-      const ns = namespaces[i % namespaces.length];
-      const op = operations[i % operations.length];
-      manyFunctions.push({
-        uri: `http://example.org/${ns}#${op}${i}`,
-        label: `${op.charAt(0).toUpperCase() + op.slice(1)} ${i}`,
-        comment: `Description for ${op} function number ${i}`,
-        parameters: [{ name: 'x' }],
-        returnType: 'xsd:string',
-      });
-    }
-
-    serviceDescriptionStore.update((state) => {
-      const descriptions = new Map(state.descriptions);
-      descriptions.set(endpoint, {
-        endpoint,
-        supportedLanguages: [],
-        features: [],
-        resultFormats: [],
-        inputFormats: [],
-        extensionFunctions: manyFunctions,
-        extensionAggregates: [],
-        datasets: [],
-        lastFetched: new Date(),
-        available: true,
-      });
-      return {
-        ...state,
-        descriptions,
-        currentEndpoint: endpoint,
-      };
-    });
+  parameters: {
+    initialEndpoint: 'http://localhost:3030/many/sparql',
+    initialServiceDescription: {
+      endpoint: 'http://localhost:3030/many/sparql',
+      supportedLanguages: [],
+      features: [],
+      resultFormats: [],
+      inputFormats: [],
+      extensionFunctions: generateManyFunctions(),
+      extensionAggregates: [],
+      datasets: [],
+      lastFetched: new Date(),
+      available: true,
+    } satisfies ServiceDescription,
   },
 };
 
@@ -207,28 +195,20 @@ export const OnlyAggregates: Story = {
   args: {
     currentEndpoint: 'http://localhost:3030/agg/sparql',
   },
-  play: async () => {
-    const endpoint = 'http://localhost:3030/agg/sparql';
-    serviceDescriptionStore.update((state) => {
-      const descriptions = new Map(state.descriptions);
-      descriptions.set(endpoint, {
-        endpoint,
-        supportedLanguages: [],
-        features: [],
-        resultFormats: [],
-        inputFormats: [],
-        extensionFunctions: [],
-        extensionAggregates: mockAggregates,
-        datasets: [],
-        lastFetched: new Date(),
-        available: true,
-      });
-      return {
-        ...state,
-        descriptions,
-        currentEndpoint: endpoint,
-      };
-    });
+  parameters: {
+    initialEndpoint: 'http://localhost:3030/agg/sparql',
+    initialServiceDescription: {
+      endpoint: 'http://localhost:3030/agg/sparql',
+      supportedLanguages: [],
+      features: [],
+      resultFormats: [],
+      inputFormats: [],
+      extensionFunctions: [],
+      extensionAggregates: mockAggregates,
+      datasets: [],
+      lastFetched: new Date(),
+      available: true,
+    } satisfies ServiceDescription,
   },
 };
 

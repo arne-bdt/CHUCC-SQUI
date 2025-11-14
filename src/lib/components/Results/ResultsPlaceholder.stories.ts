@@ -2,12 +2,13 @@
  * ResultsPlaceholder Component Stories
  * Demonstrates query results display with view switching and downloads
  * Task 35-38: Phase 8 - Raw View & Downloads
+ *
+ * Note: These stories use StoreProvider parameters to initialize store state.
+ * The StoreProvider decorator creates isolated context stores for each story.
  */
 
 import type { Meta, StoryObj } from '@storybook/svelte';
 import ResultsPlaceholder from './ResultsPlaceholder.svelte';
-import { resultsStore } from '../../stores/resultsStore';
-import { queryStore } from '../../stores/queryStore';
 import type { SparqlJsonResults } from '../../types';
 
 const meta = {
@@ -83,16 +84,12 @@ export const NoResults: Story = {
  */
 export const SelectQueryResults: Story = {
   args: {},
-  play: async () => {
-    // Set query type for proper format options
-    queryStore.setText(
-      'SELECT ?person ?name ?birthDate WHERE { ?person a dbo:Person . ?person foaf:name ?name . ?person dbo:birthDate ?birthDate . } LIMIT 3'
-    );
-    queryStore.setEndpoint('https://dbpedia.org/sparql');
-    queryStore.setType('SELECT');
-
-    // Set results with execution time
-    resultsStore.setData(selectResults, 125);
+  parameters: {
+    initialQuery:
+      'SELECT ?person ?name ?birthDate WHERE { ?person a dbo:Person . ?person foaf:name ?name . ?person dbo:birthDate ?birthDate . } LIMIT 3',
+    initialEndpoint: 'https://dbpedia.org/sparql',
+    initialResultsData: selectResults,
+    initialResultsExecutionTime: 125,
   },
 };
 
@@ -102,10 +99,9 @@ export const SelectQueryResults: Story = {
  */
 export const TableView: Story = {
   args: {},
-  play: async () => {
-    queryStore.setType('SELECT');
-    resultsStore.setData(selectResults, 89);
-    resultsStore.setView('table');
+  parameters: {
+    initialResultsData: selectResults,
+    initialResultsExecutionTime: 89,
   },
 };
 
@@ -115,13 +111,9 @@ export const TableView: Story = {
  */
 export const RawView: Story = {
   args: {},
-  play: async () => {
-    queryStore.setType('SELECT');
-    resultsStore.setData(selectResults, 89);
-    // Switch to raw view after a short delay to show transition
-    setTimeout(() => {
-      resultsStore.setView('raw');
-    }, 100);
+  parameters: {
+    initialResultsData: selectResults,
+    initialResultsExecutionTime: 89,
   },
 };
 
@@ -131,9 +123,9 @@ export const RawView: Story = {
  */
 export const AskQueryTrue: Story = {
   args: {},
-  play: async () => {
-    queryStore.setType('ASK');
-    resultsStore.setData(askResultTrue, 45);
+  parameters: {
+    initialResultsData: askResultTrue,
+    initialResultsExecutionTime: 45,
   },
 };
 
@@ -143,9 +135,9 @@ export const AskQueryTrue: Story = {
  */
 export const AskQueryFalse: Story = {
   args: {},
-  play: async () => {
-    queryStore.setType('ASK');
-    resultsStore.setData(askResultFalse, 52);
+  parameters: {
+    initialResultsData: askResultFalse,
+    initialResultsExecutionTime: 52,
   },
 };
 
@@ -155,8 +147,8 @@ export const AskQueryFalse: Story = {
  */
 export const Loading: Story = {
   args: {},
-  play: async () => {
-    resultsStore.setLoading(true);
+  parameters: {
+    initialResultsLoading: true,
   },
 };
 
@@ -166,8 +158,8 @@ export const Loading: Story = {
  */
 export const ErrorGeneric: Story = {
   args: {},
-  play: async () => {
-    resultsStore.setError('Query execution failed: Endpoint not responding (timeout after 30s)');
+  parameters: {
+    initialResultsError: 'Query execution failed: Endpoint not responding (timeout after 30s)',
   },
 };
 
@@ -178,8 +170,8 @@ export const ErrorGeneric: Story = {
  */
 export const ErrorCORS: Story = {
   args: {},
-  play: async () => {
-    resultsStore.setError({
+  parameters: {
+    initialResultsError: {
       message: 'CORS Error: Cross-origin request blocked',
       type: 'cors',
       details: `The SPARQL endpoint does not allow cross-origin requests from this domain.
@@ -191,7 +183,7 @@ Possible solutions:
 • Set up your own proxy server to forward requests
 
 Note: CORS (Cross-Origin Resource Sharing) is a browser security feature that restricts web pages from making requests to different domains. Many public SPARQL endpoints lack proper CORS configuration.`,
-    });
+    },
   },
 };
 
@@ -201,12 +193,12 @@ Note: CORS (Cross-Origin Resource Sharing) is a browser security feature that re
  */
 export const ErrorNetwork: Story = {
   args: {},
-  play: async () => {
-    resultsStore.setError({
+  parameters: {
+    initialResultsError: {
       message: 'Network error: Unable to reach endpoint',
       type: 'network',
       details: 'Check that the endpoint URL is correct and the server is reachable.',
-    });
+    },
   },
 };
 
@@ -216,14 +208,32 @@ export const ErrorNetwork: Story = {
  */
 export const ErrorServerError: Story = {
   args: {},
-  play: async () => {
-    resultsStore.setError({
+  parameters: {
+    initialResultsError: {
       message: 'Internal Server Error: The SPARQL endpoint encountered an error',
       type: 'http',
-      status: 500,
       details: 'The server encountered an unexpected condition. This is typically a server-side issue.',
-    });
+    },
   },
+};
+
+// Generate large dataset (100 rows) for performance testing
+const largeBindings = [];
+for (let i = 0; i < 100; i++) {
+  largeBindings.push({
+    id: { type: 'uri' as const, value: `http://example.org/resource/${i}` },
+    name: { type: 'literal' as const, value: `Item ${i}` },
+    value: {
+      type: 'literal' as const,
+      value: String(i * 100),
+      datatype: 'http://www.w3.org/2001/XMLSchema#integer',
+    },
+  });
+}
+
+const largeResults: SparqlJsonResults = {
+  head: { vars: ['id', 'name', 'value'] },
+  results: { bindings: largeBindings },
 };
 
 /**
@@ -232,26 +242,8 @@ export const ErrorServerError: Story = {
  */
 export const LargeDataset: Story = {
   args: {},
-  play: async () => {
-    const bindings = [];
-    for (let i = 0; i < 100; i++) {
-      bindings.push({
-        id: { type: 'uri' as const, value: `http://example.org/resource/${i}` },
-        name: { type: 'literal' as const, value: `Item ${i}` },
-        value: {
-          type: 'literal' as const,
-          value: String(i * 100),
-          datatype: 'http://www.w3.org/2001/XMLSchema#integer',
-        },
-      });
-    }
-
-    const largeResults: SparqlJsonResults = {
-      head: { vars: ['id', 'name', 'value'] },
-      results: { bindings },
-    };
-
-    queryStore.setType('SELECT');
-    resultsStore.setData(largeResults, 234);
+  parameters: {
+    initialResultsData: largeResults,
+    initialResultsExecutionTime: 234,
   },
 };

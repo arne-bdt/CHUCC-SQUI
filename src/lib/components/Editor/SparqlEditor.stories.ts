@@ -501,6 +501,7 @@ SELECT *
 FROM `,
   },
   parameters: {
+    initialEndpoint: 'http://example.org/sparql',
     docs: {
       description: {
         story:
@@ -530,6 +531,7 @@ SELECT *
 FROM NAMED `,
   },
   parameters: {
+    initialEndpoint: 'http://example.org/sparql',
     docs: {
       description: {
         story:
@@ -557,6 +559,7 @@ SELECT *
 FROM NAMED <http://example.org/graph/p`,
   },
   parameters: {
+    initialEndpoint: 'http://example.org/sparql',
     docs: {
       description: {
         story:

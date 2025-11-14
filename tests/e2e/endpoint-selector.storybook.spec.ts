@@ -22,8 +22,8 @@ test.describe('EndpointSelector Component', () => {
       `${STORYBOOK_URL}/iframe.html?id=endpoint-endpointselector--d-bpedia-selected&viewMode=story`
     );
 
-    // Wait for Storybook to render
-    await page.waitForTimeout(1500);
+    // Wait for Storybook to fully initialize story
+    await page.waitForTimeout(3000);
 
     // Debug: Check what's actually on the page
     const bodyHTML = await page.locator('body').innerHTML();
@@ -52,7 +52,7 @@ test.describe('EndpointSelector Component', () => {
       `${STORYBOOK_URL}/iframe.html?id=endpoint-endpointselector--wikidata-selected&viewMode=story`
     );
 
-    await page.waitForTimeout(1500);
+    await page.waitForTimeout(3000);
 
     const comboboxInput = page.locator('.bx--text-input, input[role="combobox"]').first();
     await expect(comboboxInput).toBeVisible({ timeout: 5000 });
@@ -68,7 +68,7 @@ test.describe('EndpointSelector Component', () => {
       `${STORYBOOK_URL}/iframe.html?id=endpoint-endpointselector--uni-prot-selected&viewMode=story`
     );
 
-    await page.waitForTimeout(1500);
+    await page.waitForTimeout(3000);
 
     const comboboxInput = page.locator('.bx--text-input, input[role="combobox"]').first();
     await expect(comboboxInput).toBeVisible({ timeout: 5000 });
@@ -84,7 +84,7 @@ test.describe('EndpointSelector Component', () => {
       `${STORYBOOK_URL}/iframe.html?id=endpoint-endpointselector--custom-endpoint&viewMode=story`
     );
 
-    await page.waitForTimeout(1500);
+    await page.waitForTimeout(3000);
 
     const comboboxInput = page.locator('.bx--text-input, input[role="combobox"]').first();
     await expect(comboboxInput).toBeVisible({ timeout: 5000 });
@@ -101,7 +101,7 @@ test.describe('EndpointSelector Component', () => {
       `${STORYBOOK_URL}/iframe.html?id=endpoint-endpointselector--default&viewMode=story`
     );
 
-    await page.waitForTimeout(1500);
+    await page.waitForTimeout(3000);
 
     const comboboxInput = page.locator('.bx--text-input, input[role="combobox"]').first();
     await expect(comboboxInput).toBeVisible({ timeout: 5000 });
@@ -118,7 +118,7 @@ test.describe('EndpointSelector Component', () => {
       `${STORYBOOK_URL}/iframe.html?id=endpoint-endpointselector--default&viewMode=story`
     );
 
-    await page.waitForTimeout(1500);
+    await page.waitForTimeout(3000);
 
     const comboboxInput = page.locator('.bx--text-input, input[role="combobox"]').first();
     await expect(comboboxInput).toBeVisible({ timeout: 5000 });
@@ -139,7 +139,7 @@ test.describe('EndpointSelector Component', () => {
       `${STORYBOOK_URL}/iframe.html?id=endpoint-endpointselector--default&viewMode=story`
     );
 
-    await page.waitForTimeout(1500);
+    await page.waitForTimeout(3000);
 
     const comboboxInput = page.locator('.bx--text-input, input[role="combobox"]').first();
 

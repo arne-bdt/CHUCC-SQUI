@@ -21,6 +21,7 @@
   import { createSettingsStore } from '../stores/settingsStore';
   import { createThemeStore } from '../stores/theme';
   import { writable } from 'svelte/store';
+  import type { SparqlJsonResults, ServiceDescription } from '../types';
 
   /**
    * Component props
@@ -30,11 +31,36 @@
     initialEndpoint?: string;
     /** Initial query text */
     initialQuery?: string;
+    /** Initial results loading state (for Storybook stories) */
+    initialResultsLoading?: boolean;
+    /** Initial results error (for Storybook stories) */
+    initialResultsError?: string | { message: string; type?: string; details?: string };
+    /** Initial results data (for Storybook stories) */
+    initialResultsData?: SparqlJsonResults;
+    /** Initial results execution time in ms (for Storybook stories) */
+    initialResultsExecutionTime?: number;
+    /** Initial service description (for Storybook stories) */
+    initialServiceDescription?: ServiceDescription;
+    /** Initial service description loading state (for Storybook stories) */
+    initialServiceDescriptionLoading?: boolean;
+    /** Initial service description error (for Storybook stories) */
+    initialServiceDescriptionError?: string;
     /** Children components */
     children?: any;
   }
 
-  let { initialEndpoint = '', initialQuery = '', children }: Props = $props();
+  let {
+    initialEndpoint = '',
+    initialQuery = '',
+    initialResultsLoading,
+    initialResultsError,
+    initialResultsData,
+    initialResultsExecutionTime,
+    initialServiceDescription,
+    initialServiceDescriptionLoading,
+    initialServiceDescriptionError,
+    children,
+  }: Props = $props();
 
   // Create fresh store instances for this component tree
   const queryStore = createQueryStore();
@@ -51,6 +77,46 @@
   }
   if (initialEndpoint) {
     endpointStore.set(initialEndpoint);
+  }
+
+  // Initialize resultsStore state (for Storybook stories)
+  if (initialResultsLoading !== undefined) {
+    resultsStore.setLoading(initialResultsLoading);
+  }
+  if (initialResultsError !== undefined) {
+    resultsStore.setError(initialResultsError);
+  }
+  if (initialResultsData !== undefined) {
+    resultsStore.setData(initialResultsData, initialResultsExecutionTime);
+  }
+
+  // Initialize serviceDescriptionStore (for Storybook stories)
+  if (initialServiceDescription !== undefined && initialEndpoint) {
+    serviceDescriptionStore.update((state) => {
+      const descriptions = new Map(state.descriptions);
+      descriptions.set(initialEndpoint, initialServiceDescription);
+      return {
+        ...state,
+        descriptions,
+        currentEndpoint: initialEndpoint,
+        loading: false,
+        error: null,
+      };
+    });
+  } else if (initialServiceDescriptionLoading !== undefined && initialEndpoint) {
+    serviceDescriptionStore.update((state) => ({
+      ...state,
+      currentEndpoint: initialEndpoint,
+      loading: initialServiceDescriptionLoading,
+      error: null,
+    }));
+  } else if (initialServiceDescriptionError !== undefined && initialEndpoint) {
+    serviceDescriptionStore.update((state) => ({
+      ...state,
+      currentEndpoint: initialEndpoint,
+      loading: false,
+      error: initialServiceDescriptionError,
+    }));
   }
 
   // Provide stores to child components via context
