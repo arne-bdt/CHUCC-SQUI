@@ -172,45 +172,39 @@
   }
 
   /**
-   * Compute the display text for the input field
-   * Shows the endpoint name (e.g., "DBpedia") if found in catalogue,
-   * otherwise shows the URL
+   * Key to force ComboBox re-render when items load
+   * Changes from 0 to item count when catalogue loads
    */
-  const displayText = $derived.by(() => {
-    if (!value) return '';
-    // Find matching item in catalogue
-    const item = items.find((it) => it.id === value || it.url === value);
-    // Return the friendly name if found, otherwise the URL
-    return item ? item.text : value;
-  });
+  const comboBoxKey = $derived(items.length);
 </script>
 
-<div class="endpoint-selector-container {className}">
-  <ComboBox
-    titleText={label}
-    {placeholder}
-    {items}
-    {disabled}
-    {invalid}
-    {invalidText}
-    {warn}
-    {warnText}
-    selectedId={value}
-    value={displayText}
-    shouldFilterItem={(item, inputValue) => {
-      // Filter by name or URL
-      const search = inputValue.toLowerCase();
-      return (
-        item.text.toLowerCase().includes(search) ||
-        item.url.toLowerCase().includes(search) ||
-        (item.description && item.description.toLowerCase().includes(search))
-      );
-    }}
-    on:select={handleSelect}
-    on:input={handleInput}
-    on:blur={handleBlur}
-  />
-</div>
+{#key comboBoxKey}
+  <div class="endpoint-selector-container {className}">
+    <ComboBox
+      titleText={label}
+      {placeholder}
+      {items}
+      {disabled}
+      {invalid}
+      {invalidText}
+      {warn}
+      {warnText}
+      selectedId={value}
+      shouldFilterItem={(item, inputValue) => {
+        // Filter by name or URL
+        const search = inputValue.toLowerCase();
+        return (
+          item.text.toLowerCase().includes(search) ||
+          item.url.toLowerCase().includes(search) ||
+          (item.description && item.description.toLowerCase().includes(search))
+        );
+      }}
+      on:select={handleSelect}
+      on:input={handleInput}
+      on:blur={handleBlur}
+    />
+  </div>
+{/key}
 
 <style>
   .endpoint-selector-container {
