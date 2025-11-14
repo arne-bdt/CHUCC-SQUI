@@ -120,6 +120,11 @@
   :global(.run-button-container .bx--btn) {
     min-width: 60px;
     padding-left: var(--cds-spacing-04, 0.75rem);
-    padding-right: var(--cds-spacing-04, 0.75rem);
+    /* Removed padding-right to fix cancel button overlap */
+  }
+
+  /* Override Carbon ButtonSet width: 100% default */
+  :global(.bx--btn-set.run-button-container .bx--btn) {
+    width: auto;
   }
 </style>

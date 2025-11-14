@@ -308,6 +308,8 @@
     height: 100%;
     max-width: none; /* Full width mode for application layout */
     padding: 0; /* Remove default grid padding - use column padding instead */
+    margin-left: 0; /* Override Carbon's auto margin for full width */
+    margin-right: 0; /* Override Carbon's auto margin for full width */
   }
 
   /* Row uses vertical flex layout instead of default horizontal */
