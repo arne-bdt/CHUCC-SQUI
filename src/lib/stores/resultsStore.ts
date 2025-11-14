@@ -144,7 +144,14 @@ export function createResultsStore(): {
       const queryPrefixes = prefixService.parsePrefixesFromQuery(options.query);
 
       try {
-        const result = await sparqlService.executeQuery(options);
+        // STREAMING-02: Wire progress callbacks to update store state
+        const result = await sparqlService.executeQuery({
+          ...options,
+          onProgress: (progress) => {
+            // Update progress state in the store
+            update((state) => ({ ...state, progress }));
+          },
+        });
 
         // Parse the result data based on content type
         // Use the raw response text from the server (preserves original formatting)
@@ -176,6 +183,7 @@ export function createResultsStore(): {
           error: null,
           executionTime: result.executionTime,
           prefixes: queryPrefixes,
+          progress: undefined, // Clear progress state after successful completion
         }));
       } catch (error) {
         // Handle errors - preserve QueryError structure for rich error details
@@ -191,6 +199,7 @@ export function createResultsStore(): {
           ...state,
           loading: false,
           error: errorValue,
+          progress: undefined, // Clear progress state on error
         }));
       }
     },

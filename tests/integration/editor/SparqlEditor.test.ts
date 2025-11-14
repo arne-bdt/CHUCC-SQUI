@@ -5,11 +5,28 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { render, cleanup } from '@testing-library/svelte';
 import TestWrapper from './SparqlEditor.test.wrapper.svelte';
-import { queryExecutionService } from '../../../src/lib/services/queryExecutionService';
+
+// Mock executeQuery spy that will be attached to the results store
+let executeQuerySpy = vi.fn();
+
+// Mock createResultsStore to return a store with our spy
+vi.mock('../../../src/lib/stores/resultsStore', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('../../../src/lib/stores/resultsStore')>();
+  return {
+    ...actual,
+    createResultsStore: () => {
+      const store = actual.createResultsStore();
+      // Wrap executeQuery with spy
+      const originalExecuteQuery = store.executeQuery.bind(store);
+      store.executeQuery = executeQuerySpy.mockImplementation(originalExecuteQuery);
+      return store;
+    },
+  };
+});
 
 describe('SparqlEditor Component', () => {
   beforeEach(() => {
-    vi.clearAllMocks();
+    executeQuerySpy.mockClear();
   });
 
   afterEach(() => {
@@ -387,7 +404,7 @@ describe('SparqlEditor Component', () => {
     it('should execute query when Ctrl+Enter is pressed with valid query and endpoint', async () => {
       // Set up valid query and endpoint
       const testQuery = 'SELECT * WHERE { ?s ?p ?o }';
-      const executeSpy = vi.spyOn(queryExecutionService, 'executeQuery');
+      // executeQuerySpy is already set up in the module mock above
 
       const { container } = render(TestWrapper, {
         props: {
@@ -415,16 +432,14 @@ describe('SparqlEditor Component', () => {
       await new Promise((resolve) => setTimeout(resolve, 100));
 
       // Verify executeQuery was called
-      expect(executeSpy).toHaveBeenCalledWith({
+      expect(executeQuerySpy).toHaveBeenCalledWith({
         query: testQuery,
         endpoint: 'https://dbpedia.org/sparql',
       });
-
-      executeSpy.mockRestore();
     });
 
     it('should not execute query when query is empty', async () => {
-      const executeSpy = vi.spyOn(queryExecutionService, 'executeQuery');
+      // executeQuerySpy is already set up in the module mock above
 
       const { container } = render(TestWrapper, {
         props: {
@@ -447,13 +462,11 @@ describe('SparqlEditor Component', () => {
       await new Promise((resolve) => setTimeout(resolve, 100));
 
       // Verify executeQuery was NOT called
-      expect(executeSpy).not.toHaveBeenCalled();
-
-      executeSpy.mockRestore();
+      expect(executeQuerySpy).not.toHaveBeenCalled();
     });
 
     it('should not execute query when endpoint is empty', async () => {
-      const executeSpy = vi.spyOn(queryExecutionService, 'executeQuery');
+      // executeQuerySpy is already set up in the module mock above
 
       const { container } = render(TestWrapper, {
         props: {
@@ -476,13 +489,11 @@ describe('SparqlEditor Component', () => {
       await new Promise((resolve) => setTimeout(resolve, 100));
 
       // Verify executeQuery was NOT called
-      expect(executeSpy).not.toHaveBeenCalled();
-
-      executeSpy.mockRestore();
+      expect(executeQuerySpy).not.toHaveBeenCalled();
     });
 
     it('should not execute query when already loading', async () => {
-      const executeSpy = vi.spyOn(queryExecutionService, 'executeQuery');
+      // executeQuerySpy is already set up in the module mock above
 
       const { container } = render(TestWrapper, {
         props: {
@@ -509,12 +520,10 @@ describe('SparqlEditor Component', () => {
 
       // Editor is rendered
       expect(container.querySelector('.cm-editor')).toBeTruthy();
-
-      executeSpy.mockRestore();
     });
 
     it('should not execute query in readonly mode', async () => {
-      const executeSpy = vi.spyOn(queryExecutionService, 'executeQuery');
+      // executeQuerySpy is already set up in the module mock above
 
       const { container } = render(TestWrapper, {
         props: {
@@ -539,9 +548,7 @@ describe('SparqlEditor Component', () => {
       await new Promise((resolve) => setTimeout(resolve, 100));
 
       // Verify executeQuery was NOT called
-      expect(executeSpy).not.toHaveBeenCalled();
-
-      executeSpy.mockRestore();
+      expect(executeQuerySpy).not.toHaveBeenCalled();
     });
 
     it('should use Mod-Enter keymap which supports both Ctrl and Cmd', () => {

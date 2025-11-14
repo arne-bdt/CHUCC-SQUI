@@ -36,7 +36,7 @@
     getSettingsStore,
     getThemeStore,
   } from '../../stores/storeContext';
-  import { queryExecutionService } from '../../services/queryExecutionService';
+  import { sparqlService } from '../../services/sparqlService';
   import { t } from '../../localization';
   import type { CarbonTheme, ServiceDescription } from '../../types';
   import { debug } from '../../utils/debug';
@@ -136,18 +136,20 @@
 
   /**
    * Execute the current query (triggered by Ctrl+Enter / Cmd+Enter)
+   * FIX: Use context resultsStore.executeQuery() instead of global queryExecutionService
+   * to ensure results are stored in the correct store instance
    */
   async function executeQuery(): Promise<boolean> {
     if (!canExecute) return false;
 
     try {
-      await queryExecutionService.executeQuery({
+      await resultsStore.executeQuery({
         query: queryState.text,
         endpoint: endpoint,
       });
       return true;
     } catch (error) {
-      // Error is already handled by the service and set in resultsStore
+      // Error is already handled by the store
       console.error('Query execution error:', error);
       return false;
     }

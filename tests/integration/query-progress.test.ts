@@ -6,7 +6,6 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { resultsStore } from '../../src/lib/stores/resultsStore';
 import { sparqlService } from '../../src/lib/services/sparqlService';
-import { queryExecutionService } from '../../src/lib/services/queryExecutionService';
 import type { ProgressState } from '../../src/lib/types';
 
 describe('Query Progress Tracking', () => {
@@ -72,7 +71,7 @@ describe('Query Progress Tracking', () => {
         } as any);
       });
 
-      await queryExecutionService.executeQuery({
+      await resultsStore.executeQuery({
         endpoint: 'https://example.com/sparql',
         query: 'SELECT * WHERE { ?s ?p ?o } LIMIT 10',
       });
@@ -100,7 +99,7 @@ describe('Query Progress Tracking', () => {
         body: null,
       } as any);
 
-      await queryExecutionService.executeQuery({
+      await resultsStore.executeQuery({
         endpoint: 'https://example.com/sparql',
         query: 'SELECT * WHERE { ?s ?p ?o } LIMIT 10',
       });
@@ -120,7 +119,7 @@ describe('Query Progress Tracking', () => {
       global.fetch = vi.fn().mockRejectedValue(new Error('Network error'));
 
       try {
-        await queryExecutionService.executeQuery({
+        await resultsStore.executeQuery({
           endpoint: 'https://example.com/sparql',
           query: 'SELECT * WHERE { ?s ?p ?o } LIMIT 10',
         });
@@ -169,7 +168,7 @@ describe('Query Progress Tracking', () => {
         return originalExecute(options);
       });
 
-      await queryExecutionService.executeQuery({
+      await resultsStore.executeQuery({
         endpoint: 'https://example.com/sparql',
         query: 'SELECT * WHERE { ?s ?p ?o } LIMIT 10',
       });
@@ -218,7 +217,7 @@ describe('Query Progress Tracking', () => {
         },
       } as any);
 
-      await queryExecutionService.executeQuery({
+      await resultsStore.executeQuery({
         endpoint: 'https://example.com/sparql',
         query: 'SELECT * WHERE { ?s ?p ?o } LIMIT 10',
       });

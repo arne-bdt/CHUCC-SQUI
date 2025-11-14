@@ -41,11 +41,16 @@ export type {
 // Service exports (for advanced usage)
 export { prefixService } from './services/prefixService';
 export { sparqlService } from './services/sparqlService';
-export { queryExecutionService } from './services/queryExecutionService';
 export { templateService } from './services/templateService';
 
-// Store exports (for advanced integration)
-export { queryStore } from './stores/queryStore';
-export { resultsStore } from './stores/resultsStore';
+// Store factory exports (for custom integration - use these to create isolated store instances)
+export { createQueryStore } from './stores/queryStore';
+export { createResultsStore } from './stores/resultsStore';
+export { createUIStore } from './stores/uiStore';
+export { createServiceDescriptionStore } from './stores/serviceDescriptionStore';
+export { createSettingsStore } from './stores/settingsStore';
+export { createThemeStore } from './stores/theme';
+export { createTabStore } from './stores/tabStore';
+
+// Endpoint catalogue (shared global state - safe to use globally)
 export { endpointCatalogue, defaultEndpoint } from './stores/endpointStore';
-export { tabStore } from './stores/tabStore';
