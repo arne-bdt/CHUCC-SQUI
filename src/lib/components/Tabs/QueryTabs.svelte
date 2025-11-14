@@ -24,22 +24,46 @@
   // Get instance-specific tab store from context
   const tabStore = getContext<ReturnType<typeof createTabStore>>('tabStore');
 
-  // Subscribe to tab store - use $state to track the store value
-  let tabsState: TabsState = $state({
-    tabs: [],
-    activeTabId: null,
+  // Initialize state immediately from store (synchronously)
+  // This ensures tests can interact with the component immediately
+  let initialState: TabsState = { tabs: [], activeTabId: null };
+  const unsubInitial = tabStore.subscribe(state => {
+    initialState = state;
   });
+  unsubInitial(); // Immediately unsubscribe after getting initial value
 
-  // Subscribe to tab store updates
+  // Subscribe to tab store - use $state to track the store value
+  let tabsState: TabsState = $state(initialState);
+
+  /**
+   * Selected tab index for Carbon Tabs two-way binding
+   * Carbon Tabs updates this when user clicks, we update it when store changes
+   */
+  let selectedIndex = $state(
+    initialState.tabs.findIndex(t => t.id === initialState.activeTabId)
+  );
+
+  // Track if we're currently updating to prevent circular updates
+  let isUpdatingFromStore = false;
+  let isUpdatingFromUI = false;
+
+  // Subscribe to tab store updates (tracks ongoing changes)
   $effect(() => {
     const unsubscribe = tabStore.subscribe((state) => {
+      if (isUpdatingFromUI) {
+        // Skip store updates if we're in the middle of a UI-initiated update
+        return;
+      }
+
+      isUpdatingFromStore = true;
       tabsState = state;
 
       // Sync selectedIndex with activeTabId when store updates
       const newIndex = state.tabs.findIndex(t => t.id === state.activeTabId);
-      if (newIndex !== -1) {
+      if (newIndex !== -1 && newIndex !== selectedIndex) {
         selectedIndex = newIndex;
       }
+      isUpdatingFromStore = false;
     });
     return unsubscribe;
   });
@@ -49,6 +73,11 @@
    * When selectedIndex changes from user interaction, update the store
    */
   $effect(() => {
+    // Skip if we're updating from store (circular dependency prevention)
+    if (isUpdatingFromStore) {
+      return;
+    }
+
     const selectedTab = tabsState.tabs[selectedIndex];
     if (selectedTab && selectedTab.id !== tabsState.activeTabId) {
       console.log('[QueryTabs] User clicked tab:', {
@@ -56,7 +85,10 @@
         selectedTab: { id: selectedTab.id, name: selectedTab.name },
         currentActiveTabId: tabsState.activeTabId,
       });
+
+      isUpdatingFromUI = true;
       tabStore.switchTab(selectedTab.id);
+      isUpdatingFromUI = false;
     }
   });
 
@@ -76,12 +108,6 @@
     event.preventDefault();
     tabStore.removeTab(tabId);
   }
-
-  /**
-   * Selected tab index for Carbon Tabs two-way binding
-   * Carbon Tabs updates this when user clicks, we update it in the subscribe callback
-   */
-  let selectedIndex = $state(0);
 </script>
 
 <div class="query-tabs-container">
