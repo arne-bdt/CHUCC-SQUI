@@ -7,28 +7,28 @@ import { test, expect } from '@playwright/test';
 
 test.describe('DataTable Accessibility', () => {
   test('should have proper ARIA roles on grid elements', async ({ page }) => {
-    // Navigate to DataTable story
-    await page.goto('http://localhost:6006/?path=/story/results-datatable--default');
+    // Navigate to DataTable story using iframe.html for direct access
+    await page.goto('http://localhost:6006/iframe.html?id=results-datatable--default&viewMode=story');
 
-    // Wait for Storybook iframe
-    const storyFrame = page.frameLocator('#storybook-preview-iframe');
+    // Wait for Storybook play function to complete (stories have play functions that run after initial render)
+    await page.waitForTimeout(1500);
 
-    // Wait for DataTable to render
-    await storyFrame.locator('.data-table-container').waitFor({ timeout: 10000 });
+    // Wait for DataTable to render (access page directly, no iframe needed)
+    await page.locator('.data-table-container').waitFor({ timeout: 10000 });
 
     // Check wrapper ARIA roles (from DataTable.svelte)
-    const container = storyFrame.locator('.data-table-container');
+    const container = page.locator('.data-table-container');
     await expect(container).toHaveAttribute('role', 'region');
 
-    const gridWrapper = storyFrame.locator('.grid-wrapper');
+    const gridWrapper = page.locator('.grid-wrapper');
     await expect(gridWrapper).toHaveAttribute('role', 'table');
 
     // Check wx-svelte-grid rendered elements
-    const wxGrid = storyFrame.locator('.wx-grid');
+    const wxGrid = page.locator('.wx-grid');
     await expect(wxGrid).toBeVisible();
 
     // Get all ARIA roles in the grid
-    const allElementsWithRole = await storyFrame.locator('[role]').all();
+    const allElementsWithRole = await page.locator('[role]').all();
     const roles = await Promise.all(
       allElementsWithRole.map(async (el) => {
         const role = await el.getAttribute('role');
@@ -76,13 +76,16 @@ test.describe('DataTable Accessibility', () => {
   });
 
   test('should support keyboard navigation', async ({ page }) => {
-    await page.goto('http://localhost:6006/?path=/story/results-datatable--default');
+    // Navigate to DataTable story using iframe.html for direct access
+    await page.goto('http://localhost:6006/iframe.html?id=results-datatable--default&viewMode=story');
 
-    const storyFrame = page.frameLocator('#storybook-preview-iframe');
-    await storyFrame.locator('.wx-grid').waitFor({ timeout: 10000 });
+    // Wait for Storybook play function to complete
+    await page.waitForTimeout(1500);
+
+    await page.locator('.wx-grid').waitFor({ timeout: 10000 });
 
     // Try to focus the grid
-    await storyFrame.locator('.wx-grid').click();
+    await page.locator('.wx-grid').click();
 
     // Test keyboard navigation (Tab, Arrow keys)
     await page.keyboard.press('Tab');
@@ -91,16 +94,11 @@ test.describe('DataTable Accessibility', () => {
     // Check if an element within the grid is focused
     const focusedElement = await page.evaluate(() => {
       const activeEl = document.activeElement;
-      const iframe = document.querySelector('#storybook-preview-iframe') as HTMLIFrameElement;
-      if (iframe?.contentDocument) {
-        const iframeActive = iframe.contentDocument.activeElement;
-        return {
-          tag: iframeActive?.tagName,
-          class: iframeActive?.className,
-          role: iframeActive?.getAttribute('role'),
-        };
-      }
-      return null;
+      return {
+        tag: activeEl?.tagName,
+        class: activeEl?.className,
+        role: activeEl?.getAttribute('role'),
+      };
     });
 
     console.log('\n=== Focused Element After Tab ===');
