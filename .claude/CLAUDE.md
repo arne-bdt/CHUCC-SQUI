@@ -567,6 +567,62 @@ const state = $derived($resultsStore);
 3. `$store` syntax auto-subscribes to stores in runes mode
 4. Never call derived values as functions unless explicitly created as functions
 
+**CRITICAL: Avoiding Reactive Loops with Carbon Components**
+
+```typescript
+// ❌ DANGEROUS: $effect + bind: creates infinite loop (browser freeze!)
+let inputText = $state('');
+$effect(() => {
+  inputText = computedValue;  // Updates bound value
+});
+<ComboBox bind:value={inputText} />  // Re-triggers effect = LOOP!
+
+// ✅ CORRECT: Use one-way binding or {#key} for re-render
+const displayText = $derived(computedValue);
+<ComboBox value={displayText} />  // One-way, no loop
+
+// ✅ CORRECT: Force re-render when data loads
+const key = $derived(items.length);
+{#key key}
+  <ComboBox selectedId={value} {items} />
+{/key}
+```
+
+**Async Data Loading Pattern (Carbon ComboBox/Dropdowns):**
+
+When items load asynchronously AFTER initial render:
+
+```typescript
+// Problem: Items array empty initially, loads later from subscription
+let _catalogue = $state<Endpoint[]>([]);  // Empty!
+$effect(() => {
+  endpointCatalogue.subscribe((catalogue) => {
+    _catalogue = catalogue;  // Loads AFTER ComboBox renders
+  });
+});
+
+const items = $derived(_catalogue.map(...));
+// ComboBox renders with items=[], selectedId doesn't match anything
+// When items load, ComboBox doesn't re-sync automatically
+
+// ✅ Solution: Use {#key} to force re-render when items load
+const comboBoxKey = $derived(items.length);
+{#key comboBoxKey}
+  <ComboBox
+    selectedId={value}
+    {items}
+  />
+{/key}
+// When items.length changes (0 → 4), Svelte destroys old ComboBox
+// and creates new one with items populated, correctly showing selected item
+```
+
+**Key Lessons:**
+1. **Never combine `$effect` with `bind:`** - creates reactive loops
+2. **Use `{#key}` for forcing re-renders** - simpler than manual state sync
+3. **Test async timing** - components often render before data loads
+4. **Consult Carbon docs** - understand prop requirements (selectedId vs value)
+
 See full specification at: `docs/SPARQL Query UI Web Component Specification.pdf`
 
 **Implementation tasks**: See `.tasks/` directory (50 incremental tasks)
