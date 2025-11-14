@@ -69,6 +69,87 @@ export default [js.configs.recommended, {
     'no-unused-vars': ['error', {
       argsIgnorePattern: '^_',
       varsIgnorePattern: '^_'
+    }],
+    // Prevent accidental use of global store singletons in Svelte components
+    // Components should use context stores via getXStore() functions instead
+    'no-restricted-imports': ['error', {
+      paths: [
+        {
+          name: '../stores/queryStore',
+          importNames: ['queryStore'],
+          message: 'Do not import global queryStore singleton in .svelte files. Use getQueryStore() from storeContext instead.'
+        },
+        {
+          name: '../../stores/queryStore',
+          importNames: ['queryStore'],
+          message: 'Do not import global queryStore singleton in .svelte files. Use getQueryStore() from storeContext instead.'
+        },
+        {
+          name: '../../../stores/queryStore',
+          importNames: ['queryStore'],
+          message: 'Do not import global queryStore singleton in .svelte files. Use getQueryStore() from storeContext instead.'
+        },
+        {
+          name: '../stores/resultsStore',
+          importNames: ['resultsStore'],
+          message: 'Do not import global resultsStore singleton in .svelte files. Use getResultsStore() from storeContext instead.'
+        },
+        {
+          name: '../../stores/resultsStore',
+          importNames: ['resultsStore'],
+          message: 'Do not import global resultsStore singleton in .svelte files. Use getResultsStore() from storeContext instead.'
+        },
+        {
+          name: '../../../stores/resultsStore',
+          importNames: ['resultsStore'],
+          message: 'Do not import global resultsStore singleton in .svelte files. Use getResultsStore() from storeContext instead.'
+        },
+        {
+          name: '../stores/uiStore',
+          importNames: ['uiStore'],
+          message: 'Do not import global uiStore singleton in .svelte files. Use getUIStore() from storeContext instead.'
+        },
+        {
+          name: '../../stores/uiStore',
+          importNames: ['uiStore'],
+          message: 'Do not import global uiStore singleton in .svelte files. Use getUIStore() from storeContext instead.'
+        },
+        {
+          name: '../../../stores/uiStore',
+          importNames: ['uiStore'],
+          message: 'Do not import global uiStore singleton in .svelte files. Use getUIStore() from storeContext instead.'
+        },
+        {
+          name: '../stores/tabStore',
+          importNames: ['tabStore'],
+          message: 'Do not import global tabStore singleton in .svelte files. Use getTabStore() from storeContext instead.'
+        },
+        {
+          name: '../../stores/tabStore',
+          importNames: ['tabStore'],
+          message: 'Do not import global tabStore singleton in .svelte files. Use getTabStore() from storeContext instead.'
+        },
+        {
+          name: '../../../stores/tabStore',
+          importNames: ['tabStore'],
+          message: 'Do not import global tabStore singleton in .svelte files. Use getTabStore() from storeContext instead.'
+        },
+        {
+          name: '../services/queryExecutionService',
+          importNames: ['queryExecutionService'],
+          message: 'Do not use queryExecutionService in .svelte files. Use resultsStore.executeQuery() from context instead.'
+        },
+        {
+          name: '../../services/queryExecutionService',
+          importNames: ['queryExecutionService'],
+          message: 'Do not use queryExecutionService in .svelte files. Use resultsStore.executeQuery() from context instead.'
+        },
+        {
+          name: '../../../services/queryExecutionService',
+          importNames: ['queryExecutionService'],
+          message: 'Do not use queryExecutionService in .svelte files. Use resultsStore.executeQuery() from context instead.'
+        }
+      ]
     }]
   }
 }, {
