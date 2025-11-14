@@ -9,7 +9,7 @@ import { sparqlService } from './sparqlService';
 import { analyzeQuery, type QueryAnalysis } from '../utils/queryAnalyzer';
 import { parseResults } from '../utils/resultsParser';
 import { workerParserService, isWorkerSupported } from './workerParserService';
-import type { SparqlJsonResults } from '../types';
+import type { SparqlJsonResults, ResultFormat } from '../types';
 
 /**
  * Query execution options
@@ -101,12 +101,20 @@ export class QueryExecutionService {
 
     const startTime = Date.now();
 
+    // Get current format from results store
+    let currentFormat: ResultFormat | undefined;
+    const unsubscribe = resultsStore.subscribe((state) => {
+      currentFormat = state.format;
+    });
+    unsubscribe();
+
     try {
       // Execute query using real SPARQL Protocol implementation
       // STREAMING-02: Wire progress callbacks to results store
       const result = await sparqlService.executeQuery({
         endpoint,
         query,
+        format: currentFormat, // Pass format from store for content negotiation
         timeout,
         signal: this.currentController.signal,
         onProgress: (progress) => {

@@ -368,25 +368,41 @@
   .endpoint-selector-wrapper {
     grid-column: 2;
     min-width: 0; /* Allow shrinking below content size */
+    overflow: hidden; /* Prevent overflow */
   }
 
   /* Format selector takes fixed space */
   .format-selector-wrapper {
     grid-column: 3;
-    min-width: 140px;
+    min-width: 120px; /* Reduced from 140px */
+    max-width: 140px;
   }
 
-  /* Responsive: stack on small screens */
+  /* Responsive: medium screens (768px - 1024px) - adjust grid */
+  @media (max-width: 1024px) {
+    .toolbar-content {
+      grid-template-columns: minmax(120px, max-content) 1fr minmax(120px, auto);
+      gap: var(--cds-spacing-03, 0.5rem); /* Tighter spacing */
+    }
+
+    .format-selector-wrapper {
+      min-width: 100px;
+    }
+  }
+
+  /* Responsive: small screens (below 768px) - stack vertically */
   @media (max-width: 768px) {
     .toolbar-content {
       grid-template-columns: 1fr;
       grid-template-rows: auto auto auto;
+      gap: var(--cds-spacing-03, 0.5rem);
     }
 
     .toolbar-content > :global(.run-button-container),
     .endpoint-selector-wrapper,
     .format-selector-wrapper {
       grid-column: 1;
+      max-width: 100%;
     }
   }
 

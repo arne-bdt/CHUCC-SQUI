@@ -415,6 +415,8 @@
     line-height: 1.43;
     color: var(--cds-text-primary, #161616);
     background-color: var(--cds-layer-01, #f4f4f4);
+    width: 100%; /* Force grid to use full container width */
+    height: 100%; /* Force grid to use full container height */
   }
 
   /* Header styling */
