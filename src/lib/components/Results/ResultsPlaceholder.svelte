@@ -85,6 +85,15 @@
   // Initialize from store, then user interactions update both local state and store
   let selectedView = $state<'table' | 'raw'>($resultsStore?.view || 'table');
 
+  // CRITICAL FIX: Sync selectedView FROM store when store changes
+  // This ensures the RadioButtonGroup reflects store state (e.g., after query execution)
+  $effect(() => {
+    const storeView = $resultsStore?.view;
+    if (storeView && (storeView === 'table' || storeView === 'raw')) {
+      selectedView = storeView;
+    }
+  });
+
   // Track previous view to avoid unnecessary store updates
   let previousSelectedView = $state<'table' | 'raw' | null>(null);
 
