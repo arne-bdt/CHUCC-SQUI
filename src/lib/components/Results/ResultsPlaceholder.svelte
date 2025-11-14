@@ -157,78 +157,81 @@
 
     <!-- Task 36: View switcher and results display for SELECT queries ONLY -->
     {:else if isTable && parsedResults}
-      <div class="results-container">
-        <!-- View switcher toolbar -->
-        <div class="results-toolbar" role="toolbar" aria-label={$t('a11y.viewSwitcher')}>
-          <div class="toolbar-left">
-            <RadioButtonGroup
-              bind:selected={selectedView}
-              orientation="horizontal"
-              legendText="View"
-              hideLegend={true}
-              aria-label={$t('a11y.viewSwitcher')}
-            >
-              <RadioButton labelText="Table" value="table" />
-              <RadioButton labelText="Raw" value="raw" />
-            </RadioButtonGroup>
-          </div>
+      <!-- CRITICAL FIX: Force re-render when data changes using {#key} -->
+      {#key resultsKey}
+        <div class="results-container">
+          <!-- View switcher toolbar -->
+          <div class="results-toolbar" role="toolbar" aria-label={$t('a11y.viewSwitcher')}>
+            <div class="toolbar-left">
+              <RadioButtonGroup
+                bind:selected={selectedView}
+                orientation="horizontal"
+                legendText="View"
+                hideLegend={true}
+                aria-label={$t('a11y.viewSwitcher')}
+              >
+                <RadioButton labelText="Table" value="table" />
+                <RadioButton labelText="Raw" value="raw" />
+              </RadioButtonGroup>
+            </div>
 
-          <div class="toolbar-right">
-            {#if $resultsStore.executionTime}
-              <span class="execution-time-badge">
-                Executed in {$resultsStore.executionTime}ms
-              </span>
-            {/if}
+            <div class="toolbar-right">
+              {#if $resultsStore.executionTime}
+                <span class="execution-time-badge">
+                  Executed in {$resultsStore.executionTime}ms
+                </span>
+              {/if}
 
-            <!-- Task 38: Download button -->
-            <DownloadButton
-              currentFormat={$resultsStore.format}
-              ondownload={handleDownload}
-              disabled={$resultsStore.loading || !$resultsStore.rawData}
-            />
-          </div>
-        </div>
-
-        <!-- Task 34: Show warning for large result sets (only in table view) -->
-        {#if currentView === 'table' && isTable}
-          <ResultsWarning
-            resultCount={(parsedResults as ParsedTableData).rowCount}
-            totalRows={(parsedResults as ParsedTableData).totalRows}
-            maxResults={maxResults}
-            warningThreshold={warningThreshold}
-            onDownload={onDownloadResults}
-            downloadAvailable={!!onDownloadResults}
-          />
-        {/if}
-
-        <!-- Results content area -->
-        <div class="results-content">
-          {#if currentView === 'table'}
-            <!-- Table view - show DataTable -->
-            {#if isTable}
-              <DataTable data={parsedResults as ParsedTableData} prefixes={$resultsStore.prefixes} />
-            {:else}
-              <div class="placeholder-content">
-                <p>No tabular data available for this query result.</p>
-                <p class="hint">Switch to Raw view to see the response.</p>
-              </div>
-            {/if}
-          {:else if currentView === 'raw'}
-            <!-- Raw view - show raw response -->
-            {#if $resultsStore.rawData}
-              <RawView
-                data={$resultsStore.rawData}
-                contentType={$resultsStore.contentType}
-                theme={$themeStore.current}
+              <!-- Task 38: Download button -->
+              <DownloadButton
+                currentFormat={$resultsStore.format}
+                ondownload={handleDownload}
+                disabled={$resultsStore.loading || !$resultsStore.rawData}
               />
-            {:else}
-              <div class="placeholder-content">
-                <p>No raw data available.</p>
-              </div>
-            {/if}
+            </div>
+          </div>
+
+          <!-- Task 34: Show warning for large result sets (only in table view) -->
+          {#if currentView === 'table' && isTable}
+            <ResultsWarning
+              resultCount={(parsedResults as ParsedTableData).rowCount}
+              totalRows={(parsedResults as ParsedTableData).totalRows}
+              maxResults={maxResults}
+              warningThreshold={warningThreshold}
+              onDownload={onDownloadResults}
+              downloadAvailable={!!onDownloadResults}
+            />
           {/if}
+
+          <!-- Results content area -->
+          <div class="results-content">
+            {#if currentView === 'table'}
+              <!-- Table view - show DataTable -->
+              {#if isTable}
+                <DataTable data={parsedResults as ParsedTableData} prefixes={$resultsStore.prefixes} />
+              {:else}
+                <div class="placeholder-content">
+                  <p>No tabular data available for this query result.</p>
+                  <p class="hint">Switch to Raw view to see the response.</p>
+                </div>
+              {/if}
+            {:else if currentView === 'raw'}
+              <!-- Raw view - show raw response -->
+              {#if $resultsStore.rawData}
+                <RawView
+                  data={$resultsStore.rawData}
+                  contentType={$resultsStore.contentType}
+                  theme={$themeStore.current}
+                />
+              {:else}
+                <div class="placeholder-content">
+                  <p>No raw data available.</p>
+                </div>
+              {/if}
+            {/if}
+          </div>
         </div>
-      </div>
+      {/key}
 
     <!-- ASK query results - show boolean -->
     {:else if isBoolean && parsedResults}
