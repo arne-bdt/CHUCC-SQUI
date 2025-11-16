@@ -9,6 +9,7 @@ import {
   prefixService,
 } from '../../../src/lib/services/prefixService';
 import type { PrefixConfig } from '../../../src/lib/types';
+import { logger } from '../../../src/lib/utils/logger';
 
 describe('PrefixService', () => {
   describe('commonPrefixes', () => {
@@ -490,17 +491,17 @@ describe('PrefixService', () => {
 
       // Mock fetch to ensure it's not called
       const fetchSpy = vi.spyOn(global, 'fetch');
-      const consoleDebugSpy = vi.spyOn(console, 'debug').mockImplementation(() => {});
+      const loggerDebugSpy = vi.spyOn(logger, 'debug').mockImplementation(() => {});
 
       const results = await service.searchPrefixes('foaf');
 
       expect(fetchSpy).not.toHaveBeenCalled();
       expect(results).toEqual([]);
-      expect(consoleDebugSpy).toHaveBeenCalledWith(
+      expect(loggerDebugSpy).toHaveBeenCalledWith(
         'External prefix lookup disabled (prefix.cc API call skipped)'
       );
 
-      consoleDebugSpy.mockRestore();
+      loggerDebugSpy.mockRestore();
     });
 
     it('should make API calls when enablePrefixLookup is true', async () => {

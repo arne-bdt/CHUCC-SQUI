@@ -6,6 +6,7 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { ServiceDescriptionCache } from '../../src/lib/services/serviceDescriptionCache';
 import type { ServiceDescription } from '../../src/lib/types';
+import { logger } from '../../src/lib/utils/logger';
 
 describe('ServiceDescriptionCache', () => {
   let cache: ServiceDescriptionCache;
@@ -386,8 +387,8 @@ describe('ServiceDescriptionCache', () => {
 
   describe('Edge cases', () => {
     it('should handle corrupted localStorage data', () => {
-      // Mock console.warn to suppress warning output
-      const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
+      // Mock logger.warn to suppress warning output
+      const warnSpy = vi.spyOn(logger, 'warn').mockImplementation(() => {});
 
       // Set corrupted data in localStorage
       localStorageMock.setItem('squi_service_description_cache', 'corrupted data');
@@ -409,8 +410,8 @@ describe('ServiceDescriptionCache', () => {
     });
 
     it('should handle localStorage quota exceeded', () => {
-      // Mock console.warn to suppress warning output
-      const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
+      // Mock logger.warn to suppress warning output
+      const warnSpy = vi.spyOn(logger, 'warn').mockImplementation(() => {});
 
       // Mock localStorage.setItem to throw quota exceeded error
       const originalSetItem = localStorageMock.setItem;

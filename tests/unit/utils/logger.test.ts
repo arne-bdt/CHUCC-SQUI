@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
-import { logger, logPerformance, LogLevel } from '$lib/utils/logger';
+import { logger, logPerformance, LogLevel } from '../../../src/lib/utils/logger';
 
 describe('logger', () => {
   let originalLogLevel: number;
