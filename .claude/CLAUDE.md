@@ -51,6 +51,117 @@ Before using any third-party component or library:
 - Avoids fighting against the library's design
 - Saves time by learning from official examples
 
+### Specialized Agents - Use for Complex Tasks
+
+**CRITICAL: Complex tasks MUST use specialized agents**
+
+This project includes specialized agents (in `.claude/agents/`) that provide expert guidance for specific domains. Using these agents ensures consistency, quality, and adherence to best practices.
+
+#### Available Agents
+
+- **`component-dev`** - Svelte 5 component development, Carbon Design System integration
+- **`testing`** - Unit tests, integration tests, E2E tests, Storybook stories
+- **`ui-ux`** - Carbon Design System compliance, accessibility (WCAG 2.1 AA), responsive design
+- **`datagrid`** - SVAR DataGrid implementation and optimization
+- **`sparql-protocol`** - SPARQL protocol implementation
+- **`docs`** - Documentation writing and maintenance
+
+#### When to Use Agents (MANDATORY)
+
+**❌ NEVER skip agents for:**
+
+1. **Component Development** → Use `component-dev` agent
+   - Creating new Svelte components
+   - Refactoring existing components
+   - Complex reactive patterns ($state, $derived, $effect)
+   - Carbon Design System component integration
+
+2. **Testing** → Use `testing` agent
+   - Creating E2E tests (Playwright)
+   - Writing unit/integration tests (Vitest)
+   - Implementing Storybook stories
+   - Test strategy and coverage planning
+
+3. **UI/UX Implementation** → Use `ui-ux` agent
+   - Accessibility verification (WCAG 2.1 AA)
+   - Carbon Design System compliance review
+   - Responsive design implementation
+   - ARIA labels and keyboard navigation
+
+4. **Major Features** → Use multiple agents
+   - Component development + UI/UX + Testing
+   - All three must review before completion
+
+**✅ Optional for:**
+- Simple documentation updates
+- Minor bug fixes (typos, imports)
+- Git operations
+
+#### How to Use Agents
+
+Use the `Task` tool with appropriate agent:
+
+```typescript
+// Example: Component development
+Task({
+  subagent_type: "general-purpose",
+  description: "Develop new component",
+  prompt: "You are the component-dev agent. Create a new Svelte 5 component for..."
+});
+
+// Example: Test creation
+Task({
+  subagent_type: "general-purpose",
+  description: "Create E2E tests",
+  prompt: "You are the testing agent. Create comprehensive E2E tests for..."
+});
+
+// Example: UI/UX review
+Task({
+  subagent_type: "general-purpose",
+  description: "Review accessibility",
+  prompt: "You are the ui-ux agent. Review this component for WCAG 2.1 AA compliance..."
+});
+```
+
+#### Agent Usage Workflow
+
+1. **Before starting** a complex task:
+   - Identify which agent(s) should be consulted
+   - Read the agent's guidelines (`.claude/agents/{name}.md`)
+
+2. **During implementation**:
+   - Use agent to guide implementation
+   - Follow agent recommendations
+   - Ask agent to review code
+
+3. **Before completion**:
+   - Use agent to verify quality
+   - Address all agent findings
+   - Document agent review in commit/PR
+
+#### Example: Complete Component Workflow
+
+For a new UI component, use **all three agents**:
+
+```bash
+# 1. Component development
+→ component-dev agent: Design component structure, implement logic
+
+# 2. UI/UX review
+→ ui-ux agent: Verify Carbon compliance, accessibility, responsive design
+
+# 3. Testing
+→ testing agent: Create unit tests, E2E tests, Storybook stories
+```
+
+**Why This Matters:**
+- **Quality**: Agents enforce project standards and best practices
+- **Consistency**: All code follows the same patterns
+- **Learning**: Agents teach correct approaches for future work
+- **Efficiency**: Prevents rework by catching issues early
+- **Documentation**: Agent reviews serve as quality audit trail
+
 ### TypeScript Requirements
 
 **CRITICAL: All code must be written in TypeScript**
