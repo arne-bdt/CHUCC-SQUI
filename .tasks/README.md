@@ -11,6 +11,8 @@ This directory contains documentation for the SPARQL Query UI Web Component (SQU
 - ✅ **Tasks 70-75**: Context-Based Store State Isolation - COMPLETED
 - ✅ **Task 76**: Migrate to loglevel Logging Library - COMPLETED
 - ✅ **Tasks 77-80**: Endpoint Dashboard & Summary - COMPLETED
+- 🔄 **Task 81**: Address UI/UX Agent Findings - PENDING
+- 🔄 **Task 82**: Complete Test Coverage for Endpoint Dashboard - PENDING
 
 ## Task Index
 
@@ -143,6 +145,100 @@ These tasks implement a collapsible endpoint information dashboard that displays
 - ✅ **Build**: 0 errors, 0 warnings, bundle size: 989KB
 - ✅ **Unit Tests**: 1113/1116 passing (no regressions)
 - ✅ **E2E Tests**: 12/12 passing for endpoint dashboard features
+
+### Endpoint Dashboard Quality Improvements (Tasks 81-82) 🔄 PENDING
+
+These tasks address findings from retrospective agent reviews of the endpoint dashboard feature (Tasks 77-80), implementing accessibility improvements and comprehensive test coverage.
+
+**Agent Review Results:**
+- ✅ **UI/UX Agent**: 4.7/5 stars (2 moderate issues identified)
+- ⚠️ **Testing Agent**: ~15% coverage (59-69 tests needed to reach >80% target)
+
+**Tasks 81-82 will achieve:**
+- ✅ 5.0/5 UI/UX score with full WCAG 2.1 AA compliance
+- ✅ >80% test coverage (70-80 total tests)
+- ✅ Screen reader announcements for dynamic content
+- ✅ Keyboard focus management (expand/collapse, modal)
+- ✅ Comprehensive unit/integration tests for all components
+- ✅ E2E interaction, error handling, and accessibility tests
+
+#### Task Breakdown
+
+- **[Task 81: Address UI/UX Agent Findings](.tasks/81-address-ui-ux-findings.md)** 🔄 **PENDING**
+  - **Priority**: HIGH (Accessibility compliance)
+  - **Estimated Effort**: 4-6 hours
+  - **Agents Required**: ui-ux, component-dev, testing
+
+  **Moderate Issues to Fix:**
+  1. Add ARIA live regions for screen reader announcements
+     - Announce loading states, search results, modal state changes
+     - Announce dashboard expand/collapse events
+  2. Implement keyboard focus management
+     - Focus moves to dashboard content when expanding
+     - Focus returns to toggle button when collapsing
+     - Focus trap in function details modal
+
+  **Enhancements:**
+  - Replace spinners with loading skeletons
+  - Add visual indicators for loading/error states
+  - Use `<time datetime>` for "Last Updated" display
+  - Consider category filtering for functions (nice to have)
+
+  **Testing:**
+  - 6+ new E2E accessibility tests (keyboard nav, ARIA verification, focus management)
+  - Manual screen reader testing (NVDA/JAWS/VoiceOver)
+  - axe DevTools automated a11y verification
+
+- **[Task 82: Complete Test Coverage](.tasks/82-complete-test-coverage.md)** 🔄 **PENDING**
+  - **Priority**: HIGH (Quality assurance)
+  - **Estimated Effort**: 8-12 hours
+  - **Agents Required**: testing, component-dev
+
+  **Current Gap**: 11/70-80 tests = ~15% coverage
+
+  **Tests Needed:**
+  1. **Unit/Integration Tests** (48-58 tests):
+     - EndpointInfoSummary: 15-20 tests (rendering, expand/collapse, auto-fetch, loading, errors)
+     - EndpointDashboard: 20-25 tests (tabs, panels, store reactivity, edge cases)
+     - FunctionLibrary: 8-10 tests (search, filtering, modal, insertion)
+
+  2. **E2E Interaction Tests** (6-8 tests):
+     - Expand/collapse dashboard (click, keyboard)
+     - Search functions (typing, filtering, clearing)
+     - Open/close function details modal
+     - Insert function into editor
+     - Navigate tabs with keyboard (Arrow keys)
+
+  3. **E2E Error Handling Tests** (4-6 tests):
+     - Network failure during fetch
+     - Invalid service description data
+     - Empty results (no capabilities/datasets/functions)
+     - Retry after error
+
+  **Target Coverage**: >80% line/branch coverage for all endpoint dashboard components
+
+#### Success Criteria
+
+**Task 81 (Accessibility):**
+- ✅ UI/UX agent review score: 5.0/5 stars
+- ✅ All moderate accessibility issues resolved
+- ✅ WCAG 2.1 AA compliance verified (automated + manual)
+- ✅ Screen reader announcements working correctly
+- ✅ Keyboard focus management implemented
+- ✅ All E2E accessibility tests passing
+
+**Task 82 (Test Coverage):**
+- ✅ >80% test coverage for endpoint dashboard components
+- ✅ 70-80 total tests passing (unit + integration + E2E)
+- ✅ Testing agent review score: 5.0/5 stars
+- ✅ All interaction scenarios covered
+- ✅ All error handling scenarios covered
+- ✅ No flaky tests (run 10 times, all pass)
+
+**Combined Result:**
+- ✅ Professional-grade accessibility (WCAG AA compliant)
+- ✅ Production-ready quality (comprehensive test coverage)
+- ✅ Maintainable codebase (well-tested, documented patterns)
 
 ### Context-Based Store State Isolation (Tasks 70-75) ✅ COMPLETED
 
