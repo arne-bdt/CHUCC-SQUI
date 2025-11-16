@@ -1,10 +1,12 @@
 <script lang="ts">
   import { Search, Button, Modal, Tabs, Tab, TabContent, Link } from 'carbon-components-svelte';
   import { Document } from 'carbon-icons-svelte';
+  import { onMount, tick } from 'svelte';
   import FunctionDetails from './FunctionDetails.svelte';
   import { getServiceDescriptionStore } from '../../stores/storeContext';
   import { buildFunctionCall, getFunctionName, filterFunctions } from '../../editor/utils/functionFormatting';
   import type { ExtensionFunction, ExtensionAggregate } from '../../types';
+  import '../../styles/accessibility.css';
 
   // Get store from context (with fallback to global)
   const serviceDescriptionStore = getServiceDescriptionStore();
@@ -40,6 +42,11 @@
   let selectedFunction = $state<ExtensionFunction | ExtensionAggregate | null>(null);
   let showModal = $state(false);
 
+  // Refs for focus management
+  let modalRef = $state<HTMLDivElement>();
+  let previouslyFocused: HTMLElement | null = null;
+  let triggerButtonRef = $state<HTMLButtonElement>();
+
   // Filtered lists
   const filteredFunctions = $derived(filterFunctions(functions, searchTerm));
   const filteredAggregates = $derived(filterFunctions(aggregates, searchTerm));
@@ -47,9 +54,25 @@
   // Current list based on tab
   const currentList = $derived(selectedTab === 0 ? filteredFunctions : filteredAggregates);
 
-  function showDetails(func: ExtensionFunction | ExtensionAggregate) {
+  // Search result announcement for screen readers
+  const searchResultAnnouncement = $derived.by(() => {
+    const count = currentList.length;
+    const type = selectedTab === 0 ? 'function' : 'aggregate';
+    if (searchTerm) {
+      return `${count} ${type}${count !== 1 ? 's' : ''} found matching "${searchTerm}"`;
+    }
+    return `${count} ${type}${count !== 1 ? 's' : ''} available`;
+  });
+
+  async function showDetails(func: ExtensionFunction | ExtensionAggregate, buttonRef?: HTMLButtonElement) {
+    // Store reference to the button that triggered the modal
+    previouslyFocused = buttonRef || document.activeElement as HTMLElement;
     selectedFunction = func;
     showModal = true;
+
+    // Wait for modal to render and focus first element
+    await tick();
+    focusModalFirstElement();
   }
 
   function insertFunction(func: ExtensionFunction | ExtensionAggregate) {
@@ -62,10 +85,31 @@
   function closeModal() {
     showModal = false;
     selectedFunction = null;
+
+    // Return focus to trigger button
+    tick().then(() => previouslyFocused?.focus());
+  }
+
+  /**
+   * Focus first interactive element in modal
+   * Carbon Modal component handles focus trap automatically
+   */
+  function focusModalFirstElement() {
+    tick().then(() => {
+      const firstFocusable = modalRef?.querySelector<HTMLElement>(
+        'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+      );
+      firstFocusable?.focus();
+    });
   }
 </script>
 
 <div class="function-library">
+  <!-- ARIA live region for search result announcements -->
+  <div class="sr-only" role="status" aria-live="polite" aria-atomic="true">
+    {searchResultAnnouncement}
+  </div>
+
   <div class="header">
     <h3>Extension Functions</h3>
     <Search
@@ -73,6 +117,7 @@
       placeholder="Search functions..."
       size="sm"
       class="search-input"
+      aria-label="Search extension functions and aggregates"
     />
   </div>
 
@@ -142,15 +187,18 @@
 </div>
 
 {#if selectedFunction && showModal}
-  <Modal
-    open={showModal}
-    modalHeading={selectedFunction.label || getFunctionName(selectedFunction.uri)}
-    passiveModal
-    on:close={closeModal}
-    on:click:button--secondary={closeModal}
-  >
-    <FunctionDetails func={selectedFunction} />
-  </Modal>
+  <div bind:this={modalRef}>
+    <Modal
+      open={showModal}
+      modalHeading={selectedFunction.label || getFunctionName(selectedFunction.uri)}
+      passiveModal
+      on:close={closeModal}
+      on:click:button--secondary={closeModal}
+      on:open={focusModalFirstElement}
+    >
+      <FunctionDetails func={selectedFunction} />
+    </Modal>
+  </div>
 {/if}
 
 <style>

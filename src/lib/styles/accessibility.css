@@ -1,0 +1,100 @@
+/**
+ * Accessibility Utilities
+ *
+ * CSS utility classes for improving accessibility compliance
+ * Based on WCAG 2.1 AA guidelines
+ */
+
+/**
+ * Screen Reader Only
+ *
+ * Visually hides an element while keeping it accessible to screen readers.
+ * Used for ARIA live regions and descriptive text that should only be announced.
+ *
+ * Pattern recommended by WebAIM and A11y Project:
+ * https://webaim.org/techniques/css/invisiblecontent/
+ * https://www.a11yproject.com/posts/how-to-hide-content/
+ */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
+
+/**
+ * Screen Reader Only - Focusable
+ *
+ * Reveals sr-only content when it receives keyboard focus.
+ * Useful for skip links and other keyboard-only navigation aids.
+ */
+.sr-only-focusable:focus,
+.sr-only-focusable:active {
+  position: static;
+  width: auto;
+  height: auto;
+  padding: inherit;
+  margin: inherit;
+  overflow: visible;
+  clip: auto;
+  white-space: normal;
+}
+
+/**
+ * Focus Visible
+ *
+ * Enhanced focus indicator for keyboard navigation.
+ * Provides a clear, high-contrast outline when elements receive keyboard focus.
+ *
+ * Note: Carbon Design System provides default focus styles, but this can be used
+ * for custom components that need explicit focus indicators.
+ */
+.focus-visible:focus-visible {
+  outline: 2px solid var(--cds-focus, #0f62fe);
+  outline-offset: 2px;
+}
+
+/**
+ * Skip Link
+ *
+ * Styling for skip navigation links.
+ * These links should be visually hidden until focused.
+ */
+.skip-link {
+  position: absolute;
+  top: -40px;
+  left: 0;
+  background: var(--cds-layer-01, #f4f4f4);
+  color: var(--cds-text-primary, #161616);
+  padding: var(--cds-spacing-03);
+  text-decoration: none;
+  z-index: 9999;
+}
+
+.skip-link:focus {
+  top: 0;
+}
+
+/**
+ * Reduced Motion
+ *
+ * Respects user's preference for reduced motion.
+ * Disables animations and transitions for users who have enabled this setting.
+ *
+ * @see https://developer.mozilla.org/en-US/docs/Web/CSS/@media/prefers-reduced-motion
+ */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

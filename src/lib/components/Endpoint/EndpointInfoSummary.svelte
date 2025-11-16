@@ -6,10 +6,12 @@
 <script lang="ts">
   import { Button, SkeletonText } from 'carbon-components-svelte';
   import { ChevronDown, ChevronUp, Renew, InformationFilled } from 'carbon-icons-svelte';
+  import { tick } from 'svelte';
   import { getServiceDescriptionStore, getEndpointStore } from '../../stores/storeContext';
   import { SPARQLLanguage } from '../../types';
   import type { ServiceDescription } from '../../types';
   import EndpointDashboard from './EndpointDashboard.svelte';
+  import '../../styles/accessibility.css';
 
   interface Props {
     /** Callback to insert function at cursor position in editor */
@@ -34,6 +36,10 @@
 
   // Component state
   let expanded = $state(false);
+
+  // Refs for focus management
+  let toggleButtonRef = $state<HTMLButtonElement>();
+  let dashboardRef = $state<HTMLDivElement>();
 
   // Auto-fetch service description when endpoint changes
   $effect(() => {
@@ -94,10 +100,25 @@
   }
 
   /**
-   * Toggle expanded/collapsed state
+   * Toggle expanded/collapsed state with focus management
    */
-  function toggleExpanded() {
+  async function toggleExpanded() {
+    const wasExpanded = expanded;
     expanded = !expanded;
+
+    // Wait for DOM update
+    await tick();
+
+    if (expanded && !wasExpanded) {
+      // When expanding, move focus to first interactive element in dashboard
+      const firstFocusable = dashboardRef?.querySelector<HTMLElement>(
+        'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+      );
+      firstFocusable?.focus();
+    } else if (!expanded && wasExpanded) {
+      // When collapsing, return focus to toggle button
+      toggleButtonRef?.focus();
+    }
   }
 
   /**
@@ -121,12 +142,43 @@
     return `✓ ${version} | ${graphCount} graphs | ${functionCount} functions | Last: ${timeAgo}`;
   });
 
+  // Status message for screen reader announcements
+  const statusMessage = $derived.by(() => {
+    if (storeState.loading) {
+      return 'Loading endpoint capabilities...';
+    } else if (storeState.error) {
+      return 'Error loading endpoint capabilities.';
+    } else if (!serviceDesc || !serviceDesc.available) {
+      return 'No service description available.';
+    } else {
+      const version = getSparqlVersion(serviceDesc);
+      const graphCount = getGraphCount(serviceDesc);
+      const functionCount = getFunctionCount(serviceDesc);
+      return `Endpoint capabilities loaded. ${version} with ${graphCount} graphs and ${functionCount} extension functions available.`;
+    }
+  });
+
+  // Announcement for expansion state changes
+  const expansionAnnouncement = $derived.by(() => {
+    if (!serviceDesc || !serviceDesc.available) return '';
+    if (expanded) {
+      return `Dashboard expanded. ${statusMessage}`;
+    } else {
+      return 'Dashboard collapsed.';
+    }
+  });
+
   // Show component only if endpoint is selected
   const shouldShow = $derived(!!currentEndpoint);
 </script>
 
 {#if shouldShow}
   <div class="endpoint-info-summary" class:expanded>
+    <!-- ARIA live region for status announcements -->
+    <div class="sr-only" role="status" aria-live="polite" aria-atomic="true">
+      {expansionAnnouncement || statusMessage}
+    </div>
+
     <!-- Collapsed Summary Bar -->
     <div class="summary-bar">
       {#if storeState.loading}
@@ -138,9 +190,14 @@
           <InformationFilled size={16} />
           <span>No service description available</span>
         </div>
-      {:else if summaryText}
+      {:else if summaryText && serviceDesc}
         <div class="summary-content">
-          <span class="summary-text">{summaryText}</span>
+          <span class="summary-text">
+            ✓ {getSparqlVersion(serviceDesc)} | {getGraphCount(serviceDesc)} graphs | {getFunctionCount(serviceDesc)} functions
+          </span>
+          <time datetime={serviceDesc.lastFetched.toISOString()} class="last-updated">
+            Last: {formatTimeAgo(serviceDesc.lastFetched)}
+          </time>
         </div>
       {/if}
 
@@ -149,19 +206,24 @@
           kind="ghost"
           size="sm"
           icon={Renew}
-          iconDescription="Refresh"
+          iconDescription="Refresh endpoint capabilities"
           tooltipPosition="left"
           onclick={handleRefresh}
           disabled={!currentEndpoint || storeState.loading}
+          aria-label="Refresh endpoint capabilities"
         />
         {#if serviceDesc && serviceDesc.available}
           <Button
+            bind:this={toggleButtonRef}
             kind="ghost"
             size="sm"
             icon={expanded ? ChevronUp : ChevronDown}
-            iconDescription={expanded ? 'Collapse' : 'Expand'}
+            iconDescription={expanded ? 'Collapse dashboard' : 'Expand dashboard'}
             tooltipPosition="left"
             onclick={toggleExpanded}
+            aria-expanded={expanded}
+            aria-controls="endpoint-dashboard"
+            aria-label={expanded ? 'Collapse endpoint dashboard' : 'Expand endpoint dashboard'}
           />
         {/if}
       </div>
@@ -169,7 +231,7 @@
 
     <!-- Expanded Dashboard -->
     {#if expanded && serviceDesc && serviceDesc.available}
-      <div class="dashboard-container">
+      <div class="dashboard-container" id="endpoint-dashboard" bind:this={dashboardRef}>
         <EndpointDashboard
           {currentEndpoint}
           {onInsertFunction}
@@ -208,6 +270,14 @@
     line-height: 1.29;
     color: var(--cds-text-secondary, #525252);
     font-family: var(--cds-code-font-family, 'IBM Plex Mono', monospace);
+  }
+
+  .last-updated {
+    font-size: var(--cds-body-compact-01);
+    line-height: 1.29;
+    color: var(--cds-text-secondary, #525252);
+    font-family: var(--cds-code-font-family, 'IBM Plex Mono', monospace);
+    margin-left: var(--cds-spacing-03);
   }
 
   .summary-error {
