@@ -4,11 +4,15 @@ import './preview.css';
 import type { CarbonTheme, ServiceDescription } from '../src/lib/types';
 import StoreProvider from '../src/lib/components/StoreProvider.svelte';
 import { serviceDescriptionCache } from '../src/lib/services/serviceDescriptionCache';
+import { logger } from '../src/lib/utils/logger';
 
 /**
  * Storybook preview configuration for SQUI
  * Integrates Carbon Design System and provides theme switching
  */
+
+// Set default log level for Storybook to reduce console noise
+logger.setLevel('warn');
 
 /**
  * Graph completion mock decorator - sets up service description for graph completion stories

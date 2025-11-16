@@ -20,6 +20,7 @@
   import type { createTabStore } from '../../stores/tabStore';
   import type { TabsState } from '../../types';
   import { t } from '../../localization';
+  import { logger } from '../../utils/logger';
 
   // Get instance-specific tab store from context
   const tabStore = getContext<ReturnType<typeof createTabStore>>('tabStore');
@@ -51,7 +52,7 @@
   $effect(() => {
     const selectedTab = tabsState.tabs[selectedIndex];
     if (selectedTab && selectedTab.id !== tabsState.activeTabId) {
-      console.log('[QueryTabs] User clicked tab:', {
+      logger.debug('[QueryTabs] User clicked tab:', {
         selectedIndex,
         selectedTab: { id: selectedTab.id, name: selectedTab.name },
         currentActiveTabId: tabsState.activeTabId,

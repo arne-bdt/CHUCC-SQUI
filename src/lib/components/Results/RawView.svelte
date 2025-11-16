@@ -13,6 +13,7 @@
   import { json } from '@codemirror/lang-json';
   import { xml } from '@codemirror/lang-xml';
   import { oneDark } from '@codemirror/theme-one-dark';
+  import { logger } from '../../utils/logger';
 
   interface Props {
     /** Raw response data to display */
@@ -106,7 +107,7 @@
       previousContentType = contentType;
       previousTheme = theme;
     } catch (error) {
-      console.error('RawView: Failed to initialize CodeMirror', error);
+      logger.error('RawView: Failed to initialize CodeMirror', error);
     }
 
     // Cleanup on unmount
@@ -143,7 +144,7 @@
         previousContentType = contentType;
         previousTheme = theme;
       } catch (error) {
-        console.error('RawView: Failed to re-initialize CodeMirror', error);
+        logger.error('RawView: Failed to re-initialize CodeMirror', error);
       }
     }
   });

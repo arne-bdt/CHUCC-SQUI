@@ -29,6 +29,7 @@
   import ResultsPlaceholder from './lib/components/Results/ResultsPlaceholder.svelte';
   import QueryTabs from './lib/components/Tabs/QueryTabs.svelte';
   import { setContext } from 'svelte';
+  import { logger } from './lib/utils/logger';
 
   // Get stores from context (provided by parent SparqlQueryUI wrapper)
   const themeStore = getThemeStore();
@@ -111,12 +112,12 @@
     const unsubscribe = instanceTabStore.subscribe((state) => {
       // Guard against re-entrant calls (updateTabQuery triggers subscription)
       if (isSwitching) {
-        console.log('[SparqlQueryUI] Ignoring re-entrant subscription call');
+        logger.debug('[SparqlQueryUI] Ignoring re-entrant subscription call');
         return;
       }
 
       // Check if active tab changed
-      console.log('[SparqlQueryUI] Tab store subscription triggered:', {
+      logger.debug('[SparqlQueryUI] Tab store subscription triggered:', {
         activeTabId: state.activeTabId,
         currentActiveTabId,
         tabCount: state.tabs.length,
@@ -128,7 +129,7 @@
         if (currentActiveTabId) {
           const oldTab = state.tabs.find((t) => t.id === currentActiveTabId);
           if (oldTab) {
-            console.log('[SparqlQueryUI] Saving old tab before switch:', {
+            logger.debug('[SparqlQueryUI] Saving old tab before switch:', {
               tabId: oldTab.id,
               queryText: $queryStore.text.substring(0, 50),
             });
@@ -142,14 +143,14 @@
         // CRITICAL FIX: Get fresh tab data using getTab() instead of stale 'state' parameter
         // After updateTabQuery, the 'state' parameter is stale - we need current data
         const newActiveTab = instanceTabStore.getTab(state.activeTabId);
-        console.log('[SparqlQueryUI] Switching to tab (FRESH DATA):', {
+        logger.debug('[SparqlQueryUI] Switching to tab (FRESH DATA):', {
           tabId: newActiveTab?.id,
           tabName: newActiveTab?.name,
           queryText: newActiveTab?.query.text.substring(0, 50),
         });
         if (newActiveTab) {
           // Load tab state into global stores (but don't save back)
-          console.log('[SparqlQueryUI] Calling queryStore.setState with:', newActiveTab.query.text.substring(0, 50));
+          logger.debug('[SparqlQueryUI] Calling queryStore.setState with:', newActiveTab.query.text.substring(0, 50));
           queryStore.setState(newActiveTab.query);
           resultsStore.setState(newActiveTab.results);
           if (newActiveTab.query.endpoint) {

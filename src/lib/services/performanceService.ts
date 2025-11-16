@@ -3,6 +3,8 @@
  * Tracks timing, memory, and data size metrics for queries
  */
 
+import { logPerformance } from '../utils/logger';
+
 /**
  * Memory information from performance.memory API (non-standard but widely supported)
  */
@@ -312,26 +314,24 @@ export class PerformanceService {
    * Log metrics to console
    */
   private logMetrics(metrics: QueryPerformanceMetrics): void {
-    console.group('🔬 Query Performance');
-    console.log('⏱️  Total time:', metrics.totalTime.toFixed(2), 'ms');
-    console.log('   Network:', metrics.networkTime.toFixed(2), 'ms');
-    console.log('   Download:', metrics.downloadTime.toFixed(2), 'ms');
-    console.log('   Parse:', metrics.parseTime.toFixed(2), 'ms');
-    console.log('   Render:', metrics.renderTime.toFixed(2), 'ms');
-    console.log('📊 Response:', this.formatBytes(metrics.responseBytes));
-    console.log('📊 Results:', metrics.rowCount, 'rows ×', metrics.columnCount, 'cols');
+    const metricsData: Record<string, unknown> = {
+      'Total time': `${metrics.totalTime.toFixed(2)} ms`,
+      'Network': `${metrics.networkTime.toFixed(2)} ms`,
+      'Download': `${metrics.downloadTime.toFixed(2)} ms`,
+      'Parse': `${metrics.parseTime.toFixed(2)} ms`,
+      'Render': `${metrics.renderTime.toFixed(2)} ms`,
+      'Response': this.formatBytes(metrics.responseBytes),
+      'Results': `${metrics.rowCount} rows × ${metrics.columnCount} cols`,
+    };
+
     if (metrics.peakMemoryMB !== undefined) {
-      console.log('💾 Memory:', metrics.peakMemoryMB.toFixed(1), 'MB peak');
+      metricsData['Memory peak'] = `${metrics.peakMemoryMB.toFixed(1)} MB`;
       if (metrics.memoryGrowthMB !== undefined) {
-        console.log(
-          '💾 Growth:',
-          metrics.memoryGrowthMB > 0 ? '+' : '',
-          metrics.memoryGrowthMB.toFixed(1),
-          'MB'
-        );
+        metricsData['Memory growth'] = `${metrics.memoryGrowthMB > 0 ? '+' : ''}${metrics.memoryGrowthMB.toFixed(1)} MB`;
       }
     }
-    console.groupEnd();
+
+    logPerformance('Query Performance', metricsData);
   }
 
   /**

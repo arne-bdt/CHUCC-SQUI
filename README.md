@@ -421,6 +421,79 @@ const abbreviated = prefixService.abbreviateIRI(
 const templates = templateService.getDefaultTemplates();
 ```
 
+## Logging
+
+SQUI uses [loglevel](https://github.com/pimterry/loglevel) for production-safe logging with runtime control.
+
+### Log Levels
+
+Available log levels (in order of severity):
+- `trace` - Detailed trace information (rarely used)
+- `debug` - Debug information (development only)
+- `info` - Informational messages
+- `warn` - Warning messages
+- `error` - Error messages
+- `silent` - Disable all logging
+
+### Default Behavior
+
+- **Development**: Default level is `debug` (shows all logs)
+- **Production**: Default level is `warn` (shows only warnings and errors)
+- **Storybook**: Default level is `warn` (reduced console noise)
+
+### Runtime Control
+
+Change the log level at runtime without rebuilding:
+
+```javascript
+// Access the logger via window
+window.__logger.setLevel('debug');  // Enable debug logs
+window.__logger.setLevel('warn');   // Show warnings and errors only
+window.__logger.setLevel('silent'); // Disable all logging
+
+// Get current log level
+const level = window.__logger.getLevel();
+```
+
+### Persistence
+
+The log level is automatically persisted to `localStorage` and will be restored on page reload:
+
+```javascript
+// Set level - persists across page reloads
+window.__logger.setLevel('debug');
+localStorage.setItem('logLevel', 'debug');
+```
+
+### Programmatic Usage
+
+For custom integrations, you can import and use the logger:
+
+```typescript
+import { logger, logPerformance } from 'sparql-query-ui';
+
+// Standard logging
+logger.debug('Debug message', { data: 'value' });
+logger.info('Info message');
+logger.warn('Warning message');
+logger.error('Error message', error);
+
+// Performance logging helper
+logPerformance('Query Execution', {
+  'Total time': '123.45 ms',
+  'Network time': '45.67 ms',
+  'Parse time': '12.34 ms',
+});
+```
+
+### Production Safety
+
+In production builds, debug and trace logs are completely eliminated by tree-shaking, resulting in zero runtime overhead:
+
+- Debug logs → Removed from production bundle
+- Tree-shaking → Only warn/error code remains
+- Bundle size → No impact from development logging
+
 ## TypeScript Support
 
 Full TypeScript definitions are included. Import types as needed:

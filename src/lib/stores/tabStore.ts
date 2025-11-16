@@ -1,5 +1,6 @@
 import { writable, get } from 'svelte/store';
 import type { Tab, TabsState, QueryState, ResultsState } from '../types';
+import { logger } from '../utils/logger';
 
 /**
  * Generate a unique tab ID
@@ -114,7 +115,7 @@ export function createTabStore(options: {
       };
       localStorage.setItem(STORAGE_KEY, JSON.stringify(storageData));
     } catch (error) {
-      console.error('Failed to save tabs to localStorage:', error);
+      logger.error('Failed to save tabs to localStorage:', error);
     }
   }
 
@@ -137,7 +138,7 @@ export function createTabStore(options: {
 
       // Check if data has expired
       if (Date.now() - savedAt > expiryTime) {
-        console.log('Stored tabs have expired, clearing storage');
+        logger.debug('Stored tabs have expired, clearing storage');
         clearStorage();
         return;
       }
@@ -153,7 +154,7 @@ export function createTabStore(options: {
         });
       }
     } catch (error) {
-      console.error('Failed to load tabs from localStorage:', error);
+      logger.error('Failed to load tabs from localStorage:', error);
     }
   }
 
@@ -167,7 +168,7 @@ export function createTabStore(options: {
     try {
       localStorage.removeItem(STORAGE_KEY);
     } catch (error) {
-      console.error('Failed to clear tabs from localStorage:', error);
+      logger.error('Failed to clear tabs from localStorage:', error);
     }
   }
 
@@ -214,7 +215,7 @@ export function createTabStore(options: {
 
         // Don't allow removing the last tab
         if (newTabs.length === 0) {
-          console.warn('Cannot remove the last tab');
+          logger.warn('Cannot remove the last tab');
           return state;
         }
 
@@ -245,7 +246,7 @@ export function createTabStore(options: {
       update((state) => {
         const tabExists = state.tabs.some((t) => t.id === tabId);
         if (!tabExists) {
-          console.warn(`Tab ${tabId} does not exist`);
+          logger.warn(`Tab ${tabId} does not exist`);
           return state;
         }
 

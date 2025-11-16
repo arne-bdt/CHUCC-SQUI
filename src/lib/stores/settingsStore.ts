@@ -4,6 +4,7 @@
  */
 
 import { writable } from 'svelte/store';
+import { logger } from '../utils/logger';
 
 /**
  * Validation settings
@@ -67,7 +68,7 @@ function loadSettings(): Settings {
       };
     }
   } catch (error) {
-    console.error('Failed to load settings from localStorage:', error);
+    logger.error('Failed to load settings from localStorage:', error);
   }
 
   return DEFAULT_SETTINGS;
@@ -84,7 +85,7 @@ function saveSettings(settings: Settings): void {
   try {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(settings));
   } catch (error) {
-    console.error('Failed to save settings to localStorage:', error);
+    logger.error('Failed to save settings to localStorage:', error);
   }
 }
 

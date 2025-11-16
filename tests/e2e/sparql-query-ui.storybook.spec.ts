@@ -69,6 +69,10 @@ test.describe('SparqlQueryUI - Query Execution and Results Display', () => {
     // Enter query and endpoint
     const query = 'SELECT * WHERE { ?s ?p ?o } LIMIT 3';
     await page.locator('.cm-content').click();
+
+    // Clear existing content and type query
+    await page.keyboard.press('Control+A');
+    await page.keyboard.press('Delete');
     await page.keyboard.type(query);
 
     const endpointInput = page.getByPlaceholder('Select or enter SPARQL endpoint');
@@ -83,7 +87,7 @@ test.describe('SparqlQueryUI - Query Execution and Results Display', () => {
     await expect(cancelButton).toBeDisabled({ timeout: 15000 });
 
     // Verify results are visible
-    const resultsTable = page.locator('.data-table-container, .data-table, .wx-grid');
+    const resultsTable = page.locator('.data-table-container, .data-table, .wx-grid').first();
     await expect(resultsTable).toBeVisible({ timeout: 5000 });
 
     // Find and change the format selector
@@ -112,15 +116,17 @@ test.describe('SparqlQueryUI - Query Execution and Results Display', () => {
     await page.waitForTimeout(1500);
 
     // Verify endpoint is pre-configured
-    await expect(page.getByText(/dbpedia/i)).toBeVisible({ timeout: 5000 });
+    const endpointCombobox = page.getByRole('combobox').first();
+    await expect(endpointCombobox).toHaveValue(/dbpedia/i);
 
     // Enter a simple query
     const query = 'SELECT * WHERE { ?s a <http://dbpedia.org/ontology/Person> } LIMIT 3';
     const editor = page.locator('.cm-content');
     await editor.click();
 
-    // Clear any existing content
+    // Clear existing content and type query
     await page.keyboard.press('Control+A');
+    await page.keyboard.press('Delete');
     await page.keyboard.type(query);
 
     // Run query
@@ -132,7 +138,7 @@ test.describe('SparqlQueryUI - Query Execution and Results Display', () => {
     await expect(cancelButton).toBeDisabled({ timeout: 20000 });
 
     // Verify results are displayed
-    const resultsContainer = page.locator('.results-container, .data-table-container');
+    const resultsContainer = page.locator('.results-container, .data-table-container').first();
     await expect(resultsContainer).toBeVisible({ timeout: 5000 });
   });
 
@@ -187,6 +193,9 @@ test.describe('SparqlQueryUI - Keyboard Shortcuts', () => {
     const endpointInput = page.getByPlaceholder('Select or enter SPARQL endpoint');
     await endpointInput.fill('https://dbpedia.org/sparql');
 
+    // Close the endpoint dropdown (Escape key) to avoid blocking clicks
+    await page.keyboard.press('Escape');
+
     // Focus back on the editor
     await editor.click();
 
@@ -230,11 +239,10 @@ test.describe('SparqlQueryUI - Format Selector Integration', () => {
     await page.waitForTimeout(1500);
 
     // Format selector should be visible in toolbar
-    const formatLabel = page.getByText(/result format/i);
-    await expect(formatLabel).toBeVisible({ timeout: 5000 });
+    const formatSelector = page.getByRole('combobox', { name: /select result format/i });
+    await expect(formatSelector).toBeVisible({ timeout: 5000 });
 
     // Should show default format (JSON for SELECT queries)
-    const formatInfo = page.getByText(/JSON/i);
-    await expect(formatInfo).toBeVisible({ timeout: 5000 });
+    await expect(formatSelector).toHaveValue('json');
   });
 });

@@ -4,6 +4,7 @@
  */
 
 import type { PrefixConfig } from '../types';
+import { logger } from '../utils/logger';
 
 /**
  * Common RDF/SPARQL prefixes
@@ -134,7 +135,7 @@ export class PrefixService {
   async searchPrefixes(query: string): Promise<PrefixSuggestion[]> {
     // Skip API call if external prefix lookup is disabled
     if (!this.enablePrefixLookup) {
-      console.debug('External prefix lookup disabled (prefix.cc API call skipped)');
+      logger.debug('External prefix lookup disabled (prefix.cc API call skipped)');
       return [];
     }
 
@@ -155,7 +156,7 @@ export class PrefixService {
         uri: uri as string,
       }));
     } catch (error) {
-      console.warn('Failed to fetch prefix suggestions:', error);
+      logger.warn('Failed to fetch prefix suggestions:', error);
       return [];
     }
   }
@@ -173,7 +174,7 @@ export class PrefixService {
     try {
       return await this.discoveryHook(endpoint);
     } catch (error) {
-      console.warn('Prefix discovery failed:', error);
+      logger.warn('Prefix discovery failed:', error);
       return {};
     }
   }

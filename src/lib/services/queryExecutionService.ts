@@ -10,6 +10,7 @@ import { analyzeQuery, type QueryAnalysis } from '../utils/queryAnalyzer';
 import { parseResults } from '../utils/resultsParser';
 import { workerParserService, isWorkerSupported } from './workerParserService';
 import type { SparqlJsonResults } from '../types';
+import { logger } from '../utils/logger';
 
 /**
  * Query execution options
@@ -171,7 +172,7 @@ export class QueryExecutionService {
             // Update results store after parsing
             resultsStore.setData(parsedData, executionTime);
           } catch (parseError) {
-            console.warn('Worker parsing failed, falling back to main thread:', parseError);
+            logger.warn('Worker parsing failed, falling back to main thread:', parseError);
             // Fallback to main thread parsing
             resultsStore.setProgress({ phase: 'parsing', startTime: Date.now() });
             const parsed = parseResults(parsedData);
@@ -181,7 +182,7 @@ export class QueryExecutionService {
           }
         } else {
           // Fallback: Workers not supported, use main thread
-          console.warn('Web Workers not supported, using main thread parsing');
+          logger.warn('Web Workers not supported, using main thread parsing');
           resultsStore.setProgress({ phase: 'parsing', startTime: Date.now() });
           const parsed = parseResults(parsedData);
           if ('rows' in parsed) {

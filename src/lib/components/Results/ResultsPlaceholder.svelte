@@ -18,6 +18,7 @@
   import type { QueryError, SparqlJsonResults, ResultFormat } from '../../types';
   import type { ParsedTableData, ParsedAskResult } from '../../utils/resultsParser';
   import { t } from '../../localization';
+  import { logger } from '../../utils/logger';
 
   // Get stores from context (with fallback to global)
   const resultsStore = getResultsStore();
@@ -64,7 +65,7 @@
       // Pass maxRows to enforce limit during parsing
       return parseResults(data as SparqlJsonResults, { maxRows: maxResults });
     } catch (error) {
-      console.error('Error parsing results:', error);
+      logger.error('Error parsing results:', error);
       return null;
     }
   });
@@ -103,7 +104,7 @@
       try {
         downloadResults($resultsStore.rawData, format);
       } catch (error) {
-        console.error('Download failed:', error);
+        logger.error('Download failed:', error);
       }
     }
   }

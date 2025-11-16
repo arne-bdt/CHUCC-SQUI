@@ -6,6 +6,7 @@
 import type { SparqlJsonResults } from '../types';
 import type { ParsedTableData } from '../utils/resultsParser';
 import type { ParseRequest, ParseResponse, ParseProgress } from '../workers/resultsParser.worker';
+import { logger } from '../utils/logger';
 
 /**
  * Options for parsing in worker
@@ -112,7 +113,7 @@ class WorkerParserService {
    * Handle worker error
    */
   private handleError(event: ErrorEvent): void {
-    console.error('Worker error:', event);
+    logger.error('Worker error:', event);
     // Reject all active requests
     for (const [id, request] of this.activeRequests) {
       request.reject(new Error('Worker error: ' + event.message));

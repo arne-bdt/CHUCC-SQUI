@@ -63,14 +63,27 @@
   let _touched = $state(false);
 
   // Convert catalogue to ComboBox items
-  const items = $derived(
-    _catalogue.map((ep) => ({
+  // Include custom endpoint as an item if value is set but not in catalogue
+  const items = $derived.by(() => {
+    const catalogueItems = _catalogue.map((ep) => ({
       id: ep.url,
       text: ep.name,
       description: ep.description || '',
       url: ep.url,
-    }))
-  );
+    }));
+
+    // If value is set and not in catalogue, add it as a custom item
+    if (value && !_catalogue.some((ep) => ep.url === value)) {
+      catalogueItems.push({
+        id: value,
+        text: value, // Show the URL as the text for custom endpoints
+        description: 'Custom endpoint',
+        url: value,
+      });
+    }
+
+    return catalogueItems;
+  });
 
   // Derived state for error/warning display
   const invalid = $derived(!_validationResult.valid && _touched);

@@ -8,6 +8,7 @@ import type {
   CachedServiceDescription,
   ServiceDescriptionCacheConfig,
 } from '../types';
+import { logger } from '../utils/logger';
 
 /**
  * Default cache configuration
@@ -235,7 +236,7 @@ export class ServiceDescriptionCache {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(entries));
     } catch (error) {
       // Silently fail if localStorage is unavailable
-      console.warn('Failed to persist service description cache:', error);
+      logger.warn('Failed to persist service description cache:', error);
     }
   }
 
@@ -284,7 +285,7 @@ export class ServiceDescriptionCache {
       }
     } catch (error) {
       // Silently fail if localStorage is corrupted
-      console.warn('Failed to load service description cache:', error);
+      logger.warn('Failed to load service description cache:', error);
       this.cache.clear();
     }
   }

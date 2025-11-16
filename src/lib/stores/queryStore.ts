@@ -1,6 +1,6 @@
 import { writable } from 'svelte/store';
 import type { QueryState, QueryType } from '../types';
-import { debug } from '../utils/debug';
+import { logger } from '../utils/logger';
 
 /**
  * Query store for managing SPARQL query state
@@ -31,11 +31,11 @@ export function createQueryStore(): {
   const originalSubscribe = subscribe;
   const wrappedSubscribe = (run: (value: QueryState) => void) => {
     subscriberCount++;
-    debug.log('[queryStore] NEW SUBSCRIPTION - Total subscribers:', subscriberCount);
+    logger.debug('[queryStore] NEW SUBSCRIPTION - Total subscribers:', subscriberCount);
     const unsubscribe = originalSubscribe(run);
     return () => {
       subscriberCount--;
-      debug.log('[queryStore] UNSUBSCRIBE - Remaining subscribers:', subscriberCount);
+      logger.debug('[queryStore] UNSUBSCRIBE - Remaining subscribers:', subscriberCount);
       unsubscribe();
     };
   };
@@ -47,18 +47,18 @@ export function createQueryStore(): {
      * Set the complete query text
      */
     setText: (text: string): void => {
-      debug.log('[queryStore] setText ENTRY:', {
+      logger.debug('[queryStore] setText ENTRY:', {
         text: text.substring(0, 50),
         subscriberCount,
       });
       update((state) => {
-        debug.log('[queryStore] setText - update callback executing:', {
+        logger.debug('[queryStore] setText - update callback executing:', {
           oldText: state.text.substring(0, 50),
           newText: text.substring(0, 50),
         });
         return { ...state, text };
       });
-      debug.log('[queryStore] setText EXIT');
+      logger.debug('[queryStore] setText EXIT');
     },
 
     /**
@@ -107,21 +107,21 @@ export function createQueryStore(): {
      * Update the entire query state
      */
     setState: (newState: Partial<QueryState>): void => {
-      debug.log('[queryStore] setState ENTRY:', {
+      logger.debug('[queryStore] setState ENTRY:', {
         newText: newState.text?.substring(0, 50) || '(no text)',
         newEndpoint: newState.endpoint || '(no endpoint)',
         subscriberCount,
       });
       update((state) => {
         const result = { ...state, ...newState };
-        debug.log('[queryStore] setState - update callback executing:', {
+        logger.debug('[queryStore] setState - update callback executing:', {
           oldText: state.text.substring(0, 50),
           newText: result.text.substring(0, 50),
           changed: state.text !== result.text,
         });
         return result;
       });
-      debug.log('[queryStore] setState EXIT');
+      logger.debug('[queryStore] setState EXIT');
     },
 
     /**

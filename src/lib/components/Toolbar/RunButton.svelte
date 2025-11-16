@@ -9,6 +9,7 @@
   import { getQueryStore, getResultsStore, getEndpointStore } from '../../stores/storeContext';
   import { sparqlService } from '../../services/sparqlService';
   import { t } from '../../localization';
+  import { logger } from '../../utils/logger';
 
   // Get stores from context (with fallback to global)
   const queryStore = getQueryStore();
@@ -65,7 +66,7 @@
       });
     } catch (error) {
       // Error is already handled by the store
-      console.error('Query execution error:', error);
+      logger.error('Query execution error:', error);
     }
   }
 

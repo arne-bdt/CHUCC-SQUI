@@ -38,8 +38,8 @@
   } from '../../stores/storeContext';
   import { sparqlService } from '../../services/sparqlService';
   import { t } from '../../localization';
+  import { logger } from '../../utils/logger';
   import type { CarbonTheme, ServiceDescription } from '../../types';
-  import { debug } from '../../utils/debug';
 
   // Get stores from context (with fallback to global)
   const queryStore = getQueryStore();
@@ -150,7 +150,7 @@
       return true;
     } catch (error) {
       // Error is already handled by the store
-      console.error('Query execution error:', error);
+      logger.error('Query execution error:', error);
       return false;
     }
   }
@@ -245,10 +245,10 @@
             // Don't update store if we're currently updating FROM the store (prevents circular updates)
             if (!isUpdatingFromStore) {
               const newText = update.state.doc.toString();
-              debug.log('[SparqlEditor] updateListener - calling queryStore.setText');
+              logger.debug('[SparqlEditor] updateListener - calling queryStore.setText');
               queryStore.setText(newText);
             } else {
-              debug.log('[SparqlEditor] updateListener - SKIPPED (isUpdatingFromStore=true)');
+              logger.debug('[SparqlEditor] updateListener - SKIPPED (isUpdatingFromStore=true)');
             }
           }
         }),
@@ -352,12 +352,12 @@
 
     // CRITICAL: Subscribe to stores AFTER editor is initialized
     // This ensures editorView is available when subscriptions fire
-    debug.log('[SparqlEditor] onMount - Setting up store subscriptions');
+    logger.debug('[SparqlEditor] onMount - Setting up store subscriptions');
 
     // Subscribe to queryStore and DIRECTLY update editor when it changes
     storeUnsubscribers.push(
       queryStore.subscribe((value) => {
-        debug.log('[SparqlEditor] queryStore subscription fired:', {
+        logger.debug('[SparqlEditor] queryStore subscription fired:', {
           newText: value.text.substring(0, 50),
           currentEditorText: editorView?.state.doc.toString().substring(0, 50) || 'no editor',
           willUpdate: editorView && value.text !== editorView.state.doc.toString(),
@@ -368,7 +368,7 @@
 
         // DIRECTLY update editor if text changed
         if (editorView && value.text !== editorView.state.doc.toString()) {
-          debug.log('[SparqlEditor] DIRECTLY updating editor to:', value.text.substring(0, 50));
+          logger.debug('[SparqlEditor] DIRECTLY updating editor to:', value.text.substring(0, 50));
 
           // Set guard flag to prevent updateListener from calling queryStore.setText()
           isUpdatingFromStore = true;
@@ -385,7 +385,7 @@
           // Use setTimeout to ensure updateListener has finished
           setTimeout(() => {
             isUpdatingFromStore = false;
-            debug.log('[SparqlEditor] Guard flag cleared (isUpdatingFromStore=false)');
+            logger.debug('[SparqlEditor] Guard flag cleared (isUpdatingFromStore=false)');
           }, 0);
         }
       })
@@ -406,7 +406,7 @@
         // Fetch service description for new endpoint
         if (value) {
           serviceDescriptionStore.fetchForEndpoint(value).catch((err) => {
-            debug.log('[SparqlEditor] Failed to fetch service description:', err);
+            logger.debug('[SparqlEditor] Failed to fetch service description:', err);
           });
         }
       })
@@ -419,7 +419,7 @@
       })
     );
 
-    debug.log('[SparqlEditor] onMount complete - subscriptions active');
+    logger.debug('[SparqlEditor] onMount complete - subscriptions active');
   });
 
   onDestroy(() => {
