@@ -13,8 +13,10 @@ A modern, full-featured SPARQL query interface built with Svelte 5 and IBM Carbo
 - **Multiple Query Types** - SELECT, ASK, CONSTRUCT, DESCRIBE
 - **Smart Editor** - CodeMirror 6 with syntax highlighting, autocomplete, and query validation
 - **Service Description Support** - Auto-discover endpoint capabilities (SPARQL 1.1 Service Description)
+- **Endpoint Dashboard** - Collapsible info panel showing capabilities, datasets, and extension functions at a glance
 - **Graph Name Auto-completion** - Intelligent completion for FROM/FROM NAMED clauses
 - **Query Validation** - Real-time warnings for unsupported features and compatibility issues
+- **Extension Function Discovery** - Searchable function library with one-click insertion into queries
 - **Results Display** - High-performance table view with virtual scrolling (10,000+ rows)
 - **Multiple Tabs** - Manage multiple queries simultaneously
 - **Multiple Formats** - JSON and XML in-app display with syntax highlighting; all formats (CSV, TSV, Turtle, JSON-LD, N-Triples, RDF/XML) viewable as text and available for download

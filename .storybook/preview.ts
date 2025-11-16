@@ -15,28 +15,37 @@ import { logger } from '../src/lib/utils/logger';
 logger.setLevel('warn');
 
 /**
- * Graph completion mock decorator - sets up service description for graph completion stories
- * This ensures the mock data is available BEFORE the CodeMirror editor initializes
+ * Service description mock decorator - sets up service description cache for stories
+ * This ensures the mock data is available BEFORE components try to fetch it
  *
  * NOTE: This decorator runs AFTER withStoreProvider, so stores are provided via context.
  * We only set up the cache here - the component will read from cache via its context stores.
  */
-const withGraphCompletionMocks: Decorator = (story, context) => {
-  // Check if this is a graph completion story
+const withServiceDescriptionMocks: Decorator = (story, context) => {
   const storyId = (context.id || '').toLowerCase();
   const storyName = (context.name || '').toLowerCase();
   const title = (context.title || '').toLowerCase();
+
+  // Check if this story needs service description mocks
   const isGraphCompletionStory = storyId.includes('graph') && storyId.includes('completion') ||
                                   storyName.includes('graph') && storyName.includes('completion') ||
                                   title.includes('sparqleditor') && storyName.includes('graph');
 
-  if (isGraphCompletionStory && typeof window !== 'undefined') {
+  const isEndpointDashboardStory = title.includes('endpoint') && (
+                                    title.includes('dashboard') ||
+                                    title.includes('infosummary')
+                                  );
+
+  if ((isGraphCompletionStory || isEndpointDashboardStory) && typeof window !== 'undefined') {
     const mockEndpoint = context.parameters?.initialEndpoint || 'http://example.org/sparql';
 
-    // Determine which mock data to use based on story name
-    let mockServiceDesc: ServiceDescription;
+    // Determine which mock data to use based on story type
+    let mockServiceDesc: ServiceDescription | null = null;
 
-    if (storyId.includes('from-named')) {
+    if (isEndpointDashboardStory && context.parameters?.initialServiceDescription) {
+      // For endpoint dashboard stories, use the provided initial service description
+      mockServiceDesc = context.parameters.initialServiceDescription;
+    } else if (storyId.includes('from-named')) {
       // Mock for FROM NAMED story - only named graphs
       mockServiceDesc = {
         endpoint: mockEndpoint,
@@ -154,7 +163,9 @@ const withGraphCompletionMocks: Decorator = (story, context) => {
 
     // Set up the cache so components can fetch from it
     // Components will use their context-based serviceDescriptionStore
-    serviceDescriptionCache.set(mockEndpoint, mockServiceDesc);
+    if (mockServiceDesc) {
+      serviceDescriptionCache.set(mockEndpoint, mockServiceDesc);
+    }
 
     // NOTE: No need to call fetchForEndpoint here - the component will do it
     // using its context-based store when it mounts
@@ -292,11 +303,11 @@ const preview: Preview = {
     },
   },
 
-  // Apply decorators - execution order is REVERSE: withTheme → withStoreProvider → withGraphCompletionMocks
+  // Apply decorators - execution order is REVERSE: withTheme → withStoreProvider → withServiceDescriptionMocks
   // 1. withTheme applies Carbon theme classes
   // 2. withStoreProvider creates isolated store instances
-  // 3. withGraphCompletionMocks sets up service description mocks
-  decorators: [withGraphCompletionMocks, withStoreProvider, withTheme],
+  // 3. withServiceDescriptionMocks sets up service description cache (graph completion + endpoint dashboard)
+  decorators: [withServiceDescriptionMocks, withStoreProvider, withTheme],
 
   // Global types for toolbar controls
   globalTypes: {

@@ -9,7 +9,8 @@ This directory contains documentation for the SPARQL Query UI Web Component (SQU
 - ✅ **Tasks 60-62**: Self-Contained/Offline Support - COMPLETED
 - ✅ **Tasks 63-68**: Carbon Design System Compliance - COMPLETED
 - ✅ **Tasks 70-75**: Context-Based Store State Isolation - COMPLETED
-- 🆕 **Task 76**: Migrate to loglevel Logging Library - PENDING
+- ✅ **Task 76**: Migrate to loglevel Logging Library - COMPLETED
+- ✅ **Tasks 77-80**: Endpoint Dashboard & Summary - COMPLETED
 
 ## Task Index
 
@@ -48,14 +49,100 @@ CHUCC-SQUI now fully complies with the IBM Carbon Design System, implementing th
   - Fixed 5 spacing violations to achieve 100% compliance
   - Verified accessibility (WCAG AA)
 
-### Code Quality & Logging (Task 76) 🆕
+### Code Quality & Logging (Task 76) ✅ COMPLETED
 
-- **[Task 76: Migrate to loglevel Logging Library](./76-migrate-to-loglevel.md)** 🆕
+- **[Task 76: Migrate to loglevel Logging Library](./76-migrate-to-loglevel.md)** ✅ **COMPLETED**
   - Replace direct `console.*` calls with loglevel
   - Industry-standard logging with <1KB bundle size
   - Runtime log level control (debug, info, warn, error)
   - Production-safe defaults (warn level in prod)
   - Remove custom `debug.ts` utility
+
+### Endpoint Dashboard & Summary (Tasks 77-80) ✅ COMPLETED
+
+These tasks implement a collapsible endpoint information dashboard that displays service description data (capabilities, datasets, extension functions) directly in the query interface, eliminating the need for a separate sidebar.
+
+**Problem Solved:**
+- ✅ Endpoint capabilities now visible at a glance without opening separate panel
+- ✅ Service description fetched automatically when endpoint changes
+- ✅ Extension functions discoverable with search and insertion into editor
+- ✅ Dataset information (graphs) accessible without running queries
+- ✅ Compact, collapsible design saves screen real estate
+
+**Solution Implemented:**
+- ✅ `EndpointInfoSummary` - Collapsible summary bar with auto-fetch
+- ✅ `EndpointDashboard` - Tabbed interface for capabilities/datasets/functions
+- ✅ Integration into main UI between toolbar and editor
+- ✅ Function insertion callback for inserting extension functions into queries
+- ✅ Comprehensive E2E test coverage (12 tests)
+
+#### Task Breakdown
+
+- **Task 77: Create EndpointInfoSummary Component**
+  - Collapsible summary bar showing capabilities at a glance
+  - Auto-fetch service description when endpoint changes
+  - Display: SPARQL version, graph count, function count, last fetched time
+  - Expand/collapse to show detailed EndpointDashboard
+  - Refresh button to re-fetch service description
+
+- **Task 78: Create EndpointDashboard Component**
+  - Tabbed interface with three tabs: Capabilities, Datasets, Functions
+  - Capabilities tab: Language support, features, result/input formats
+  - Datasets tab: Default and named graphs with metadata
+  - Functions tab: Extension functions and aggregates with search
+  - Dynamic tab visibility (hide empty tabs)
+  - Reuses existing components: LanguageSupport, FeatureList, FormatList, DatasetInfo, FunctionLibrary
+
+- **Task 79: Integrate into SparqlQueryUI**
+  - Added EndpointInfoSummary between toolbar and main editor area
+  - Implemented function insertion callback to append functions to query
+  - Fixed `$lib` alias imports to relative paths for library build compatibility
+  - Seamless integration with existing endpoint selector workflow
+
+- **Task 80: E2E Tests**
+  - 12 comprehensive E2E tests covering all user workflows
+  - Tests for collapsed/expanded states, tab navigation, search, insertion
+  - Accessibility verification (keyboard navigation, ARIA attributes)
+  - All tests passing ✅
+
+#### Key Features
+
+**EndpointInfoSummary:**
+- ✅ Compact summary: "✓ SPARQL 1.1 | 42 graphs | 15 functions | Last: 5m ago"
+- ✅ Auto-fetch on endpoint change (no manual refresh needed)
+- ✅ Loading skeleton during fetch
+- ✅ Error handling for unavailable endpoints
+- ✅ Expand/collapse button for detailed view
+- ✅ Manual refresh button
+
+**EndpointDashboard:**
+- ✅ Three-tab interface (Capabilities, Datasets, Functions)
+- ✅ Capabilities tab shows SPARQL version, features, supported formats
+- ✅ Datasets tab shows graph URIs with triple counts and metadata
+- ✅ Functions tab shows extension functions/aggregates with:
+  - Search functionality
+  - Details modal with signature and documentation
+  - Insert button to add function to query
+  - Documentation links
+- ✅ Dynamic tab hiding (e.g., no Datasets tab if no graphs)
+- ✅ Responsive design with Carbon styling
+
+#### Test Coverage
+
+- **12 E2E Tests** (all passing ✅):
+  - EndpointInfoSummary rendering and state management
+  - Tab navigation and content verification
+  - Function search and insertion
+  - Expand/collapse interactions
+  - Refresh functionality
+  - Keyboard navigation (Tab, Enter)
+  - Accessibility (ARIA attributes, screen reader support)
+
+#### Build & Tests Status
+
+- ✅ **Build**: 0 errors, 0 warnings, bundle size: 989KB
+- ✅ **Unit Tests**: 1113/1116 passing (no regressions)
+- ✅ **E2E Tests**: 12/12 passing for endpoint dashboard features
 
 ### Context-Based Store State Isolation (Tasks 70-75) ✅ COMPLETED
 

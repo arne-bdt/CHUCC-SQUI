@@ -5,7 +5,12 @@ Svelte 5 components for the SPARQL Query UI.
 ## Structure
 
 - **Editor/** - SPARQL query editor with syntax highlighting and autocompletion
-- **Endpoint/** - Endpoint selector and configuration
+- **Endpoint/** - Endpoint selector, configuration, and dashboard
+  - EndpointSelector - Endpoint selection with catalogue
+  - EndpointInfoSummary - Collapsible summary bar with endpoint capabilities
+  - EndpointDashboard - Tabbed interface for capabilities, datasets, and functions
+- **Capabilities/** - Endpoint capability display components
+- **Functions/** - Extension function library and details
 - **Results/** - Result visualization (table, raw, boolean views)
 - **Tabs/** - Multi-query tab management
 - **Toolbar/** - Action buttons and controls

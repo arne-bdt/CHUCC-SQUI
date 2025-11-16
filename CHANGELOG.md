@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- Endpoint Dashboard feature (Tasks 77-80)
+  - EndpointInfoSummary component with collapsible summary bar
+  - EndpointDashboard component with tabbed interface (Capabilities, Datasets, Functions)
+  - Auto-fetch service description when endpoint changes
+  - Function library with search and one-click insertion into queries
+  - 12 comprehensive E2E tests for endpoint dashboard features
 - Initial NPM package configuration
 - Comprehensive README with usage examples
 - TypeScript type definitions export

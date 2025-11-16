@@ -23,6 +23,7 @@
   import { Toolbar, ToolbarContent } from 'carbon-components-svelte';
   import RunButton from './lib/components/Toolbar/RunButton.svelte';
   import EndpointSelector from './lib/components/Endpoint/EndpointSelector.svelte';
+  import EndpointInfoSummary from './lib/components/Endpoint/EndpointInfoSummary.svelte';
   import FormatSelector from './lib/components/Results/FormatSelector.svelte';
   import SplitPane from './lib/components/Layout/SplitPane.svelte';
   import SparqlEditor from './lib/components/Editor/SparqlEditor.svelte';
@@ -209,6 +210,19 @@
     }
   }
 
+  /**
+   * Handle function insertion from EndpointInfoSummary
+   * Called when user clicks "Insert" on a function
+   *
+   * TODO: Implement proper cursor-position insertion when SparqlEditor exposes insertAtCursor method
+   * For now, appends the function call to the query text
+   */
+  function handleFunctionInsert(functionCall: string) {
+    const currentQuery = $queryStore.text;
+    const newQuery = currentQuery ? `${currentQuery}\n${functionCall}` : functionCall;
+    queryStore.setText(newQuery);
+  }
+
   // Prevent unused variable warnings - these will be used in future tasks
   $effect(() => {
     if (prefixes || localization || features || limits) {
@@ -274,6 +288,9 @@
             </div>
           </ToolbarContent>
         </Toolbar>
+
+        <!-- Endpoint information summary - shows capabilities, datasets, functions -->
+        <EndpointInfoSummary onInsertFunction={handleFunctionInsert} />
 
         <!-- Main content area with resizable editor and results panes -->
         <div class="squi-main">

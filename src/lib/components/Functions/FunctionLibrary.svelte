@@ -2,9 +2,9 @@
   import { Search, Button, Modal, Tabs, Tab, TabContent, Link } from 'carbon-components-svelte';
   import { Document } from 'carbon-icons-svelte';
   import FunctionDetails from './FunctionDetails.svelte';
-  import { getServiceDescriptionStore } from '$lib/stores/storeContext';
-  import { buildFunctionCall, getFunctionName, filterFunctions } from '$lib/editor/utils/functionFormatting';
-  import type { ExtensionFunction, ExtensionAggregate } from '$lib/types';
+  import { getServiceDescriptionStore } from '../../stores/storeContext';
+  import { buildFunctionCall, getFunctionName, filterFunctions } from '../../editor/utils/functionFormatting';
+  import type { ExtensionFunction, ExtensionAggregate } from '../../types';
 
   // Get store from context (with fallback to global)
   const serviceDescriptionStore = getServiceDescriptionStore();
