@@ -13,7 +13,8 @@ This directory contains documentation for the SPARQL Query UI Web Component (SQU
 - ✅ **Tasks 77-80**: Endpoint Dashboard & Summary - COMPLETED
 - ✅ **Task 81**: Address UI/UX Agent Findings - COMPLETED
 - ✅ **Task 82**: Complete Test Coverage for Endpoint Dashboard - COMPLETED
-- 📋 **Task 83**: Comprehensive Project Review with Specialized Agents - PLANNED
+- ✅ **Task 83**: Comprehensive Project Review with Specialized Agents - COMPLETED
+- 📋 **Tasks 84-87**: Pre-1.0 Quality Improvements - PLANNED
 
 ## Task Index
 
@@ -247,36 +248,196 @@ These tasks address findings from retrospective agent reviews of the endpoint da
 - ✅ Production-ready quality (comprehensive test coverage)
 - ✅ Maintainable codebase (well-tested, documented patterns)
 
-### Comprehensive Project Review (Task 83) 📋 PLANNED
+### Comprehensive Project Review (Task 83) ✅ COMPLETED
 
-This task provides a systematic review of the entire codebase using all specialized agents to identify quality improvements, consistency issues, technical debt, and enhancement opportunities before the 1.0 release.
+Systematic review of the entire SQUI codebase using all 6 specialized agents to assess quality, identify improvements, and prepare for the 1.0 release.
 
-**Execution Strategy:**
-- ⚠️ **MUST run in fresh context window** (new conversation)
-- Use all 6 specialized agents systematically
-- Generate comprehensive findings report
-- Create improvement backlog for future sprints
+**Review Results:**
+- ✅ **Overall Quality Score: 4.3/5.0** (Excellent)
+- ✅ All 6 agent reviews completed successfully
+- ✅ Comprehensive findings report generated
+- ✅ 60+ issues categorized by priority (3 critical, 14 high, 28 medium, 15 low)
+- ✅ 4 new task files created for high-priority fixes (Tasks 84-87)
 
-**Agents Used:**
-1. **component-dev** - Review all Svelte components for quality and consistency
-2. **testing** - Analyze test coverage and identify gaps
-3. **ui-ux** - Verify Carbon compliance and WCAG 2.1 AA accessibility
-4. **datagrid** - Review DataGrid implementation and performance
-5. **sparql-protocol** - Verify SPARQL 1.2 Protocol compliance
-6. **docs** - Review documentation completeness and accuracy
+**Agent Scores:**
+1. ✅ **component-dev**: 4.3/5.0 - Excellent Svelte 5 patterns, strong TypeScript
+2. ✅ **testing**: 4.2/5.0 - ~85% coverage, comprehensive test suite
+3. ✅ **ui-ux**: 4.2/5.0 - Strong Carbon compliance, 2 critical a11y issues found
+4. ✅ **datagrid**: 4.3/5.0 - Excellent pre-computation pattern, performance optimized
+5. ✅ **sparql-protocol**: 4.2/5.0 - 85% SPARQL 1.2 Protocol compliance
+6. ✅ **docs**: 4.2/5.0 - Strong external docs, missing architecture/API reference
+
+**Key Findings:**
+- ✅ Production-ready codebase with excellent patterns
+- ⚠️ 3 critical issues requiring immediate fix (SplitPane a11y, JSON parse error handling)
+- ⚠️ Missing architecture documentation and API reference
+- ⚠️ Gaps in E2E test coverage (DataTable stories, download functionality)
 
 **Deliverables:**
-- Comprehensive review report with quality scores
-- Prioritized improvement backlog (Critical/High/Medium/Low)
-- New task files for high-priority findings
-- Updated project roadmap
+- ✅ [Comprehensive Review Report](../docs/reviews/2025-comprehensive-review.md)
+- ✅ Task 84: Fix SplitPane Accessibility Issues (CRITICAL)
+- ✅ Task 85: Add Missing E2E Tests (HIGH)
+- ✅ Task 86: Create Architecture & API Documentation (HIGH)
+- ✅ Task 87: Fix Component Development Issues (HIGH)
 
-**When to Execute:**
-- After Tasks 81-82 completion (endpoint dashboard quality improvements done)
-- Before 1.0 release preparation
-- Requires dedicated 4-8 hour session with fresh context
+**See:** [Task 83 Specification](.tasks/83-comprehensive-project-review.md) | [Review Report](../docs/reviews/2025-comprehensive-review.md)
 
-**See:** [Task 83 Specification](.tasks/83-comprehensive-project-review.md)
+---
+
+### Pre-1.0 Quality Improvements (Tasks 84-87) 📋 PLANNED
+
+These tasks address the critical and high-priority findings from Task 83's comprehensive review to prepare the codebase for the 1.0 release. Completing these tasks will raise the overall quality score from 4.3/5.0 to ~4.6/5.0.
+
+**Total Estimated Effort:** 31-38 hours
+**Priority:** HIGH (Required before 1.0 release)
+**Target Completion:** Before 1.0 release
+
+**Impact:**
+- ✅ WCAG 2.1 Level AA compliance (fixes 2 critical accessibility violations)
+- ✅ Improved robustness (error handling, memory leaks fixed)
+- ✅ Better documentation (architecture and API reference for integrators)
+- ✅ Complete E2E test coverage (all UI components and workflows tested)
+
+#### Task Breakdown
+
+- **[Task 84: Fix SplitPane Accessibility Issues](./84-fix-splitpane-accessibility.md)** 📋 **PLANNED**
+  - **Priority**: CRITICAL (WCAG violations)
+  - **Estimated Effort**: 3-4 hours
+  - **Agent Required**: ui-ux
+
+  **Issues to Fix:**
+  1. **Keyboard Navigation** (WCAG 2.1.1 - Keyboard)
+     - Add keyboard resize support (ArrowUp/ArrowDown)
+     - Implement aria-valuenow updates
+     - Add screen reader announcements
+
+  2. **Touch Target Size** (WCAG 2.5.5 - Target Size)
+     - Increase divider height to 44px minimum
+     - Add touch event handlers (touchstart, touchmove, touchend)
+     - Ensure mobile-friendly resizing
+
+  **Acceptance Criteria:**
+  - ✅ Keyboard users can resize panes with arrow keys
+  - ✅ Touch target meets 44x44px minimum
+  - ✅ WCAG 2.1 Level AA compliant
+  - ✅ Integration and E2E tests verify accessibility
+  - ✅ All tests passing
+
+- **[Task 85: Add Missing E2E Tests](./85-add-missing-e2e-tests.md)** 📋 **PLANNED**
+  - **Priority**: HIGH
+  - **Estimated Effort**: 8-12 hours
+  - **Agent Required**: testing
+
+  **Tests to Create:**
+  1. **DataTable Storybook Stories** (4-6 hours)
+     - E2E tests for all 19 DataTable stories
+     - Test rendering, sorting, filtering, resizing, visibility
+     - Test virtual scrolling with large datasets (10,000+ rows)
+     - Test clickable links and styled literals
+
+  2. **Download Functionality** (2-3 hours)
+     - E2E test for download button visibility and click
+     - Test download event triggers
+     - Verify file name and format
+
+  3. **Error Recovery** (2-3 hours)
+     - E2E test for error notification display
+     - Test retry functionality
+     - Test CORS and timeout error messaging
+
+  **Acceptance Criteria:**
+  - ✅ `data-table.storybook.spec.ts` created with 15+ tests
+  - ✅ `download.storybook.spec.ts` created with 3+ tests
+  - ✅ `error-recovery.storybook.spec.ts` created with 3+ tests
+  - ✅ All E2E tests use semantic selectors (getByRole, getByText)
+  - ✅ All tests passing
+
+- **[Task 86: Create Architecture & API Documentation](./86-create-architecture-api-documentation.md)** 📋 **PLANNED**
+  - **Priority**: HIGH (Critical for 1.0 release)
+  - **Estimated Effort**: 14-18 hours
+  - **Agent Required**: docs
+
+  **Documentation to Create:**
+  1. **Architecture Documentation** (6-8 hours)
+     - System architecture overview with Mermaid diagrams
+     - Component hierarchy and relationships
+     - Data flow documentation (query execution, service description)
+     - Store architecture and state management patterns
+     - Service layer organization
+     - Extension points for integrators and contributors
+
+  2. **API Reference** (8-10 hours)
+     - Component APIs (props, events, usage examples)
+     - Service APIs (methods, parameters, returns, throws, examples)
+     - Store APIs (state shape, actions, getters, subscriptions)
+     - Type definitions reference
+     - Integration examples (React, Vue, Vanilla JS)
+
+  **Acceptance Criteria:**
+  - ✅ `docs/ARCHITECTURE.md` created with diagrams and comprehensive documentation
+  - ✅ `docs/API.md` created with all major APIs documented
+  - ✅ All code examples tested and verified
+  - ✅ Diagrams render correctly in GitHub
+  - ✅ Documentation linked from README.md
+
+- **[Task 87: Fix Component Development Issues](./87-fix-component-development-issues.md)** 📋 **PLANNED**
+  - **Priority**: HIGH
+  - **Estimated Effort**: 5-7 hours
+  - **Agent Required**: component-dev
+
+  **Issues to Fix:**
+  1. **DataTable Effect Cleanup** (1 hour)
+     - Fix infinite scroll effect cleanup on early returns
+     - Prevent memory leaks
+
+  2. **QueryTabs Circular Update Risk** (2 hours)
+     - Add guard flag to prevent infinite loop
+     - Use tick() pattern like SparqlEditor
+
+  3. **RunButton Redundant Effects** (30 minutes)
+     - Replace 3 $effect blocks with $derived
+     - Simplify store subscriptions
+
+  4. **JSON Parse Error Handling** (1 hour)
+     - Wrap JSON.parse in try-catch
+     - Add structure validation
+     - Throw proper QueryError
+
+  5. **SPARQL JSON Error Format Support** (2 hours)
+     - Detect SPARQL JSON error responses
+     - Extract structured error messages
+     - Improve error categorization
+
+  6. **Multi-line PREFIX Detection** (30 minutes)
+     - Fix regex to handle multi-line PREFIX declarations
+     - Add tests for edge case
+
+  **Acceptance Criteria:**
+  - ✅ All 6 issues fixed with tests
+  - ✅ No memory leaks
+  - ✅ No circular update risks
+  - ✅ Better error handling
+  - ✅ All tests passing
+
+#### Success Criteria (Tasks 84-87)
+
+**After completion:**
+- ✅ Overall Quality Score: 4.6/5.0 (up from 4.3/5.0)
+- ✅ WCAG 2.1 Level AA: PASS (all violations fixed)
+- ✅ Test Coverage: ~90% (E2E gaps filled)
+- ✅ Documentation: Complete (architecture and API reference)
+- ✅ Code Quality: Excellent (critical issues fixed)
+- ✅ Ready for 1.0 Release
+
+**Timeline:**
+- Task 84: Week 1 (3-4 hours)
+- Task 85: Week 1-2 (8-12 hours)
+- Task 86: Week 2-3 (14-18 hours)
+- Task 87: Week 3 (5-7 hours)
+
+**Total:** 3-4 weeks of focused work
+
+---
 
 ### Context-Based Store State Isolation (Tasks 70-75) ✅ COMPLETED
 
