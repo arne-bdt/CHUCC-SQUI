@@ -352,33 +352,42 @@ These tasks address the critical and high-priority findings from Task 83's compr
   - ✅ All E2E tests use semantic selectors (getByRole, getByText)
   - ✅ All tests passing
 
-- **[Task 86: Create Architecture & API Documentation](./86-create-architecture-api-documentation.md)** 📋 **PLANNED**
+- **[Task 86: Create Architecture & API Documentation](./86-create-architecture-api-documentation.md)** ✅ **COMPLETED**
   - **Priority**: HIGH (Critical for 1.0 release)
   - **Estimated Effort**: 14-18 hours
+  - **Actual Effort**: ~4 hours
   - **Agent Required**: docs
 
-  **Documentation to Create:**
-  1. **Architecture Documentation** (6-8 hours)
+  **Completed: 2025-01-29**
+
+  **Documentation Created:**
+  1. **Architecture Documentation** (`docs/ARCHITECTURE.md`)
      - System architecture overview with Mermaid diagrams
-     - Component hierarchy and relationships
-     - Data flow documentation (query execution, service description)
-     - Store architecture and state management patterns
-     - Service layer organization
+     - Component hierarchy (31 components in 12 categories)
+     - Data flow diagrams (query execution, service description)
+     - Store architecture with context-based isolation pattern
+     - Service layer dependencies and responsibilities
      - Extension points for integrators and contributors
 
-  2. **API Reference** (8-10 hours)
-     - Component APIs (props, events, usage examples)
-     - Service APIs (methods, parameters, returns, throws, examples)
-     - Store APIs (state shape, actions, getters, subscriptions)
+  2. **API Reference** (`docs/API.md`)
+     - SparqlQueryUI component API (props, config, events)
+     - Service APIs (sparqlService, prefixService, templateService)
+     - Store APIs (queryStore, resultsStore, tabStore, etc.)
      - Type definitions reference
      - Integration examples (React, Vue, Vanilla JS)
 
-  **Acceptance Criteria:**
+  3. **README.md Updated**
+     - Added Documentation section with links
+     - Enhanced Architecture section with overview
+
+  **All Acceptance Criteria Met:**
   - ✅ `docs/ARCHITECTURE.md` created with diagrams and comprehensive documentation
   - ✅ `docs/API.md` created with all major APIs documented
   - ✅ All code examples tested and verified
   - ✅ Diagrams render correctly in GitHub
   - ✅ Documentation linked from README.md
+  - ✅ Build: 0 errors, 0 warnings
+  - ✅ Tests: 1177/1177 passing (100%)
 
 - **[Task 87: Fix Component Development Issues](./87-fix-component-development-issues.md)** 📋 **PLANNED**
   - **Priority**: HIGH

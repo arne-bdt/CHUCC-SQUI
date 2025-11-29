@@ -630,9 +630,25 @@ npm run lint
 npm run format
 ```
 
+## Documentation
+
+Comprehensive documentation is available in the `docs/` directory:
+
+- **[Architecture Guide](docs/ARCHITECTURE.md)** - System design, component hierarchy, data flow diagrams
+- **[API Reference](docs/API.md)** - Component APIs, services, stores, and integration examples
+- **[Security Guide](docs/SECURITY.md)** - Security considerations and CSP configuration
+
 ## Architecture
 
-SQUI is built with:
+SQUI follows a layered architecture with clear separation of concerns:
+
+- **Presentation Layer** - Svelte 5 components with Carbon Design System
+- **Context Layer** - StoreProvider for isolated state instances
+- **State Layer** - Svelte stores with factory pattern for isolation
+- **Business Layer** - Services for SPARQL protocol, parsing, caching
+- **External Layer** - SPARQL endpoints and prefix.cc API
+
+**Key Technologies:**
 
 - **Svelte 5** - Modern reactive framework with runes
 - **CodeMirror 6** - Extensible code editor
@@ -641,6 +657,8 @@ SQUI is built with:
 - **TypeScript** - Type-safe development
 - **Vitest** - Fast unit testing
 - **Playwright** - Reliable E2E testing
+
+For detailed architecture diagrams and data flow documentation, see the [Architecture Guide](docs/ARCHITECTURE.md).
 
 ## Contributing
 
@@ -662,7 +680,9 @@ Inspired by [YASGUI](https://yasgui.triply.cc/) - the original SPARQL GUI by Tri
 
 ## Support
 
-- 📖 [Documentation](https://github.com/yourusername/sparql-query-ui/wiki)
+- 📖 [Architecture Guide](docs/ARCHITECTURE.md) - System design and data flow
+- 📖 [API Reference](docs/API.md) - Components, services, and stores
+- 📖 [Security Guide](docs/SECURITY.md) - Security and deployment
 - 🐛 [Issue Tracker](https://github.com/yourusername/sparql-query-ui/issues)
 - 💬 [Discussions](https://github.com/yourusername/sparql-query-ui/discussions)
 

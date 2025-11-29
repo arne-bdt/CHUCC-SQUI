@@ -295,7 +295,7 @@ $effect(() => {
 
 ---
 
-### 15. Missing Architecture Documentation
+### 15. Missing Architecture Documentation ✅ RESOLVED
 **Agent:** Docs
 **Impact:** New contributors struggle to understand system design
 
@@ -306,9 +306,11 @@ $effect(() => {
 **Estimated Effort:** 6-8 hours
 **Priority:** HIGH (critical for 1.0 release)
 
+**Resolution (Task 86):** Created `docs/ARCHITECTURE.md` with Mermaid diagrams covering system architecture, component hierarchy (31 components), data flow diagrams, store architecture, service layer, and extension points.
+
 ---
 
-### 16. Missing API Reference Documentation
+### 16. Missing API Reference Documentation ✅ RESOLVED
 **Agent:** Docs
 **Impact:** Integration developers lack detailed API documentation
 
@@ -318,6 +320,8 @@ $effect(() => {
 
 **Estimated Effort:** 8-10 hours
 **Priority:** HIGH (critical for 1.0 release)
+
+**Resolution (Task 86):** Created `docs/API.md` with complete API reference for SparqlQueryUI component, services (sparqlService, prefixService, templateService), stores (queryStore, resultsStore, tabStore, etc.), type definitions, and integration examples for React, Vue, and Vanilla JS.
 
 ---
 
